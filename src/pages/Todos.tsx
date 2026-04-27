@@ -151,14 +151,6 @@ const Todos: React.FC = () => {
     URL.revokeObjectURL(url);
   };
 
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case 'high': return 'var(--danger-color)';
-      case 'low': return 'var(--text-muted)';
-      default: return 'var(--warning-color)';
-    }
-  };
-
   const completedTodos = todos.filter(t => t.completed);
   const pendingTodos = todos.filter(t => !t.completed);
 

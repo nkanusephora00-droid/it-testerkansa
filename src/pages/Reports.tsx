@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { api, testsAPI, testSessionsAPI, applicationsAPI, comptesAPI, usersAPI, todosAPI } from '../services/api';
+import { usersAPI, applicationsAPI, testsAPI, todosAPI, comptesAPI } from '../services/api';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChartBar, faChartPie, faCheckCircle, faTimesCircle, faClock, faUsers, faDatabase, faTasks } from '@fortawesome/free-solid-svg-icons';
 
@@ -17,12 +17,6 @@ interface Stats {
   completedTodos: number;
 }
 
-interface TestTrend {
-  date: string;
-  ok: number;
-  bug: number;
-}
-
 const Reports: React.FC = () => {
   const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(true);
@@ -34,11 +28,10 @@ const Reports: React.FC = () => {
 
   const fetchStats = async () => {
     try {
-      const [apps, comptes, tests, sessions, users, todos] = await Promise.all([
+      const [apps, comptes, tests, users, todos] = await Promise.all([
         applicationsAPI.getAll(),
         comptesAPI.getAll(),
         testsAPI.getAll(),
-        testSessionsAPI.getAll(),
         usersAPI.getAll(),
         todosAPI.getAll()
       ]);

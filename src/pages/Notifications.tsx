@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { api, todosAPI, testsAPI } from '../services/api';
+import { testsAPI, todosAPI } from '../services/api';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBell, faCheck, faTimes, faExclamationTriangle, faInfo, faCheckCircle, faTasks, faBug, faClock } from '@fortawesome/free-solid-svg-icons';
+import { faBell, faCheck, faExclamationTriangle, faInfo, faCheckCircle, faBug } from '@fortawesome/free-solid-svg-icons';
 
 interface Notification {
   id: number;

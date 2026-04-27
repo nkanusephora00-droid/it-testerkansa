@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { profileAPI, User } from '../services/api';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUser, faCamera, faLock, faSave, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faUser, faCamera, faLock, faSave } from '@fortawesome/free-solid-svg-icons';
 
 interface ProfileData extends User {
   profilePhoto?: string | null;
@@ -140,9 +140,9 @@ const Profile: React.FC = () => {
 
         <div style={styles.profileHeader}>
           <div style={styles.photoContainer} onClick={handlePhotoClick}>
-            <img 
-              src={previewPhoto || defaultPhoto} 
-              alt="Photo de profil"
+            <img
+              src={previewPhoto || defaultPhoto}
+              alt="Profil"
               style={styles.photo}
             />
             <div style={styles.photoOverlay}>
