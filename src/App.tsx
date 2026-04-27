@@ -5,6 +5,8 @@ import Layout from './components/Layout';
 
 // Lazy load pages for better performance
 const Login = lazy(() => import('./pages/Login'));
+const ForgotPassword = lazy(() => import('./pages/ForgotPassword'));
+const ResetPassword = lazy(() => import('./pages/ResetPassword'));
 const Dashboard = lazy(() => import('./pages/Dashboard'));
 const Users = lazy(() => import('./pages/Users'));
 const Applications = lazy(() => import('./pages/Applications'));
@@ -28,6 +30,8 @@ function App() {
       <Suspense fallback={<div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>Chargement...</div>}>
         <Routes>
           <Route path="/login" element={<Login />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/dashboard" element={<PrivateRoute><Layout><Dashboard /></Layout></PrivateRoute>} />
           <Route path="/users" element={<PrivateRoute><Layout><Users /></Layout></PrivateRoute>} />
           <Route path="/applications" element={<PrivateRoute><Layout><Applications /></Layout></PrivateRoute>} />

@@ -83,6 +83,15 @@ const Login: React.FC = () => {
           </button>
         </form>
         
+        <div style={styles.forgotPassword}>
+          <button 
+            type="button" 
+            style={styles.forgotPasswordLink} 
+            onClick={() => navigate('/forgot-password')}
+          >
+            Mot de passe oublié ?
+          </button>
+        </div>
 
       </div>
     </div>
@@ -169,6 +178,20 @@ const styles = {
     fontSize: '14px',
     fontWeight: 500,
     boxShadow: '0 4px 12px rgba(255, 107, 107, 0.2)',
+  },
+  forgotPassword: {
+    textAlign: 'center' as const,
+    marginTop: '16px',
+  },
+  forgotPasswordLink: {
+    background: 'none',
+    border: 'none',
+    color: 'var(--info-color)',
+    fontSize: '14px',
+    fontWeight: 600,
+    cursor: 'pointer',
+    textDecoration: 'none',
+    transition: 'all 0.2s ease',
   },
 };
 
