@@ -130,9 +130,27 @@ api.interceptors.request.use((config) => {
 
 api.interceptors.response.use(
   (response) => response,
-  (error) => {
+  async (error) => {
     if (process.env.NODE_ENV === 'development') {
       console.error("Erreur API:", error.message);
+    }
+    
+    // Handle 429 Too Many Requests - retry with delay
+    if (error.response?.status === 429) {
+      const retryCount = error.config._retryCount || 0;
+      const maxRetries = 3;
+      
+      if (retryCount < maxRetries) {
+        error.config._retryCount = retryCount + 1;
+        const delay = Math.pow(2, retryCount) * 1000; // Exponential backoff: 1s, 2s, 4s
+        
+        if (process.env.NODE_ENV === 'development') {
+          console.log(`Rate limit exceeded. Retrying in ${delay}ms... (Attempt ${retryCount + 1}/${maxRetries})`);
+        }
+        
+        await new Promise(resolve => setTimeout(resolve, delay));
+        return api.request(error.config);
+      }
     }
     
     // Handle 401 Unauthorized - redirect to login
