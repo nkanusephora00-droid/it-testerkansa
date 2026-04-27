@@ -219,9 +219,7 @@ export const apkAPI = {
     if (version) formData.append('version', version);
     if (packageName) formData.append('packageName', packageName);
     if (description) formData.append('description', description);
-    const response = await api.post<ApkFile>("/apk/upload", formData, {
-      headers: { 'Content-Type': 'multipart/form-data' }
-    });
+    const response = await api.post<ApkFile>("/apk/upload", formData);
     return response.data;
   },
   download: async (id: number) => {
