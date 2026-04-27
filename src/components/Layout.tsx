@@ -40,16 +40,28 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         }
       } catch (error: any) {
         if (process.env.NODE_ENV === 'development') {
-          console.error("Layout: Token invalide:", error);
+          console.error("Layout: Token validation error:", error);
           console.error("Layout: Token validation response:", error?.response?.status, error?.response?.data);
         }
-        localStorage.removeItem("access_token");
-        localStorage.removeItem("token_type");
-        localStorage.removeItem("user_role");
-        localStorage.removeItem("user_id");
-        localStorage.removeItem("username");
-        localStorage.removeItem("email");
-        navigate("/login");
+        
+        // Ne déconnecter que si c'est une vraie erreur 401 (token invalide/expiré)
+        // Ne pas déconnecter pour 429 (rate limiting) ou autres erreurs temporaires
+        if (error?.response?.status === 401) {
+          if (process.env.NODE_ENV === 'development') {
+            console.log("Layout: Token invalid (401), redirecting to login");
+          }
+          localStorage.removeItem("access_token");
+          localStorage.removeItem("token_type");
+          localStorage.removeItem("user_role");
+          localStorage.removeItem("user_id");
+          localStorage.removeItem("username");
+          localStorage.removeItem("email");
+          navigate("/login");
+        } else {
+          if (process.env.NODE_ENV === 'development') {
+            console.log("Layout: Token validation failed but not 401, keeping user logged in");
+          }
+        }
       }
     };
 

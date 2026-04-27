@@ -28,13 +28,52 @@ const Reports: React.FC = () => {
 
   const fetchStats = async () => {
     try {
-      const [apps, comptes, tests, users, todos] = await Promise.all([
-        applicationsAPI.getAll(),
-        comptesAPI.getAll(),
-        testsAPI.getAll(),
-        usersAPI.getAll(),
-        todosAPI.getAll()
-      ]);
+      // Faire les requêtes séquentiellement pour éviter les erreurs 429
+      let apps: any[] = [];
+      let comptes: any[] = [];
+      let tests: any[] = [];
+      let users: any[] = [];
+      let todos: any[] = [];
+
+      try {
+        apps = await applicationsAPI.getAll();
+      } catch (e) {
+        if (process.env.NODE_ENV === 'development') {
+          console.error('Error fetching apps:', e);
+        }
+      }
+
+      try {
+        comptes = await comptesAPI.getAll();
+      } catch (e) {
+        if (process.env.NODE_ENV === 'development') {
+          console.error('Error fetching comptes:', e);
+        }
+      }
+
+      try {
+        tests = await testsAPI.getAll();
+      } catch (e) {
+        if (process.env.NODE_ENV === 'development') {
+          console.error('Error fetching tests:', e);
+        }
+      }
+
+      try {
+        users = await usersAPI.getAll();
+      } catch (e) {
+        if (process.env.NODE_ENV === 'development') {
+          console.error('Error fetching users:', e);
+        }
+      }
+
+      try {
+        todos = await todosAPI.getAll();
+      } catch (e) {
+        if (process.env.NODE_ENV === 'development') {
+          console.error('Error fetching todos:', e);
+        }
+      }
 
       const testsOK = tests.filter((t: any) => t.statut === 'OK').length;
       const testsBug = tests.filter((t: any) => t.statut === 'BUG').length;

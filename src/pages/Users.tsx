@@ -30,13 +30,21 @@ const Users: React.FC = () => {
 
   const fetchUsers = async () => {
     try {
-      const data = await usersAPI.getAll();
-      setUsers(data);
+      const data: any = await usersAPI.getAll();
+      // Gérer à la fois les réponses tableau direct et PageResponse
+      if (Array.isArray(data)) {
+        setUsers(data);
+      } else if (data && data.content) {
+        setUsers(data.content);
+      } else {
+        setUsers([]);
+      }
     } catch (err) {
       if (process.env.NODE_ENV === 'development') {
-        console.error(err);
+        console.error('Error fetching users:', err);
       }
       setMessage({ type: 'error', text: 'Erreur de chargement des utilisateurs' });
+      setUsers([]);
     } finally {
       setLoading(false);
     }
@@ -277,21 +285,29 @@ const Users: React.FC = () => {
 const styles = {
   container: { backgroundColor: 'var(--bg-primary)', minHeight: '100vh' },
   main: { padding: '30px', maxWidth: '1400px', margin: '0 auto', minHeight: 'calc(100vh - 70px)' },
-  formSection: { backgroundColor: 'var(--bg-card)', padding: '24px', borderRadius: '12px', marginBottom: '24px', boxShadow: '0 2px 8px var(--shadow-color)' },
-  tableSection: { backgroundColor: 'var(--bg-card)', padding: '24px', borderRadius: '12px', boxShadow: '0 2px 8px var(--shadow-color)' },
-  form: { display: 'flex', gap: '10px', flexWrap: 'wrap' as const },
-  input: { padding: '12px 14px', border: '1px solid var(--border-color)', borderRadius: '8px', flex: '1 1 200px', fontSize: '14px', backgroundColor: 'var(--input-bg)', color: 'var(--text-primary)' },
-  inputDisabled: { padding: '12px 14px', border: '1px solid var(--border-color)', borderRadius: '8px', backgroundColor: 'var(--bg-primary)', flex: '1 1 200px', fontSize: '14px', color: 'var(--text-muted)' },
-  select: { padding: '12px 14px', border: '1px solid var(--border-color)', borderRadius: '8px', flex: '1 1 200px', fontSize: '14px', backgroundColor: 'var(--input-bg)', color: 'var(--text-primary)' },
-  submitButton: { padding: '12px 24px', backgroundColor: 'var(--success-color)', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: '600' },
-  cancelButton: { padding: '12px 24px', backgroundColor: 'var(--text-muted)', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', marginLeft: '10px', fontWeight: '500' },
-  table: { width: '100%', borderCollapse: 'collapse' as const, borderRadius: '8px', overflow: 'hidden' },
-  editButton: { padding: '8px 14px', backgroundColor: 'var(--info-color)', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', marginRight: '8px', fontSize: '13px', marginBottom: '5px' },
-  deleteButton: { padding: '8px 14px', backgroundColor: 'var(--danger-color)', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '13px', marginBottom: '5px' },
-  toggleOnButton: { padding: '8px 14px', backgroundColor: 'var(--success-color)', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', marginRight: '8px', fontSize: '13px', marginBottom: '5px' },
-  toggleOffButton: { padding: '8px 14px', backgroundColor: 'var(--text-muted)', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', marginRight: '8px', fontSize: '13px', marginBottom: '5px' },
-  success: { padding: '14px', backgroundColor: 'var(--success-color)', color: 'white', borderRadius: '8px', marginBottom: '20px' },
-  error: { padding: '14px', backgroundColor: 'var(--danger-color)', color: 'white', borderRadius: '8px', marginBottom: '20px' },
+  header: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap' as const, gap: '16px' },
+  pageTitle: { fontSize: '28px', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '4px', letterSpacing: '-0.5px' },
+  pageSubtitle: { fontSize: '14px', color: 'var(--text-secondary)', fontWeight: 400 },
+  formSection: { backgroundColor: 'var(--bg-card)', padding: '28px', borderRadius: '16px', marginBottom: '24px', boxShadow: '0 4px 24px var(--shadow-color)', border: '1px solid var(--border-light)' },
+  tableSection: { backgroundColor: 'var(--bg-card)', padding: '28px', borderRadius: '16px', boxShadow: '0 4px 24px var(--shadow-color)', border: '1px solid var(--border-light)' },
+  sectionTitle: { fontSize: '20px', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '4px', letterSpacing: '-0.3px' },
+  form: { display: 'flex', flexDirection: 'column' as const, gap: '18px', maxWidth: '760px' },
+  modalForm: { display: 'flex', flexDirection: 'column' as const, gap: '20px', padding: '8px 0' },
+  formRow: { display: 'flex', gap: '16px', flexWrap: 'wrap' as const },
+  formGroup: { flex: '1 1 280px' as const, minWidth: '240px', marginBottom: '0' },
+  label: { display: 'block', marginBottom: '8px', fontSize: '13px', fontWeight: 600, color: 'var(--text-secondary)', letterSpacing: '0.3px', textTransform: 'uppercase' as const },
+  input: { padding: '14px 16px', border: '2px solid var(--border-color)', borderRadius: '12px', flex: '1 1 200px', fontSize: '15px', backgroundColor: 'var(--input-bg)', color: 'var(--text-primary)', transition: 'all 0.2s ease', outline: 'none', fontWeight: 400 },
+  inputDisabled: { padding: '14px 16px', border: '2px solid var(--border-color)', borderRadius: '12px', backgroundColor: 'var(--bg-primary)', flex: '1 1 200px', fontSize: '15px', color: 'var(--text-muted)', outline: 'none' },
+  select: { padding: '14px 16px', border: '2px solid var(--border-color)', borderRadius: '12px', flex: '1 1 200px', fontSize: '15px', backgroundColor: 'var(--input-bg)', color: 'var(--text-primary)', transition: 'all 0.2s ease', outline: 'none', cursor: 'pointer', fontWeight: 400 },
+  submitButton: { padding: '14px 28px', backgroundColor: 'var(--success-color)', color: 'white', border: 'none', borderRadius: '12px', cursor: 'pointer', fontWeight: 600, fontSize: '14px', transition: 'all 0.2s ease', boxShadow: '0 4px 12px rgba(39, 174, 96, 0.3)', letterSpacing: '0.3px' },
+  cancelButton: { padding: '14px 24px', backgroundColor: 'transparent', color: 'var(--text-secondary)', border: '2px solid var(--border-color)', borderRadius: '12px', cursor: 'pointer', fontWeight: 600, fontSize: '14px', transition: 'all 0.2s ease', letterSpacing: '0.3px' },
+  table: { width: '100%', borderCollapse: 'collapse' as const, borderRadius: '12px', overflow: 'hidden' },
+  editButton: { padding: '10px 16px', backgroundColor: 'var(--info-color)', color: 'white', border: 'none', borderRadius: '10px', cursor: 'pointer', marginRight: '8px', fontSize: '13px', fontWeight: 600, transition: 'all 0.2s ease', boxShadow: '0 4px 12px rgba(52, 152, 219, 0.3)' },
+  deleteButton: { padding: '10px 16px', backgroundColor: 'var(--danger-color)', color: 'white', border: 'none', borderRadius: '10px', cursor: 'pointer', fontSize: '13px', fontWeight: 600, transition: 'all 0.2s ease', boxShadow: '0 4px 12px rgba(255, 107, 107, 0.3)' },
+  toggleOnButton: { padding: '10px 16px', backgroundColor: 'var(--success-color)', color: 'white', border: 'none', borderRadius: '10px', cursor: 'pointer', marginRight: '8px', fontSize: '13px', fontWeight: 600, transition: 'all 0.2s ease', boxShadow: '0 4px 12px rgba(39, 174, 96, 0.3)' },
+  toggleOffButton: { padding: '10px 16px', backgroundColor: 'var(--text-muted)', color: 'white', border: 'none', borderRadius: '10px', cursor: 'pointer', marginRight: '8px', fontSize: '13px', fontWeight: 600, transition: 'all 0.2s ease' },
+  success: { padding: '16px 20px', backgroundColor: 'var(--success-color)', color: 'white', borderRadius: '12px', marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '12px', fontWeight: 500, boxShadow: '0 4px 12px rgba(39, 174, 96, 0.2)' },
+  error: { padding: '16px 20px', backgroundColor: 'var(--danger-color)', color: 'white', borderRadius: '12px', marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '12px', fontWeight: 500, boxShadow: '0 4px 12px rgba(255, 107, 107, 0.2)' },
   modal: { 
     position: 'fixed' as const, 
     top: 0, 
@@ -305,27 +321,28 @@ const styles = {
     justifyContent: 'center', 
     alignItems: 'flex-start', 
     zIndex: 1000,
-    paddingTop: '40px',
+    paddingTop: '60px',
     overflowY: 'auto' as const,
-    backdropFilter: 'blur(4px)'
+    backdropFilter: 'blur(4px)',
+    padding: '20px'
   },
   modalContent: { 
     backgroundColor: 'var(--bg-card)', 
-    padding: '20px', 
-    borderRadius: '16px', 
+    padding: '32px', 
+    borderRadius: '20px', 
     width: '95%', 
-    maxWidth: '500px', 
+    maxWidth: '640px', 
     position: 'relative' as const,
     margin: '0 auto 40px auto',
-    boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
+    boxShadow: '0 24px 80px rgba(0,0,0,0.4)',
     border: '1px solid var(--border-light)'
   },
-  close: { position: 'absolute' as const, top: '15px', right: '20px', fontSize: '28px', cursor: 'pointer', color: 'var(--text-muted)' },
-  formGroup: { flex: '1 1 200px' as const, minWidth: '150px', marginBottom: '16px' },
+  close: { position: 'absolute' as const, top: '20px', right: '24px', fontSize: '32px', cursor: 'pointer', color: 'var(--text-muted)', transition: 'all 0.2s ease', lineHeight: 1 },
+  formGroup: { flex: '1 1 280px' as const, minWidth: '240px', marginBottom: '0' },
   formRow: { display: 'flex', gap: '16px', flexWrap: 'wrap' as const },
-  modalForm: { display: 'flex', flexDirection: 'column' as const, gap: '12px' },
-  label: { display: 'block', marginBottom: '6px', fontSize: '13px', fontWeight: '600', color: 'var(--text-secondary)' },
-  formActions: { display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '8px' },
+  modalForm: { display: 'flex', flexDirection: 'column' as const, gap: '20px', padding: '8px 0' },
+  label: { display: 'block', marginBottom: '8px', fontSize: '13px', fontWeight: 600, color: 'var(--text-secondary)', letterSpacing: '0.3px', textTransform: 'uppercase' as const },
+  formActions: { display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '8px', paddingTop: '8px' },
 };
 
 export default Users;
