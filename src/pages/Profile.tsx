@@ -1,16 +1,11 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { profileAPI } from '../services/api';
+import { profileAPI, User } from '../services/api';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faCamera, faLock, faSave, faTimes } from '@fortawesome/free-solid-svg-icons';
 
-interface ProfileData {
-  id: number;
-  username: string;
-  email: string;
-  role: string;
-  isActive: boolean;
-  profilePhoto: string | null;
-  createdAt: string | null;
+interface ProfileData extends User {
+  profilePhoto?: string | null;
+  createdAt?: string | null;
 }
 
 const Profile: React.FC = () => {
@@ -40,9 +35,10 @@ const Profile: React.FC = () => {
   const fetchProfile = async () => {
     try {
       const data = await profileAPI.getMe();
-      setProfile(data);
+      const profileData = data as ProfileData;
+      setProfile(profileData);
       setFormData({ email: data.email || '' });
-      setPreviewPhoto(data.profilePhoto);
+      setPreviewPhoto(profileData.profilePhoto !== undefined ? profileData.profilePhoto : null);
     } catch (err) {
       if (process.env.NODE_ENV === 'development') {
         console.error(err);

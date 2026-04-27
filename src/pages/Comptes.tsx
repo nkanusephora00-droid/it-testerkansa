@@ -1,12 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { comptesAPI, applicationsAPI } from '../services/api';
+import { comptesAPI, applicationsAPI, Application } from '../services/api';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPen, faTrash, faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
-
-interface Application {
-  id: number;
-  nom: string;
-}
 
 interface Compte {
   id: number;
@@ -14,7 +9,7 @@ interface Compte {
   role?: string;
   code?: string;
   applicationId: number;
-  application?: { id: number; nom: string };
+  application?: Application;
   commentaire?: string;
 }
 
@@ -122,7 +117,7 @@ const Comptes: React.FC = () => {
 
   const getAppName = (appId: number) => {
     const app = applications.find(a => a.id === appId);
-    return app ? app.nom : 'Application inconnue';
+    return app ? app.name : 'Application inconnue';
   };
 
   return (
@@ -256,7 +251,7 @@ const Comptes: React.FC = () => {
                   >
                     <option value="">Sélectionnez une application</option>
                     {applications.map(app => (
-                      <option key={app.id} value={app.id}>{app.nom}</option>
+                      <option key={app.id} value={app.id}>{app.name}</option>
                     ))}
                   </select>
                 </div>
@@ -363,7 +358,7 @@ const Comptes: React.FC = () => {
                   >
                     <option value="">Sélectionnez une application</option>
                     {applications.map(app => (
-                      <option key={app.id} value={app.id}>{app.nom}</option>
+                      <option key={app.id} value={app.id}>{app.name}</option>
                     ))}
                   </select>
                 </div>

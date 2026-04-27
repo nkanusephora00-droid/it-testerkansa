@@ -266,7 +266,9 @@ const Todos: React.FC = () => {
 
         {todos.length === 0 ? (
           <div style={styles.emptyState}>
-            <FontAwesomeIcon icon={faListCheck} style={styles.emptyIcon} />
+            <div style={styles.emptyIcon}>
+              <FontAwesomeIcon icon={faListCheck} />
+            </div>
             <h3>Aucune tâche</h3>
             <p>Créez votre première tâche pour commencer</p>
             <button style={styles.emptyButton} onClick={() => setShowForm(true)}>
@@ -386,7 +388,7 @@ const styles: { [key: string]: React.CSSProperties } = {
   cancelButton: { padding: '12px 20px', backgroundColor: 'var(--bg-card)', color: 'var(--text-primary)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', cursor: 'pointer', fontWeight: 500, display: 'flex', alignItems: 'center', gap: '8px' },
   submitButton: { padding: '12px 20px', backgroundColor: 'var(--success-color)', color: 'white', border: 'none', borderRadius: 'var(--radius-md)', cursor: 'pointer', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px' },
   emptyState: { textAlign: 'center', padding: '60px 20px', color: 'var(--text-secondary)' },
-  emptyIcon: { fontSize: '48px', marginBottom: '16px', opacity: 0.5 },
+  emptyIcon: { fontSize: '48px', marginBottom: '16px', opacity: 0.5, color: 'var(--text-secondary)', display: 'inline-block' },
   emptyButton: { marginTop: '16px', padding: '12px 24px', backgroundColor: 'var(--success-color)', color: 'white', border: 'none', borderRadius: 'var(--radius-md)', cursor: 'pointer', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: '8px' },
   listsContainer: { display: 'flex', flexDirection: 'column', gap: '24px' },
   listSection: {},

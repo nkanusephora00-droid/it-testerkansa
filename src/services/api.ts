@@ -17,6 +17,7 @@ export interface User {
 export interface Application {
   id: number;
   name: string;
+  nom: string;
   description?: string;
   platform?: string;
   version?: string;
@@ -32,22 +33,47 @@ export interface Compte {
 
 export interface Test {
   id: number;
-  name: string;
-  statut: string;
   sessionId?: number;
+  applicationId?: number;
+  applicationNom?: string;
+  version?: string;
+  environnement?: string;
+  fonction: string;
+  precondition: string;
+  etapes: string;
+  resultatAttendu: string;
+  resultatObtenu: string;
+  statut: string;
+  commentaires: string;
+  image?: string;
 }
 
 export interface TestSession {
   id: number;
-  name: string;
-  date?: string;
-  status?: string;
+  nom: string;
+  description?: string;
+  applicationId?: number;
+  applicationNom?: string;
+  environnement?: string;
+  version?: string;
+  nom_document?: string;
+  date_creation: string;
+  statut: string;
+  tests: Test[];
+  total_tests: number;
+  tests_ok: number;
+  tests_bug: number;
+  tests_en_cours: number;
 }
 
 export interface Todo {
   id: number;
   title: string;
+  description: string | null;
   completed: boolean;
+  priority: string;
+  dueDate: string | null;
+  createdAt: string;
 }
 
 export const api = axios.create({

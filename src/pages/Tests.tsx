@@ -1,49 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { testsAPI, applicationsAPI, api, testSessionsAPI } from '../services/api';
+import { testsAPI, applicationsAPI, api, testSessionsAPI, Application, Test, TestSession } from '../services/api';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash, faEye, faFilePdf, faCheck, faTimes, faPlus, faEdit } from '@fortawesome/free-solid-svg-icons';
-
-interface Application {
-  id: number;
-  nom: string;
-  version?: string;
-  environnement?: string;
-}
-
-interface Test {
-  id: number;
-  sessionId?: number;
-  applicationId?: number;
-  applicationNom?: string;
-  version?: string;
-  environnement?: string;
-  fonction: string;
-  precondition: string;
-  etapes: string;
-  resultatAttendu: string;
-  resultatObtenu: string;
-  statut: string;
-  commentaires: string;
-  image?: string;
-}
-
-interface TestSession {
-  id: number;
-  nom: string;
-  description?: string;
-  applicationId?: number;
-  applicationNom?: string;
-  environnement?: string;
-  version?: string;
-  nom_document?: string;
-  date_creation: string;
-  statut: string;
-  tests: Test[];
-  total_tests: number;
-  tests_ok: number;
-  tests_bug: number;
-  tests_en_cours: number;
-}
 
 const Tests: React.FC = () => {
   const [tests, setTests] = useState<Test[]>([]);
@@ -337,7 +295,7 @@ const Tests: React.FC = () => {
   };
 
   const getSessionTests = (sessionId: number) => {
-    return tests.filter(t => t.sessionId === sessionId || t.session_id === sessionId);
+    return tests.filter(t => t.sessionId === sessionId);
   };
 
   const getStatutClass = (statut: string) => {
