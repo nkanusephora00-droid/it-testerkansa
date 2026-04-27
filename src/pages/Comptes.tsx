@@ -1,16 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import { comptesAPI, applicationsAPI, Application } from '../services/api';
+import { comptesAPI, applicationsAPI, Application, ApplicationInfoDTO } from '../services/api';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPen, faTrash, faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 
 interface Compte {
   id: number;
-  username: string;
-  role?: string;
-  code?: string;
   applicationId: number;
-  application?: Application;
+  username: string;
+  code?: string;
+  role?: string;
   commentaire?: string;
+  createdBy?: number;
+  application?: ApplicationInfoDTO;
 }
 
 const Comptes: React.FC = () => {
@@ -42,8 +43,11 @@ const Comptes: React.FC = () => {
         comptesAPI.getAll(),
         applicationsAPI.getAll(),
       ]);
-      setComptes(comptesData);
-      setApplications(appsData);
+      // Gérer à la fois les réponses tableau direct et PageResponse
+      const comptes: any = comptesData;
+      const apps: any = appsData;
+      setComptes(Array.isArray(comptes) ? comptes : (comptes?.content || []));
+      setApplications(Array.isArray(apps) ? apps : (apps?.content || []));
     } catch (err) {
       if (process.env.NODE_ENV === 'development') {
         console.error(err);
@@ -117,7 +121,7 @@ const Comptes: React.FC = () => {
 
   const getAppName = (appId: number) => {
     const app = applications.find(a => a.id === appId);
-    return app ? app.name : 'Application inconnue';
+    return app ? app.nom : 'Application inconnue';
   };
 
   return (
@@ -251,7 +255,7 @@ const Comptes: React.FC = () => {
                   >
                     <option value="">Sélectionnez une application</option>
                     {applications.map(app => (
-                      <option key={app.id} value={app.id}>{app.name}</option>
+                      <option key={app.id} value={app.id}>{app.nom}</option>
                     ))}
                   </select>
                 </div>
@@ -358,7 +362,7 @@ const Comptes: React.FC = () => {
                   >
                     <option value="">Sélectionnez une application</option>
                     {applications.map(app => (
-                      <option key={app.id} value={app.id}>{app.name}</option>
+                      <option key={app.id} value={app.id}>{app.nom}</option>
                     ))}
                   </select>
                 </div>

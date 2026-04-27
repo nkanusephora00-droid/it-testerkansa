@@ -64,6 +64,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     { path: "/dashboard", label: "Tableau de bord", icon: "fa-home" },
     { path: "/applications", label: "Applications", icon: "fa-mobile-alt" },
     { path: "/comptes", label: "Comptes", icon: "fa-user" },
+    { path: "/apk", label: "APK", icon: "fa-android" },
     { path: "/tests", label: "Tests", icon: "fa-check-square" },
     { path: "/todos", label: "Tâches", icon: "fa-tasks" },
     { path: "/reports", label: "Rapports", icon: "fa-chart-bar" },

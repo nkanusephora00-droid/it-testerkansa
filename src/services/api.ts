@@ -16,19 +16,28 @@ export interface User {
 
 export interface Application {
   id: number;
-  name: string;
   nom: string;
   description?: string;
-  platform?: string;
   version?: string;
+  environnement?: string;
+  dateCreation?: string;
+  createdBy?: number;
+}
+
+export interface ApplicationInfoDTO {
+  id: number;
+  nom: string;
 }
 
 export interface Compte {
   id: number;
-  username: string;
   applicationId: number;
-  password?: string;
-  status?: string;
+  username: string;
+  code?: string;
+  role?: string;
+  commentaire?: string;
+  createdBy?: number;
+  application?: ApplicationInfoDTO;
 }
 
 export interface Test {
@@ -64,6 +73,30 @@ export interface TestSession {
   tests_ok: number;
   tests_bug: number;
   tests_en_cours: number;
+}
+
+export interface PageResponse<T> {
+  content: T[];
+  currentPage: number;
+  pageSize: number;
+  totalElements: number;
+  totalPages: number;
+  first: boolean;
+  last: boolean;
+}
+
+export interface ApkFile {
+  id: number;
+  fileName: string;
+  originalFileName: string;
+  fileSize: number;
+  version?: string;
+  packageName?: string;
+  description?: string;
+  applicationId?: number;
+  uploadedBy?: number;
+  uploadDate: string;
+  downloadCount?: number;
 }
 
 export interface Todo {
@@ -148,7 +181,12 @@ export const profileAPI = {
 
 // Applications API
 export const applicationsAPI = {
-  getAll: async () => (await api.get<Application[]>("/applications")).data,
+  getAll: async (page = 0, size = 10, sortBy = 'id', sortDir = 'asc') => {
+    const response = await api.get<PageResponse<Application>>("/applications", {
+      params: { page, size, sortBy, sortDir }
+    });
+    return response.data.content;
+  },
   getById: async (id: number) => (await api.get<Application>(`/applications/${id}`)).data,
   create: async (data: Partial<Application>) => (await api.post<Application>("/applications", data)).data,
   update: async (id: number, data: Partial<Application>) => (await api.put<Application>(`/applications/${id}`, data)).data,
@@ -157,11 +195,42 @@ export const applicationsAPI = {
 
 // Comptes API
 export const comptesAPI = {
-  getAll: async () => (await api.get<Compte[]>("/comptes")).data,
+  getAll: async (page = 0, size = 10, sortBy = 'id', sortDir = 'asc') => {
+    const response = await api.get<PageResponse<Compte>>("/comptes", {
+      params: { page, size, sortBy, sortDir }
+    });
+    return response.data.content;
+  },
   getById: async (id: number) => (await api.get<Compte>(`/comptes/${id}`)).data,
   create: async (data: Partial<Compte>) => (await api.post<Compte>("/comptes", data)).data,
   update: async (id: number, data: Partial<Compte>) => (await api.put<Compte>(`/comptes/${id}`, data)).data,
   delete: async (id: number) => (await api.delete(`/comptes/${id}`)).data,
+};
+
+// APK API
+export const apkAPI = {
+  getAll: async () => (await api.get<ApkFile[]>("/apk")).data,
+  getById: async (id: number) => (await api.get<ApkFile>(`/apk/${id}`)).data,
+  getByApplication: async (applicationId: number) => (await api.get<ApkFile[]>(`/apk/application/${applicationId}`)).data,
+  upload: async (file: File, applicationId?: number, version?: string, packageName?: string, description?: string) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    if (applicationId) formData.append('applicationId', applicationId.toString());
+    if (version) formData.append('version', version);
+    if (packageName) formData.append('packageName', packageName);
+    if (description) formData.append('description', description);
+    const response = await api.post<ApkFile>("/apk/upload", formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    });
+    return response.data;
+  },
+  download: async (id: number) => {
+    const response = await api.get(`/apk/download/${id}`, {
+      responseType: 'blob'
+    });
+    return response.data;
+  },
+  delete: async (id: number) => (await api.delete(`/apk/${id}`)).data,
 };
 
 // Tests API

@@ -11,8 +11,8 @@ const Applications: React.FC = () => {
   const [editingApp, setEditingApp] = useState<Application | null>(null);
   const [message, setMessage] = useState({ type: '', text: '' });
   
-  const [formData, setFormData] = useState({ name: '', description: '', version: '', platform: '' });
-  const [editFormData, setEditFormData] = useState({ name: '', description: '', version: '', platform: '' });
+  const [formData, setFormData] = useState({ nom: '', description: '', version: '', environnement: '' });
+  const [editFormData, setEditFormData] = useState({ nom: '', description: '', version: '', environnement: '' });
 
   // Récupérer le rôle de l'utilisateur
   const userRole = localStorage.getItem('user_role');
@@ -24,8 +24,15 @@ const Applications: React.FC = () => {
 
   const fetchApplications = async () => {
     try {
-      const data = await applicationsAPI.getAll();
-      setApplications(data);
+      const data: any = await applicationsAPI.getAll();
+      // Gérer à la fois les réponses tableau direct et PageResponse
+      if (Array.isArray(data)) {
+        setApplications(data);
+      } else if (data && data.content && Array.isArray(data.content)) {
+        setApplications(data.content);
+      } else {
+        setApplications([]);
+      }
     } catch (err) {
       if (process.env.NODE_ENV === 'development') {
         console.error(err);
@@ -41,7 +48,7 @@ const Applications: React.FC = () => {
     try {
       await applicationsAPI.create(formData);
       setMessage({ type: 'success', text: 'Application ajoutée avec succès!' });
-      setFormData({ name: '', description: '', version: '', platform: '' });
+      setFormData({ nom: '', description: '', version: '', environnement: '' });
       setShowCreateModal(false);
       fetchApplications();
     } catch (err: any) {
@@ -58,7 +65,7 @@ const Applications: React.FC = () => {
       setMessage({ type: 'success', text: 'Application mise à jour avec succès!' });
       setShowModal(false);
       setEditingApp(null);
-      setEditFormData({ name: '', description: '', version: '', platform: '' });
+      setEditFormData({ nom: '', description: '', version: '', environnement: '' });
       fetchApplications();
     } catch (err: any) {
       setMessage({ type: 'error', text: err.response?.data?.detail || 'Erreur lors de la mise à jour' });
@@ -80,10 +87,10 @@ const Applications: React.FC = () => {
   const openEditModal = (app: Application) => {
     setEditingApp(app);
     setEditFormData({
-      name: app.name,
+      nom: app.nom,
       description: app.description || '',
       version: app.version || '',
-      platform: app.platform || ''
+      environnement: app.environnement || ''
     });
     setShowModal(true);
   };
@@ -137,9 +144,9 @@ const Applications: React.FC = () => {
                   {applications.map((app) => (
                     <tr key={app.id}>
                       <td>{app.id}</td>
-                      <td><strong>{app.name}</strong></td>
+                      <td><strong>{app.nom}</strong></td>
                       <td>{app.version || '-'}</td>
-                      <td>{app.platform || '-'}</td>
+                      <td>{app.environnement || '-'}</td>
                       <td>{app.description || ''}</td>
                       <td style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
                         <button style={{...styles.editButton, padding: '6px', backgroundColor: 'transparent', color: '#3498db'}} onClick={() => openEditModal(app)} title="Modifier">
@@ -175,8 +182,8 @@ const Applications: React.FC = () => {
                   <input
                     type="text"
                     placeholder="Ex: Portail RH"
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    value={formData.nom}
+                    onChange={(e) => setFormData({ ...formData, nom: e.target.value })}
                     style={styles.input}
                     required
                   />
@@ -198,8 +205,8 @@ const Applications: React.FC = () => {
                   <input
                     type="text"
                     placeholder="Ex: Production, Recette, Mobile"
-                    value={formData.platform}
-                    onChange={(e) => setFormData({ ...formData, platform: e.target.value })}
+                    value={formData.environnement}
+                    onChange={(e) => setFormData({ ...formData, environnement: e.target.value })}
                     style={styles.input}
                   />
                 </div>
@@ -233,8 +240,8 @@ const Applications: React.FC = () => {
                   <label style={styles.label}>Nom</label>
                   <input
                     type="text"
-                    value={editFormData.name}
-                    onChange={(e) => setEditFormData({ ...editFormData, name: e.target.value })}
+                    value={editFormData.nom}
+                    onChange={(e) => setEditFormData({ ...editFormData, nom: e.target.value })}
                     style={styles.input}
                     required
                   />
@@ -255,8 +262,8 @@ const Applications: React.FC = () => {
                   <label style={styles.label}>Environnement</label>
                   <input
                     type="text"
-                    value={editFormData.platform}
-                    onChange={(e) => setEditFormData({ ...editFormData, platform: e.target.value })}
+                    value={editFormData.environnement}
+                    onChange={(e) => setEditFormData({ ...editFormData, environnement: e.target.value })}
                     style={styles.input}
                     placeholder="ex: Mobile, Production"
                   />
