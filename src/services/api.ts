@@ -135,21 +135,26 @@ api.interceptors.response.use(
       console.error("Erreur API:", error.message);
     }
     
-    // Handle 429 Too Many Requests - retry with delay
+    // Handle 429 Too Many Requests - retry with delay (sauf pour /auth/*)
     if (error.response?.status === 429) {
-      const retryCount = error.config._retryCount || 0;
-      const maxRetries = 3;
+      // Ne pas retry pour les requêtes d'authentification
+      const isAuthRequest = error.config?.url?.includes('/auth/');
       
-      if (retryCount < maxRetries) {
-        error.config._retryCount = retryCount + 1;
-        const delay = Math.pow(2, retryCount) * 1000; // Exponential backoff: 1s, 2s, 4s
+      if (!isAuthRequest) {
+        const retryCount = error.config._retryCount || 0;
+        const maxRetries = 2;
         
-        if (process.env.NODE_ENV === 'development') {
-          console.log(`Rate limit exceeded. Retrying in ${delay}ms... (Attempt ${retryCount + 1}/${maxRetries})`);
+        if (retryCount < maxRetries) {
+          error.config._retryCount = retryCount + 1;
+          const delay = Math.pow(2, retryCount) * 1000; // Exponential backoff: 1s, 2s
+          
+          if (process.env.NODE_ENV === 'development') {
+            console.log(`Rate limit exceeded. Retrying in ${delay}ms... (Attempt ${retryCount + 1}/${maxRetries})`);
+          }
+          
+          await new Promise(resolve => setTimeout(resolve, delay));
+          return api.request(error.config);
         }
-        
-        await new Promise(resolve => setTimeout(resolve, delay));
-        return api.request(error.config);
       }
     }
     
