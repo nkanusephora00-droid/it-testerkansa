@@ -117,7 +117,7 @@ const Applications: React.FC = () => {
           </div>
         )}
 
-        <div style={styles.tableSection}>
+        <div style={window.innerWidth <= 768 ? { ...styles.tableSection, ...styles.tableSectionMobile } : styles.tableSection}>
           <div style={styles.listHeader}>
             <div>
               <h3 style={styles.sectionTitle}>Liste des applications</h3>
@@ -299,6 +299,7 @@ const styles: Record<string, React.CSSProperties> = {
   pageTitle: { margin: 0, fontSize: '24px', display: 'flex', alignItems: 'center', gap: '12px' },
   pageSubtitle: { margin: '4px 0 0', color: 'var(--text-secondary)', fontSize: '14px' },
   tableSection: { backgroundColor: 'var(--bg-card)', borderRadius: 'var(--radius-lg)', padding: '24px', marginBottom: '24px', border: '1px solid var(--border-color)', boxShadow: '0 2px 8px var(--shadow-color)' },
+  tableSectionMobile: { padding: '16px', marginBottom: '16px' },
   sectionTitle: { margin: '0 0 20px', fontSize: '18px' },
   modalForm: { display: 'flex', flexDirection: 'column' as const, gap: '20px', padding: '8px 0' },
   formRow: { display: 'flex', gap: '16px', flexWrap: 'wrap' as const },

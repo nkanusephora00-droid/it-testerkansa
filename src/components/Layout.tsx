@@ -165,7 +165,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       {/* Main Content */}
       <div style={styles.mainWrapper} className="main-wrapper">
        {/* Header */}
-       <header 
+       <header
          style={styles.header}
        >
          <div style={styles.headerTitle}>
@@ -173,27 +173,12 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
          </div>
          <div style={styles.headerActions}>
            <button
-             onClick={() => handleNavClick('/notifications')}
-             style={styles.notifBellButton}
-             title="Notifications"
-           >
-             <i className="fas fa-bell"></i>
-           </button>
-           <button
             onClick={handleLogout}
-            style={styles.logoutIconButton}
+            style={styles.logoutButton}
             title="Se déconnecter"
           >
+            Déconnexion
           </button>
-           <div style={styles.userBadgeContainer}>
-            <span style={styles.onlineIndicator}></span>
-            <span style={styles.userBadge}>
-              <i
-                className={`fas ${isAdmin ? "fa-user-shield" : "fa-user"}`}
-              ></i>
-              {isAdmin ? "Admin" : "Utilisateur"}
-            </span>
-          </div>
          </div>
        </header>
 
@@ -406,6 +391,17 @@ const styles = {
     justifyContent: "center",
     transition: "all 0.2s ease",
   },
+  logoutButton: {
+    padding: "8px 16px",
+    borderRadius: "8px",
+    border: "none",
+    backgroundColor: "var(--danger-color)",
+    color: "white",
+    fontSize: "14px",
+    fontWeight: "500",
+    cursor: "pointer",
+    transition: "all 0.2s ease",
+  },
   userBadge: {
     padding: "6px 14px",
     borderRadius: "20px",
@@ -441,7 +437,7 @@ const styles = {
     right: 0,
     backgroundColor: "var(--bg-card)",
     borderTop: "1px solid var(--border-color)",
-    padding: "8px 0",
+    padding: "12px 0",
     boxShadow: "0 -2px 8px var(--shadow-color)",
     zIndex: 1000,
   },
@@ -450,11 +446,11 @@ const styles = {
     flexDirection: "column" as const,
     alignItems: "center",
     gap: "4px",
-    padding: "8px 12px",
+    padding: "8px 4px",
     border: "none",
     backgroundColor: "transparent",
     color: "var(--text-secondary)",
-    fontSize: "11px",
+    fontSize: "10px",
     fontWeight: "500",
     cursor: "pointer",
     flex: 1,
