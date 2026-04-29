@@ -63,6 +63,10 @@ const Messages: React.FC = () => {
   const handleStartChat = (user: User) => {
     setSelectedUser(user);
     setShowChat(true);
+    // Ensure current user is loaded
+    if (!currentUser) {
+      loadCurrentUser();
+    }
     // Clear unread count for this user
     setUnreadCounts(prev => ({ ...prev, [user.id]: 0 }));
   };
@@ -75,7 +79,7 @@ const Messages: React.FC = () => {
 
   // Mobile view: show either list or chat
   if (isMobile) {
-    if (showChat && selectedUser && currentUser) {
+    if (showChat && selectedUser) {
       return (
         <div style={styles.container}>
           <main style={styles.main}>
@@ -87,7 +91,7 @@ const Messages: React.FC = () => {
             </div>
             <div style={styles.chatArea}>
               <Chat
-                currentUser={currentUser}
+                currentUser={currentUser || { id: currentUserId, username: localStorage.getItem('username') || 'Utilisateur', email: '', role: localStorage.getItem('user_role') || 'utilisateur' }}
                 selectedUser={selectedUser}
               />
             </div>
@@ -216,9 +220,9 @@ const Messages: React.FC = () => {
 
           {/* Right side - Chat area */}
           <div style={styles.chatArea}>
-            {selectedUser && currentUser ? (
+            {selectedUser ? (
               <Chat
-                currentUser={currentUser}
+                currentUser={currentUser || { id: currentUserId, username: localStorage.getItem('username') || 'Utilisateur', email: '', role: localStorage.getItem('user_role') || 'utilisateur' }}
                 selectedUser={selectedUser}
               />
             ) : (
