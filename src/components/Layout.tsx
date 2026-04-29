@@ -177,7 +177,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             style={styles.logoutButton}
             title="Se déconnecter"
           >
-            Déconnexion
+            <i className="fas fa-sign-out-alt"></i>
           </button>
          </div>
        </header>
@@ -376,14 +376,17 @@ const styles = {
     transition: "all 0.2s ease",
   },
   logoutButton: {
-    padding: "8px 16px",
+    width: "40px",
+    height: "40px",
     borderRadius: "8px",
     border: "none",
     backgroundColor: "var(--danger-color)",
     color: "white",
-    fontSize: "14px",
-    fontWeight: "500",
+    fontSize: "16px",
     cursor: "pointer",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
     transition: "all 0.2s ease",
   },
   userBadge: {
