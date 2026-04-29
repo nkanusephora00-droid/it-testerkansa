@@ -460,6 +460,9 @@ const Tests: React.FC = () => {
                 <option value="Terminé">Terminé</option>
               </select>
             </div>
+            {session.createdByUsername && (
+              <p style={styles.sessionOwner}><i className="fas fa-user"></i> Créé par: {session.createdByUsername}</p>
+            )}
             <p style={styles.sessionDesc}>{session.description || 'Aucune description'}</p>
             {session.nom_document && (
               <p style={styles.sessionInfo}><i className="fas fa-file"></i> Document: {session.nom_document}</p>
@@ -976,6 +979,7 @@ input: { padding: '4px 6px', border: '1px solid var(--border-color)', borderRadi
   sessionCard: { backgroundColor: 'var(--bg-card)', padding: '14px', borderRadius: '10px', cursor: 'pointer', transition: 'all 0.2s ease', boxShadow: '0 2px 8px var(--shadow-color)', border: '1px solid var(--border-light)' },
   sessionHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px', gap: '8px' },
   sessionTitle: { margin: 0, color: 'var(--text-primary)', fontSize: '16px', fontWeight: '600', flex: 1 },
+  sessionOwner: { color: 'var(--info-color)', fontSize: '12px', marginBottom: '6px', fontWeight: '500' },
   sessionDesc: { color: 'var(--text-secondary)', fontSize: '13px', marginBottom: '10px', lineHeight: '1.4', minHeight: '36px' },
   sessionStats: { display: 'flex', gap: '12px', marginBottom: '10px', fontSize: '13px', padding: '8px', backgroundColor: 'var(--hover-bg)', borderRadius: '6px' },
   sessionActions: { display: 'flex', gap: '8px', flexWrap: 'wrap' as const },

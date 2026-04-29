@@ -68,6 +68,8 @@ export interface TestSession {
   nom_document?: string;
   date_creation: string;
   statut: string;
+  created_by?: number;
+  createdByUsername?: string;
   tests: Test[];
   total_tests: number;
   tests_ok: number;
