@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { usersAPI, User, messagesAPI } from '../services/api';
+import { usersAPI, messagesAPI, User, profileAPI } from '../services/api';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faComments, faPaperPlane, faCircle, faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import Chat from '../components/Chat';
@@ -38,7 +38,7 @@ const Messages: React.FC = () => {
 
   const loadCurrentUser = async () => {
     try {
-      const data = await usersAPI.getById(currentUserId);
+      const data = await profileAPI.getMe();
       setCurrentUser(data);
     } catch (err) {
       console.error('Error loading current user:', err);

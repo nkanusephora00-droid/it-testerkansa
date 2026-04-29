@@ -72,7 +72,7 @@ const Reports: React.FC = () => {
       }
 
       try {
-        users = await usersAPI.getAll();
+        users = await usersAPI.getAvailable();
       } catch (e: any) {
         if (process.env.NODE_ENV === 'development') {
           console.error('Error fetching users:', e);

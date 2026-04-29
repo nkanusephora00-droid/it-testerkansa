@@ -167,12 +167,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
        {/* Header */}
        <header 
          style={styles.header}
-         onClick={() => {
-           // Toggle mobile menu when clicking header on mobile
-           if (window.innerWidth <= 768) {
-             toggleMobileMenu();
-           }
-         }}
        >
          <div style={styles.headerTitle}>
            <h1>Gestion des Accès IT</h1>
@@ -192,17 +186,37 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
            >
              <i className="fas fa-sign-out-alt"></i>
            </button>
-           <span style={styles.userBadge}>
-             <i
-               className={`fas ${isAdmin ? "fa-user-shield" : "fa-user"}`}
-             ></i>
-             {isAdmin ? "Admin" : "Utilisateur"}
-           </span>
+           <div style={styles.userBadgeContainer}>
+            <span style={styles.onlineIndicator}></span>
+            <span style={styles.userBadge}>
+              <i
+                className={`fas ${isAdmin ? "fa-user-shield" : "fa-user"}`}
+              ></i>
+              {isAdmin ? "Admin" : "Utilisateur"}
+            </span>
+          </div>
          </div>
        </header>
 
         {/* Content */}
         <main style={styles.content}>{children}</main>
+
+        {/* Bottom Navigation for Mobile */}
+        <div style={styles.bottomNav}>
+          {mainMenuItems.slice(0, 5).map((item) => (
+            <button
+              key={item.path}
+              onClick={() => handleNavClick(item.path)}
+              style={{
+                ...styles.bottomNavItem,
+                ...(currentPath === item.path ? styles.bottomNavItemActive : {}),
+              }}
+            >
+              <i className={`fas ${item.icon}`}></i>
+              <span>{item.label}</span>
+            </button>
+          ))}
+        </div>
       </div>
     </div>
   );
@@ -364,12 +378,54 @@ const styles = {
     fontSize: "12px",
     fontWeight: "600",
   },
+  userBadgeContainer: {
+    display: "flex",
+    alignItems: "center",
+    gap: "8px",
+  },
+  onlineIndicator: {
+    width: "10px",
+    height: "10px",
+    borderRadius: "50%",
+    backgroundColor: "#27ae60",
+    boxShadow: "0 0 0 2px rgba(39, 174, 96, 0.2)",
+  },
   content: {
     flex: 1,
     padding: "90px 30px 30px 30px",
     overflowY: "auto" as const,
     backgroundColor: "var(--bg-primary)",
     minHeight: "calc(100vh - 70px)",
+  },
+  bottomNav: {
+    display: "none",
+    position: "fixed" as const,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: "var(--bg-card)",
+    borderTop: "1px solid var(--border-color)",
+    padding: "8px 0",
+    boxShadow: "0 -2px 8px var(--shadow-color)",
+    zIndex: 1000,
+  },
+  bottomNavItem: {
+    display: "flex",
+    flexDirection: "column" as const,
+    alignItems: "center",
+    gap: "4px",
+    padding: "8px 12px",
+    border: "none",
+    backgroundColor: "transparent",
+    color: "var(--text-secondary)",
+    fontSize: "11px",
+    fontWeight: "500",
+    cursor: "pointer",
+    flex: 1,
+    transition: "all 0.2s ease",
+  },
+  bottomNavItemActive: {
+    color: "var(--info-color)",
   },
   mobileMenuToggle: {
     display: "none",
