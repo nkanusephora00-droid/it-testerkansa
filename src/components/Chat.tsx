@@ -1,15 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { messagesAPI, Message, User } from '../services/api';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPaperPlane, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faPaperPlane } from '@fortawesome/free-solid-svg-icons';
 
 interface ChatProps {
   currentUser: User;
   selectedUser: User;
-  onClose: () => void;
 }
 
-const Chat: React.FC<ChatProps> = ({ currentUser, selectedUser, onClose }) => {
+const Chat: React.FC<ChatProps> = ({ currentUser, selectedUser }) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState('');
   const [loading, setLoading] = useState(true);
@@ -72,12 +71,9 @@ const Chat: React.FC<ChatProps> = ({ currentUser, selectedUser, onClose }) => {
     <div style={styles.container}>
       <div style={styles.header}>
         <div style={styles.headerInfo}>
-          <h3 style={styles.headerTitle}>Conversation avec {selectedUser.username}</h3>
+          <h3 style={styles.headerTitle}>{selectedUser.username}</h3>
           <span style={styles.headerRole}>{selectedUser.role === 'admin' ? 'Administrateur' : 'Utilisateur'}</span>
         </div>
-        <button style={styles.closeButton} onClick={onClose}>
-          <FontAwesomeIcon icon={faTimes} />
-        </button>
       </div>
 
       <div style={styles.messagesContainer}>
@@ -145,9 +141,9 @@ const styles: Record<string, React.CSSProperties> = {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: '16px 20px',
+    padding: '16px 24px',
     borderBottom: '1px solid var(--border-color)',
-    backgroundColor: 'var(--bg-primary)',
+    backgroundColor: 'var(--bg-card)',
   },
   headerInfo: {
     display: 'flex',
@@ -155,34 +151,22 @@ const styles: Record<string, React.CSSProperties> = {
   },
   headerTitle: {
     margin: 0,
-    fontSize: '16px',
+    fontSize: '18px',
     fontWeight: 600,
     color: 'var(--text-primary)',
   },
   headerRole: {
-    fontSize: '12px',
+    fontSize: '13px',
     color: 'var(--text-secondary)',
-  },
-  closeButton: {
-    width: '32px',
-    height: '32px',
-    borderRadius: '8px',
-    border: 'none',
-    backgroundColor: 'var(--hover-bg)',
-    color: 'var(--text-secondary)',
-    cursor: 'pointer',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    transition: 'all 0.2s',
   },
   messagesContainer: {
     flex: 1,
     overflowY: 'auto' as const,
-    padding: '20px',
+    padding: '20px 24px',
     display: 'flex',
     flexDirection: 'column' as const,
-    gap: '12px',
+    gap: '16px',
+    backgroundColor: 'var(--bg-primary)',
   },
   loading: {
     textAlign: 'center' as const,
@@ -195,19 +179,22 @@ const styles: Record<string, React.CSSProperties> = {
     padding: '40px 20px',
   },
   message: {
-    maxWidth: '70%',
+    maxWidth: '65%',
     padding: '12px 16px',
-    borderRadius: '12px',
+    borderRadius: '18px',
+    boxShadow: '0 1px 2px rgba(0,0,0,0.1)',
   },
   ownMessage: {
     alignSelf: 'flex-end' as const,
-    backgroundColor: 'var(--info-color)',
+    backgroundColor: '#007AFF',
     color: 'white',
+    borderBottomRightRadius: '4px',
   },
   otherMessage: {
     alignSelf: 'flex-start' as const,
-    backgroundColor: 'var(--hover-bg)',
+    backgroundColor: '#E5E5EA',
     color: 'var(--text-primary)',
+    borderBottomLeftRadius: '4px',
   },
   messageContent: {
     display: 'flex',
@@ -215,43 +202,45 @@ const styles: Record<string, React.CSSProperties> = {
     gap: '4px',
   },
   messageSender: {
-    fontSize: '11px',
+    fontSize: '12px',
     fontWeight: 600,
     opacity: 0.9,
+    marginBottom: '2px',
   },
   messageText: {
     margin: 0,
-    fontSize: '14px',
+    fontSize: '15px',
     lineHeight: '1.4',
     wordBreak: 'break-word' as const,
   },
   messageTime: {
-    fontSize: '10px',
+    fontSize: '11px',
     opacity: 0.7,
     alignSelf: 'flex-end' as const,
+    marginTop: '4px',
   },
   inputContainer: {
     display: 'flex',
     gap: '12px',
-    padding: '16px 20px',
+    padding: '16px 24px',
     borderTop: '1px solid var(--border-color)',
-    backgroundColor: 'var(--bg-primary)',
+    backgroundColor: 'var(--bg-card)',
   },
   input: {
     flex: 1,
-    padding: '12px 16px',
+    padding: '12px 20px',
     border: '1px solid var(--border-color)',
     borderRadius: '24px',
-    fontSize: '14px',
-    backgroundColor: 'var(--input-bg)',
+    fontSize: '15px',
+    backgroundColor: 'var(--bg-primary)',
     color: 'var(--text-primary)',
   },
   sendButton: {
-    width: '44px',
-    height: '44px',
+    width: '48px',
+    height: '48px',
     borderRadius: '50%',
     border: 'none',
-    backgroundColor: 'var(--success-color)',
+    backgroundColor: '#007AFF',
     color: 'white',
     cursor: 'pointer',
     display: 'flex',

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { usersAPI, User } from '../services/api';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faComments, faPaperPlane, faCircle } from '@fortawesome/free-solid-svg-icons';
+import { faComments, faPaperPlane, faCircle, faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import Chat from '../components/Chat';
 
 const Messages: React.FC = () => {
@@ -66,84 +66,168 @@ const Messages: React.FC = () => {
     setUnreadCounts(prev => ({ ...prev, [user.id]: 0 }));
   };
 
-  const handleCloseChat = () => {
+  const handleBackToList = () => {
     setShowChat(false);
-    setSelectedUser(null);
   };
 
-  if (showChat && selectedUser && currentUser) {
+  const isMobile = window.innerWidth <= 768;
+
+  // Mobile view: show either list or chat
+  if (isMobile) {
+    if (showChat && selectedUser && currentUser) {
+      return (
+        <div style={styles.container}>
+          <main style={styles.main}>
+            <div style={styles.header}>
+              <button style={styles.backButton} onClick={handleBackToList}>
+                <FontAwesomeIcon icon={faArrowLeft} />
+              </button>
+              <h2 style={styles.pageTitle}>{selectedUser.username}</h2>
+            </div>
+            <div style={styles.chatArea}>
+              <Chat
+                currentUser={currentUser}
+                selectedUser={selectedUser}
+              />
+            </div>
+          </main>
+        </div>
+      );
+    }
     return (
       <div style={styles.container}>
         <main style={styles.main}>
-          <Chat
-            currentUser={currentUser}
-            selectedUser={selectedUser}
-            onClose={handleCloseChat}
-          />
+          <div style={styles.header}>
+            <h2 style={styles.pageTitle}>
+              <FontAwesomeIcon icon={faComments} /> Messages
+            </h2>
+          </div>
+          <div style={styles.sidebar}>
+            <div style={styles.sidebarHeader}>
+              <h3 style={styles.sidebarTitle}>Conversations</h3>
+            </div>
+            {loading ? (
+              <div style={styles.loading}>Chargement...</div>
+            ) : users.length === 0 ? (
+              <div style={styles.emptyState}>
+                <FontAwesomeIcon icon={faComments} style={styles.emptyIcon as any} />
+                <p>Aucun utilisateur disponible</p>
+              </div>
+            ) : (
+              <div style={styles.usersList}>
+                {users.map((user) => (
+                  <div
+                    key={user.id}
+                    style={styles.userCard as any}
+                    onClick={() => handleStartChat(user)}
+                  >
+                    <div style={styles.userInfo}>
+                      <div style={styles.userAvatar as any}>
+                        <FontAwesomeIcon icon={user.role === 'admin' ? faComments : faPaperPlane} />
+                      </div>
+                      <div style={styles.userDetails}>
+                        <div style={styles.userName}>
+                          {user.username}
+                          {(unreadCounts[user.id] || 0) > 0 && (
+                            <span style={styles.unreadBadge}>{unreadCounts[user.id]}</span>
+                          )}
+                        </div>
+                        <div style={styles.userEmail}>{user.email}</div>
+                      </div>
+                    </div>
+                    <div style={styles.userStatus}>
+                      {user.isActive !== false ? (
+                        <FontAwesomeIcon icon={faCircle} style={styles.onlineIndicator as any} />
+                      ) : (
+                        <FontAwesomeIcon icon={faCircle} style={styles.offlineIndicator as any} />
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </main>
       </div>
     );
   }
 
+  // Desktop view: show both list and chat
   return (
     <div style={styles.container}>
       <main style={styles.main}>
         <div style={styles.header}>
-          <div>
-            <h2 style={styles.pageTitle}>
-              <FontAwesomeIcon icon={faComments} /> Messages
-            </h2>
-            <p style={styles.pageSubtitle}>
-              Communiquez avec les autres utilisateurs et l'administrateur
-            </p>
-          </div>
+          <h2 style={styles.pageTitle}>
+            <FontAwesomeIcon icon={faComments} /> Messages
+          </h2>
         </div>
 
-        <div style={styles.usersSection}>
-          <h3 style={styles.sectionTitle}>Utilisateurs</h3>
-          {loading ? (
-            <div style={styles.loading}>Chargement...</div>
-          ) : users.length === 0 ? (
-            <div style={styles.emptyState}>
-              <FontAwesomeIcon icon={faComments} style={styles.emptyIcon as any} />
-              <p>Aucun autre utilisateur disponible</p>
+        <div style={styles.chatContainer}>
+          {/* Left sidebar - User list */}
+          <div style={styles.sidebar}>
+            <div style={styles.sidebarHeader}>
+              <h3 style={styles.sidebarTitle}>Conversations</h3>
             </div>
-          ) : (
-            <div style={styles.usersList}>
-              {users.map((user) => (
-                <div
-                  key={user.id}
-                  style={styles.userCard as any}
-                  onClick={() => handleStartChat(user)}
-                >
-                  <div style={styles.userInfo}>
-                    <div style={styles.userAvatar as any}>
-                      <FontAwesomeIcon icon={user.role === 'admin' ? faComments : faPaperPlane} />
+            {loading ? (
+              <div style={styles.loading}>Chargement...</div>
+            ) : users.length === 0 ? (
+              <div style={styles.emptyState}>
+                <FontAwesomeIcon icon={faComments} style={styles.emptyIcon as any} />
+                <p>Aucun utilisateur disponible</p>
+              </div>
+            ) : (
+              <div style={styles.usersList}>
+                {users.map((user) => (
+                  <div
+                    key={user.id}
+                    style={{
+                      ...styles.userCard as any,
+                      ...(selectedUser?.id === user.id ? styles.userCardSelected : {})
+                    }}
+                    onClick={() => handleStartChat(user)}
+                  >
+                    <div style={styles.userInfo}>
+                      <div style={styles.userAvatar as any}>
+                        <FontAwesomeIcon icon={user.role === 'admin' ? faComments : faPaperPlane} />
+                      </div>
+                      <div style={styles.userDetails}>
+                        <div style={styles.userName}>
+                          {user.username}
+                          {(unreadCounts[user.id] || 0) > 0 && (
+                            <span style={styles.unreadBadge}>{unreadCounts[user.id]}</span>
+                          )}
+                        </div>
+                        <div style={styles.userEmail}>{user.email}</div>
+                      </div>
                     </div>
-                    <div style={styles.userDetails}>
-                      <div style={styles.userName}>
-                        {user.username}
-                        {unreadCounts[user.id] > 0 && (
-                          <span style={styles.unreadBadge}>{unreadCounts[user.id]}</span>
-                        )}
-                      </div>
-                      <div style={styles.userEmail}>{user.email}</div>
-                      <div style={styles.userRole}>
-                        {user.role === 'admin' ? 'Administrateur' : 'Utilisateur'}
-                      </div>
+                    <div style={styles.userStatus}>
+                      {user.isActive !== false ? (
+                        <FontAwesomeIcon icon={faCircle} style={styles.onlineIndicator as any} />
+                      ) : (
+                        <FontAwesomeIcon icon={faCircle} style={styles.offlineIndicator as any} />
+                      )}
                     </div>
                   </div>
-                  <div style={styles.userStatus}>
-                    {user.isActive !== false ? (
-                      <FontAwesomeIcon icon={faCircle} style={styles.onlineIndicator as any} />
-                    ) : (
-                      <FontAwesomeIcon icon={faCircle} style={styles.offlineIndicator as any} />
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Right side - Chat area */}
+          <div style={styles.chatArea}>
+            {selectedUser && currentUser ? (
+              <Chat
+                currentUser={currentUser}
+                selectedUser={selectedUser}
+              />
+            ) : (
+              <div style={styles.noChatSelected}>
+                <FontAwesomeIcon icon={faComments} style={styles.noChatIcon as any} />
+                <h3>Sélectionnez une conversation</h3>
+                <p>Choisissez un utilisateur pour commencer à discuter</p>
+              </div>
+            )}
+          </div>
         </div>
       </main>
     </div>
@@ -156,13 +240,16 @@ const styles: Record<string, React.CSSProperties> = {
     minHeight: '100vh',
   },
   main: {
-    padding: '30px',
-    maxWidth: '1200px',
+    padding: '20px',
+    maxWidth: '1400px',
     margin: '0 auto',
     minHeight: 'calc(100vh - 70px)',
   },
   header: {
-    marginBottom: '32px',
+    marginBottom: '20px',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '12px',
   },
   pageTitle: {
     margin: 0,
@@ -173,21 +260,40 @@ const styles: Record<string, React.CSSProperties> = {
     alignItems: 'center',
     gap: '12px',
   },
-  pageSubtitle: {
-    margin: '4px 0 0',
-    color: 'var(--text-secondary)',
-    fontSize: '14px',
+  backButton: {
+    width: '40px',
+    height: '40px',
+    borderRadius: '8px',
+    border: 'none',
+    backgroundColor: 'var(--hover-bg)',
+    color: 'var(--text-primary)',
+    cursor: 'pointer',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    fontSize: '16px',
   },
-  usersSection: {
+  chatContainer: {
+    display: 'flex',
+    gap: '20px',
+    height: 'calc(100vh - 140px)',
+  },
+  sidebar: {
+    width: '350px',
     backgroundColor: 'var(--bg-card)',
-    borderRadius: '16px',
-    padding: '24px',
+    borderRadius: '12px',
     border: '1px solid var(--border-color)',
-    boxShadow: '0 2px 8px var(--shadow-color)',
+    display: 'flex',
+    flexDirection: 'column' as const,
+    overflow: 'hidden',
   },
-  sectionTitle: {
-    margin: '0 0 20px',
-    fontSize: '18px',
+  sidebarHeader: {
+    padding: '16px 20px',
+    borderBottom: '1px solid var(--border-color)',
+  },
+  sidebarTitle: {
+    margin: 0,
+    fontSize: '16px',
     fontWeight: 600,
     color: 'var(--text-primary)',
   },
@@ -207,44 +313,48 @@ const styles: Record<string, React.CSSProperties> = {
     opacity: 0.5,
   } as React.CSSProperties,
   usersList: {
+    flex: 1,
+    overflowY: 'auto' as const,
     display: 'flex',
     flexDirection: 'column' as const,
-    gap: '12px',
+    gap: '0',
   },
   userCard: {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: '16px',
-    backgroundColor: 'var(--bg-primary)',
-    borderRadius: '12px',
-    border: '1px solid var(--border-color)',
+    padding: '16px 20px',
+    backgroundColor: 'transparent',
     cursor: 'pointer',
     transition: 'all 0.2s',
+    borderBottom: '1px solid var(--border-color)',
   } as React.CSSProperties,
+  userCardSelected: {
+    backgroundColor: 'var(--hover-bg)',
+  },
   userInfo: {
     display: 'flex',
     alignItems: 'center',
-    gap: '16px',
+    gap: '12px',
   },
   userAvatar: {
-    width: '48px',
-    height: '48px',
+    width: '40px',
+    height: '40px',
     borderRadius: '50%',
     backgroundColor: 'var(--info-color)',
     color: 'white',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    fontSize: '18px',
+    fontSize: '16px',
   } as React.CSSProperties,
   userDetails: {
     display: 'flex',
     flexDirection: 'column' as const,
-    gap: '4px',
+    gap: '2px',
   },
   userName: {
-    fontSize: '16px',
+    fontSize: '14px',
     fontWeight: 600,
     color: 'var(--text-primary)',
     display: 'flex',
@@ -254,30 +364,46 @@ const styles: Record<string, React.CSSProperties> = {
   unreadBadge: {
     backgroundColor: 'var(--danger-color)',
     color: 'white',
-    fontSize: '12px',
+    fontSize: '11px',
     fontWeight: 600,
     padding: '2px 8px',
-    borderRadius: '12px',
+    borderRadius: '10px',
   },
   userEmail: {
-    fontSize: '13px',
-    color: 'var(--text-secondary)',
-  },
-  userRole: {
     fontSize: '12px',
-    color: 'var(--text-muted)',
+    color: 'var(--text-secondary)',
   },
   userStatus: {
     display: 'flex',
     alignItems: 'center',
   },
   onlineIndicator: {
-    fontSize: '10px',
+    fontSize: '8px',
     color: 'var(--success-color)',
   } as React.CSSProperties,
   offlineIndicator: {
-    fontSize: '10px',
+    fontSize: '8px',
     color: 'var(--text-muted)',
+  } as React.CSSProperties,
+  chatArea: {
+    flex: 1,
+    backgroundColor: 'var(--bg-card)',
+    borderRadius: '12px',
+    border: '1px solid var(--border-color)',
+    overflow: 'hidden',
+  },
+  noChatSelected: {
+    display: 'flex',
+    flexDirection: 'column' as const,
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: '100%',
+    color: 'var(--text-secondary)',
+  },
+  noChatIcon: {
+    fontSize: '64px',
+    marginBottom: '20px',
+    opacity: 0.3,
   } as React.CSSProperties,
 };
 

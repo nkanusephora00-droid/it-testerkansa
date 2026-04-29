@@ -584,8 +584,8 @@ const Tests: React.FC = () => {
       <main style={styles.main}>
         <div style={styles.sessionsHeader}>
           <div>
-            <h2 style={styles.pageTitle}><i className="fas fa-vial"></i> Gestion des Tests</h2>
-            <p style={styles.pageSubtitle}>Documents de Test - Planification et suivi des tests</p>
+            <h2 style={styles.pageTitle}><i className="fas fa-vial"></i> {isAdmin ? 'Gestion des Tests' : 'Mes Sessions de Test'}</h2>
+            <p style={styles.pageSubtitle}>{isAdmin ? 'Documents de Test - Planification et suivi des tests' : 'Vos sessions de test personnelles'}</p>
           </div>
         </div>
         
