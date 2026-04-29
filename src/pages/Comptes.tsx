@@ -160,80 +160,36 @@ const Comptes: React.FC = () => {
           {loading ? (
             <p>Chargement...</p>
           ) : (
-            <>
-              {/* Mobile Card View */}
-              <div className="comptes-cards">
-                {comptes.map((compte) => (
-                  <div key={compte.id} style={styles.cardItem}>
-                    <div style={styles.cardHeader}>
-                      <span style={styles.cardId}>#{compte.id}</span>
-                      <span style={styles.cardApp}>{getAppName(compte.applicationId)}</span>
+            <div style={styles.comptesGrid}>
+              {comptes.map((compte) => (
+                <div key={compte.id} style={styles.compteCard}>
+                  <div style={styles.compteCardHeader}>
+                    <div style={styles.compteIcon}>
+                      <i className="fas fa-user-cog"></i>
                     </div>
-                    <div style={styles.cardBody}>
-                      <div style={styles.cardRow}>
-                        <span style={styles.cardLabel}>Utilisateur:</span>
-                        <span style={styles.cardValue}>{compte.username}</span>
-                      </div>
-                      <div style={styles.cardRow}>
-                        <span style={styles.cardLabel}>Rôle:</span>
-                        <span style={styles.cardValue}>{compte.role || 'Non défini'}</span>
-                      </div>
-                    </div>
-                    <div style={styles.cardActions}>
-                      <button style={{...styles.viewButton, padding: '8px 12px'}} onClick={() => { setViewingCompte(compte); setShowViewModal(true); }} title="Voir">
+                    <div style={styles.compteCardActions}>
+                      <button style={styles.iconButton} onClick={() => { setViewingCompte(compte); setShowViewModal(true); }} title="Voir">
                         <FontAwesomeIcon icon={faEye} />
                       </button>
-                      <button style={{...styles.editButton, padding: '8px 12px'}} onClick={() => openEditModal(compte)} title="Modifier">
+                      <button style={styles.iconButton} onClick={() => openEditModal(compte)} title="Modifier">
                         <FontAwesomeIcon icon={faPen} />
                       </button>
                       {isAdmin && (
-                        <button style={{...styles.deleteButton, padding: '8px 12px'}} onClick={() => handleDelete(compte.id)} title="Supprimer">
+                        <button style={{...styles.iconButton, color: '#ff6b6b'}} onClick={() => handleDelete(compte.id)} title="Supprimer">
                           <FontAwesomeIcon icon={faTrash} />
                         </button>
                       )}
                     </div>
                   </div>
-                ))}
-              </div>
-              
-              {/* Desktop Table View */}
-              <div className="comptes-table table-container" style={{ overflowX: 'auto', margin: '0 -12px', padding: '0 12px' }}>
-                <table style={styles.table}>
-                  <thead>
-                    <tr>
-                      <th>ID</th>
-                      <th>Application</th>
-                      <th>Nom d'utilisateur</th>
-                      <th>Rôle</th>
-                      <th>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {comptes.map((compte) => (
-                      <tr key={compte.id}>
-                        <td>{compte.id}</td>
-                        <td>{getAppName(compte.applicationId)}</td>
-                        <td>{compte.username}</td>
-                        <td>{compte.role || ''}</td>
-                        <td style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
-                          <button style={{...styles.viewButton, padding: '6px', backgroundColor: 'transparent', color: '#27ae60'}} onClick={() => { setViewingCompte(compte); setShowViewModal(true); }} title="Voir">
-                            <FontAwesomeIcon icon={faEye} />
-                          </button>
-                          <button style={{...styles.editButton, padding: '6px', backgroundColor: 'transparent', color: '#3498db'}} onClick={() => openEditModal(compte)} title="Modifier">
-                            <FontAwesomeIcon icon={faPen} />
-                          </button>
-                          {isAdmin && (
-                            <button style={{...styles.deleteButton, padding: '6px', backgroundColor: 'transparent', color: '#ff6b6b'}} onClick={() => handleDelete(compte.id)} title="Supprimer">
-                              <FontAwesomeIcon icon={faTrash} />
-                            </button>
-                          )}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </>
+                  <h4 style={styles.compteUsername}>{compte.username}</h4>
+                  <div style={styles.compteDetails}>
+                    <div style={styles.compteDetail}><span style={styles.detailLabel}>App:</span> {getAppName(compte.applicationId)}</div>
+                    {compte.role && <div style={styles.compteDetail}><span style={styles.detailLabel}>Rôle:</span> {compte.role}</div>}
+                  </div>
+                  {compte.commentaire && <p style={styles.compteCommentaire}>{compte.commentaire}</p>}
+                </div>
+              ))}
+            </div>
           )}
         </div>
       </main>
@@ -444,7 +400,6 @@ const styles: Record<string, React.CSSProperties> = {
   editButton: { padding: '8px', backgroundColor: 'transparent', color: 'var(--text-secondary)', border: 'none', borderRadius: 'var(--radius-sm)', cursor: 'pointer' },
   deleteButton: { padding: '8px', backgroundColor: 'transparent', color: 'var(--danger-color)', border: 'none', borderRadius: 'var(--radius-sm)', cursor: 'pointer' },
   viewButton: { padding: '8px', backgroundColor: 'transparent', color: 'var(--success-color)', border: 'none', borderRadius: 'var(--radius-sm)', cursor: 'pointer' },
-  iconButton: { padding: '6px', backgroundColor: 'transparent', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '14px' },
   listHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap' as const, gap: '12px' },
   listSubtitle: { fontSize: '14px', color: 'var(--text-secondary)', fontWeight: 400 },
   success: { padding: '14px', backgroundColor: 'var(--success-color)', color: 'white', borderRadius: 'var(--radius-md)', marginBottom: '20px' },
@@ -454,10 +409,17 @@ const styles: Record<string, React.CSSProperties> = {
   close: { position: 'absolute' as const, top: '15px', right: '20px', fontSize: '28px', cursor: 'pointer', color: 'var(--text-muted)' },
   modalHeader: { marginBottom: '24px' },
   modalSubtitle: { fontSize: '14px', color: 'var(--text-secondary)', marginTop: '6px', fontWeight: 400 },
-  cardItem: { backgroundColor: 'var(--bg-primary)', borderRadius: '8px', padding: '16px', marginBottom: '12px', border: '1px solid var(--border-light)' },
-  cardHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', paddingBottom: '8px', borderBottom: '1px solid var(--border-light)' },
-  cardId: { fontSize: '12px', color: 'var(--text-muted)', fontWeight: '600' },
-  cardApp: { fontSize: '14px', color: 'var(--info-color)', fontWeight: '600' },
+  comptesGrid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '20px' },
+  compteCard: { backgroundColor: 'var(--bg-primary)', borderRadius: '12px', padding: '20px', border: '1px solid var(--border-color)', transition: 'all 0.2s ease', cursor: 'pointer' },
+  compteCardHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' },
+  compteIcon: { width: '50px', height: '50px', borderRadius: '10px', backgroundColor: 'var(--primary-color)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: '20px' },
+  compteCardActions: { display: 'flex', gap: '8px' },
+  iconButton: { width: '32px', height: '32px', borderRadius: '6px', border: 'none', backgroundColor: 'var(--hover-bg)', color: 'var(--text-secondary)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s ease' },
+  compteUsername: { margin: '0 0 12px 0', color: 'var(--text-primary)', fontSize: '18px', fontWeight: '600' },
+  compteDetails: { display: 'flex', gap: '16px', marginBottom: '12px', flexWrap: 'wrap' as const },
+  compteDetail: { fontSize: '13px', color: 'var(--text-secondary)' },
+  detailLabel: { fontWeight: '500', color: 'var(--text-primary)', marginRight: '4px' },
+  compteCommentaire: { margin: '0', color: 'var(--text-secondary)', fontSize: '13px', lineHeight: '1.4', minHeight: '40px' },
   cardBody: { marginBottom: '12px' },
   cardRow: { display: 'flex', justifyContent: 'space-between', marginBottom: '6px' },
   cardLabel: { fontSize: '13px', color: 'var(--text-secondary)', fontWeight: '500' },

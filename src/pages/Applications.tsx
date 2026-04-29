@@ -140,40 +140,32 @@ const Applications: React.FC = () => {
           {loading ? (
             <p>Chargement...</p>
           ) : (
-            <div className="table-container" style={{ overflowX: 'auto', margin: '0 -12px', padding: '0 12px' }}>
-              <table style={styles.table}>
-                <thead>
-                  <tr>
-                    <th>ID</th>
-                    <th>Nom</th>
-                    <th>Version</th>
-                    <th>Environnement</th>
-                    <th>Description</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {applications.map((app) => (
-                    <tr key={app.id}>
-                      <td>{app.id}</td>
-                      <td><strong>{app.nom}</strong></td>
-                      <td>{app.version || '-'}</td>
-                      <td>{app.environnement || '-'}</td>
-                      <td>{app.description || ''}</td>
-                      <td style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
-                        <button style={{...styles.editButton, padding: '6px', backgroundColor: 'transparent', color: '#3498db'}} onClick={() => openEditModal(app)} title="Modifier">
-                          <FontAwesomeIcon icon={faPen} />
+            <div style={styles.applicationsGrid}>
+              {applications.map((app) => (
+                <div key={app.id} style={styles.appCard}>
+                  <div style={styles.appCardHeader}>
+                    <div style={styles.appIcon}>
+                      <i className="fas fa-mobile-alt"></i>
+                    </div>
+                    <div style={styles.appCardActions}>
+                      <button style={styles.iconButton} onClick={() => openEditModal(app)} title="Modifier">
+                        <FontAwesomeIcon icon={faPen} />
+                      </button>
+                      {isAdmin && (
+                        <button style={{...styles.iconButton, color: '#ff6b6b'}} onClick={() => handleDelete(app.id)} title="Supprimer">
+                          <FontAwesomeIcon icon={faTrash} />
                         </button>
-                        {isAdmin && (
-                          <button style={{...styles.deleteButton, padding: '6px', backgroundColor: 'transparent', color: '#ff6b6b'}} onClick={() => handleDelete(app.id)} title="Supprimer">
-                            <FontAwesomeIcon icon={faTrash} />
-                          </button>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+                      )}
+                    </div>
+                  </div>
+                  <h4 style={styles.appName}>{app.nom}</h4>
+                  <div style={styles.appDetails}>
+                    {app.version && <div style={styles.appDetail}><span style={styles.detailLabel}>Version:</span> {app.version}</div>}
+                    {app.environnement && <div style={styles.appDetail}><span style={styles.detailLabel}>Env:</span> {app.environnement}</div>}
+                  </div>
+                  {app.description && <p style={styles.appDescription}>{app.description}</p>}
+                </div>
+              ))}
             </div>
           )}
         </div>
@@ -309,6 +301,17 @@ const styles: Record<string, React.CSSProperties> = {
   pageSubtitle: { margin: '4px 0 0', color: 'var(--text-secondary)', fontSize: '14px' },
   tableSection: { backgroundColor: 'var(--bg-card)', borderRadius: 'var(--radius-lg)', padding: '24px', marginBottom: '24px', border: '1px solid var(--border-color)', boxShadow: '0 2px 8px var(--shadow-color)' },
   tableSectionMobile: { padding: '16px', marginBottom: '16px' },
+  applicationsGrid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '20px' },
+  appCard: { backgroundColor: 'var(--bg-primary)', borderRadius: '12px', padding: '20px', border: '1px solid var(--border-color)', transition: 'all 0.2s ease', cursor: 'pointer' },
+  appCardHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' },
+  appIcon: { width: '50px', height: '50px', borderRadius: '10px', backgroundColor: 'var(--info-color)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: '20px' },
+  appCardActions: { display: 'flex', gap: '8px' },
+  iconButton: { width: '32px', height: '32px', borderRadius: '6px', border: 'none', backgroundColor: 'var(--hover-bg)', color: 'var(--text-secondary)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s ease' },
+  appName: { margin: '0 0 12px 0', color: 'var(--text-primary)', fontSize: '18px', fontWeight: '600' },
+  appDetails: { display: 'flex', gap: '16px', marginBottom: '12px', flexWrap: 'wrap' as const },
+  appDetail: { fontSize: '13px', color: 'var(--text-secondary)' },
+  detailLabel: { fontWeight: '500', color: 'var(--text-primary)', marginRight: '4px' },
+  appDescription: { margin: '0', color: 'var(--text-secondary)', fontSize: '13px', lineHeight: '1.4', minHeight: '40px' },
   sectionTitle: { margin: '0 0 20px', fontSize: '18px' },
   modalForm: { display: 'flex', flexDirection: 'column' as const, gap: '20px', padding: '8px 0' },
   formRow: { display: 'flex', gap: '16px', flexWrap: 'wrap' as const },
