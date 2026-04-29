@@ -1,3 +1,22 @@
+/* Desktop styles - ensure content is visible */
+@media (min-width: 769px) {
+  main {
+    display: block !important;
+    width: 100% !important;
+  }
+  
+  .main-wrapper {
+    display: flex !important;
+    flex-direction: column !important;
+  }
+  
+  /* Ensure tables are visible on desktop */
+  table {
+    display: table !important;
+  }
+}
+
+/* Mobile phones (small screens) */
 @media (max-width: 768px) {
   /* Reset body and html for mobile scrolling */
   html, body {

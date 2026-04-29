@@ -16,6 +16,7 @@ const Profile = lazy(() => import('./pages/Profile'));
 const Todos = lazy(() => import('./pages/Todos'));
 const Reports = lazy(() => import('./pages/Reports'));
 const Notifications = lazy(() => import('./pages/Notifications'));
+const Messages = lazy(() => import('./pages/Messages'));
 
 const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const token = localStorage.getItem('access_token');
@@ -37,6 +38,7 @@ function App() {
           <Route path="/comptes" element={<PrivateRoute><Layout><Comptes /></Layout></PrivateRoute>} />
           <Route path="/tests" element={<PrivateRoute><Layout><Tests /></Layout></PrivateRoute>} />
           <Route path="/todos" element={<PrivateRoute><Layout><Todos /></Layout></PrivateRoute>} />
+          <Route path="/messages" element={<PrivateRoute><Layout><Messages /></Layout></PrivateRoute>} />
           <Route path="/reports" element={<PrivateRoute><Layout><Reports /></Layout></PrivateRoute>} />
           <Route path="/notifications" element={<PrivateRoute><Layout><Notifications /></Layout></PrivateRoute>} />
           <Route path="/profile" element={<PrivateRoute><Layout><Profile /></Layout></PrivateRoute>} />

@@ -79,6 +79,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     { path: "/comptes", label: "Comptes", icon: "fa-user" },
     { path: "/tests", label: "Tests", icon: "fa-check-square" },
     { path: "/todos", label: "Tâches", icon: "fa-tasks" },
+    { path: "/messages", label: "Messages", icon: "fa-comments" },
     { path: "/reports", label: "Rapports", icon: "fa-chart-bar" },
     ...(isAdmin
       ? [{ path: "/users", label: "Utilisateurs", icon: "fa-users" }]
@@ -365,10 +366,10 @@ const styles = {
   },
   content: {
     flex: 1,
-    padding: "100px 30px 30px 30px",
+    padding: "90px 30px 30px 30px",
     overflowY: "auto" as const,
     backgroundColor: "var(--bg-primary)",
-    minHeight: "100vh",
+    minHeight: "calc(100vh - 70px)",
   },
   mobileMenuToggle: {
     display: "none",

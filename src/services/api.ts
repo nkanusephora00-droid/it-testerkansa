@@ -109,6 +109,17 @@ export interface Todo {
   createdAt: string;
 }
 
+export interface Message {
+  id: number;
+  senderId: number;
+  senderUsername: string;
+  receiverId: number;
+  receiverUsername: string;
+  content: string;
+  timestamp: string;
+  read: boolean;
+}
+
 export const api = axios.create({
   baseURL: API_URL,
   headers: {
@@ -289,6 +300,15 @@ export const todosAPI = {
   update: async (id: number, data: Partial<Todo>) => (await api.put<Todo>(`/todos/${id}`, data)).data,
   delete: async (id: number) => (await api.delete(`/todos/${id}`)).data,
   toggle: async (id: number) => (await api.patch(`/todos/${id}/toggle`)).data,
+};
+
+// Messages API
+export const messagesAPI = {
+  getAll: async () => (await api.get<Message[]>("/messages")).data,
+  getConversation: async (userId: number) => (await api.get<Message[]>(`/messages/conversation/${userId}`)).data,
+  create: async (data: { receiverId: number; content: string }) => (await api.post<Message>("/messages", data)).data,
+  markAsRead: async (messageId: number) => (await api.patch(`/messages/${messageId}/read`)).data,
+  getUnreadCount: async () => (await api.get<number>("/messages/unread-count")).data,
 };
 
 export default api;
