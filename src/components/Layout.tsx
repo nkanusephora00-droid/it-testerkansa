@@ -110,10 +110,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     <div style={styles.container}>
       {/* Mobile Menu Toggle */}
       <button
-        style={{
-          ...styles.mobileMenuToggle,
-          ...(mobileMenuOpen ? styles.mobileMenuHidden : {})
-        }}
+        className="mobileMenuToggle"
+        style={styles.mobileMenuToggle}
         onClick={toggleMobileMenu}
         aria-label={mobileMenuOpen ? "Fermer le menu" : "Ouvrir le menu"}
       >

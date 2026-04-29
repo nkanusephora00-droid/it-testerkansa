@@ -67,6 +67,7 @@
   .headerActions {
     display: flex !important;
     gap: 8px !important;
+    align-items: center !important;
   }
   
   /* Smaller badge on mobile */
@@ -91,6 +92,16 @@
     -webkit-overflow-scrolling: touch;
     min-height: calc(100vh - 60px) !important;
     height: auto !important;
+    display: block !important;
+    width: 100% !important;
+  }
+  
+  /* Ensure all pages content is visible */
+  main > div,
+  main > section,
+  main > form {
+    display: block !important;
+    width: 100% !important;
   }
   
   /* Page container scrollable */
@@ -144,4 +155,31 @@
 /* Prevent body scroll when mobile menu is open */
 body.menu-open {
   overflow: hidden;
+}
+
+/* Mobile menu toggle button styles */
+.mobileMenuToggle {
+  display: none;
+  position: fixed;
+  top: 8px;
+  left: 8px;
+  z-index: 1001;
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  border: 2px solid var(--border-color);
+  background-color: var(--bg-card);
+  color: var(--text-primary);
+  font-size: 20px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px var(--shadow-strong);
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+@media (max-width: 768px) {
+  .mobileMenuToggle {
+    display: flex !important;
+  }
 }
