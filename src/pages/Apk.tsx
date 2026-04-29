@@ -66,8 +66,9 @@ const Apk: React.FC = () => {
       setFormData({ applicationId: 0, version: '', packageName: '', description: '' });
       setShowUploadModal(false);
       fetchData();
-    } catch (err: any) {
-      setMessage({ type: 'error', text: err.response?.data?.detail || 'Erreur lors de l\'upload' });
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { detail?: string } } };
+      setMessage({ type: 'error', text: error.response?.data?.detail || 'Erreur lors de l\'upload' });
     } finally {
       setUploading(false);
     }
@@ -96,8 +97,9 @@ const Apk: React.FC = () => {
       await apkAPI.delete(id);
       setMessage({ type: 'success', text: 'APK supprimé avec succès!' });
       fetchData();
-    } catch (err: any) {
-      setMessage({ type: 'error', text: err.response?.data?.detail || 'Erreur lors de la suppression' });
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { detail?: string } } };
+      setMessage({ type: 'error', text: error.response?.data?.detail || 'Erreur lors de la suppression' });
     }
   };
 
@@ -280,7 +282,7 @@ const Apk: React.FC = () => {
   );
 };
 
-const styles: any = {
+const styles: Record<string, React.CSSProperties> = {
   container: { backgroundColor: 'var(--bg-primary)', minHeight: '100vh' },
   main: { padding: '30px', maxWidth: '1400px', margin: '0 auto', minHeight: 'calc(100vh - 70px)' },
   header: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap' as const, gap: '16px' },

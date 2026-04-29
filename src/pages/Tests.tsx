@@ -109,13 +109,17 @@ const Tests: React.FC = () => {
       fetchSessions();
       // Automatically select the newly created session
       setSelectedSession(newSession.id);
-    } catch (err: any) {
-      const detail = err.response?.data?.detail;
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { detail?: string | unknown[] } } };
+      const detail = error.response?.data?.detail;
       let errorText = 'Erreur lors de la création';
       if (typeof detail === 'string') {
         errorText = detail;
       } else if (Array.isArray(detail)) {
-        errorText = detail.map((e: any) => e.msg || JSON.stringify(e)).join(', ');
+        errorText = (detail as unknown[]).map((e: unknown) => {
+          const err = e as { msg?: string };
+          return err.msg || JSON.stringify(e);
+        }).join(', ');
       }
       setMessage({ type: 'error', text: errorText });
     }
@@ -152,8 +156,9 @@ const Tests: React.FC = () => {
       });
       setMessage({ type: 'success', text: 'Statut mis à jour!' });
       fetchSessions();
-    } catch (err: any) {
-      const detail = err.response?.data?.detail;
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { detail?: string } } };
+      const detail = error.response?.data?.detail;
       let errorText = 'Erreur lors de la mise à jour';
       if (typeof detail === 'string') errorText = detail;
       setMessage({ type: 'error', text: errorText });
@@ -164,7 +169,7 @@ const Tests: React.FC = () => {
     e.preventDefault();
     try {
       // Filter out 0/empty values for optional fields and prepare data
-      const testData: any = {};
+      const testData: Partial<Test> = {};
       
       if (formData.sessionId) testData.sessionId = formData.sessionId;
       if (formData.applicationId) testData.applicationId = formData.applicationId;
@@ -196,13 +201,17 @@ const Tests: React.FC = () => {
       setShowTestForm(false);
       fetchData();
       fetchSessions();
-    } catch (err: any) {
-      const detail = err.response?.data?.detail;
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { detail?: string | unknown[] } } };
+      const detail = error.response?.data?.detail;
       let errorText = 'Erreur lors de l\'ajout';
       if (typeof detail === 'string') {
         errorText = detail;
       } else if (Array.isArray(detail)) {
-        errorText = detail.map((e: any) => e.msg || JSON.stringify(e)).join(', ');
+        errorText = (detail as unknown[]).map((e: unknown) => {
+          const err = e as { msg?: string };
+          return err.msg || JSON.stringify(e);
+        }).join(', ');
       }
       setMessage({ type: 'error', text: errorText });
     }
@@ -215,13 +224,17 @@ const Tests: React.FC = () => {
       setMessage({ type: 'success', text: 'Test supprimé!' });
       fetchData();
       fetchSessions();
-    } catch (err: any) {
-      const detail = err.response?.data?.detail;
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { detail?: string | unknown[] } } };
+      const detail = error.response?.data?.detail;
       let errorText = 'Erreur';
       if (typeof detail === 'string') {
         errorText = detail;
       } else if (Array.isArray(detail)) {
-        errorText = detail.map((e: any) => e.msg || JSON.stringify(e)).join(', ');
+        errorText = (detail as unknown[]).map((e: unknown) => {
+          const err = e as { msg?: string };
+          return err.msg || JSON.stringify(e);
+        }).join(', ');
       }
       setMessage({ type: 'error', text: errorText });
     }
@@ -250,7 +263,7 @@ const Tests: React.FC = () => {
     if (!editingTest) return;
     
     try {
-      const testData: any = {};
+      const testData: Partial<Test> = {};
       
       if (formData.sessionId) testData.sessionId = formData.sessionId;
       if (formData.applicationId) testData.applicationId = formData.applicationId;
@@ -282,13 +295,17 @@ const Tests: React.FC = () => {
       });
       fetchData();
       fetchSessions();
-    } catch (err: any) {
-      const detail = err.response?.data?.detail;
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { detail?: string | unknown[] } } };
+      const detail = error.response?.data?.detail;
       let errorText = 'Erreur lors de la modification';
       if (typeof detail === 'string') {
         errorText = detail;
       } else if (Array.isArray(detail)) {
-        errorText = detail.map((e: any) => e.msg || JSON.stringify(e)).join(', ');
+        errorText = (detail as unknown[]).map((e: unknown) => {
+          const err = e as { msg?: string };
+          return err.msg || JSON.stringify(e);
+        }).join(', ');
       }
       setMessage({ type: 'error', text: errorText });
     }
@@ -910,7 +927,7 @@ const Tests: React.FC = () => {
   );
 };
 
-const styles: any = {
+const styles: Record<string, React.CSSProperties> = {
   container: { backgroundColor: 'var(--bg-primary)', minHeight: '100vh' },
   main: { padding: '20px', maxWidth: '1400px', margin: '0 auto', minHeight: 'calc(100vh - 70px)' },
   pageTitle: { fontSize: '24px', fontWeight: '700', color: 'var(--text-primary)', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '10px' },

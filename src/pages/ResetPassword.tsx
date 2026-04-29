@@ -40,11 +40,12 @@ const ResetPassword: React.FC = () => {
         console.log("ResetPassword: Password reset successfully");
       }
       setTimeout(() => navigate('/login'), 2000);
-    } catch (err: any) {
+    } catch (err: unknown) {
       if (process.env.NODE_ENV === 'development') {
         console.error('ResetPassword: Error:', err);
       }
-      const errorMessage = err.response?.data?.detail || err.message || 'Erreur lors de la réinitialisation';
+      const error = err as { response?: { data?: { detail?: string } }; message?: string };
+      const errorMessage = error.response?.data?.detail || error.message || 'Erreur lors de la réinitialisation';
       setError(errorMessage);
     } finally {
       setLoading(false);

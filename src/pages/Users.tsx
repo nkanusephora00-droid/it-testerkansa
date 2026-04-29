@@ -7,6 +7,7 @@ const Users: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
+  const [showAddForm, setShowAddForm] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [message, setMessage] = useState({ type: '', text: '' });
   
@@ -56,9 +57,11 @@ const Users: React.FC = () => {
       await usersAPI.create(formData);
       setMessage({ type: 'success', text: 'Utilisateur ajouté avec succès!' });
       setFormData({ username: '', email: '', role: 'user', password: '' });
+      setShowAddForm(false);
       fetchUsers();
-    } catch (err: any) {
-      setMessage({ type: 'error', text: err.response?.data?.detail || 'Erreur lors de l\'ajout' });
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { detail?: string } } };
+      setMessage({ type: 'error', text: error.response?.data?.detail || 'Erreur lors de l\'ajout' });
     }
   };
 
@@ -81,8 +84,9 @@ const Users: React.FC = () => {
       setShowModal(false);
       setEditingUser(null);
       fetchUsers();
-    } catch (err: any) {
-      setMessage({ type: 'error', text: err.response?.data?.detail || 'Erreur lors de la mise à jour' });
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { detail?: string } } };
+      setMessage({ type: 'error', text: error.response?.data?.detail || 'Erreur lors de la mise à jour' });
     }
   };
 
@@ -93,8 +97,9 @@ const Users: React.FC = () => {
       await usersAPI.delete(id);
       setMessage({ type: 'success', text: 'Utilisateur supprimé avec succès!' });
       fetchUsers();
-    } catch (err: any) {
-      setMessage({ type: 'error', text: err.response?.data?.detail || 'Erreur lors de la suppression' });
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { detail?: string } } };
+      setMessage({ type: 'error', text: error.response?.data?.detail || 'Erreur lors de la suppression' });
     }
   };
 
@@ -103,8 +108,9 @@ const Users: React.FC = () => {
       await usersAPI.update(user.id, { isActive: !user.isActive });
       setMessage({ type: 'success', text: user.isActive ? 'Utilisateur désactivé!' : 'Utilisateur activé!' });
       fetchUsers();
-    } catch (err: any) {
-      setMessage({ type: 'error', text: err.response?.data?.detail || 'Erreur lors de la mise à jour' });
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { detail?: string } } };
+      setMessage({ type: 'error', text: error.response?.data?.detail || 'Erreur lors de la mise à jour' });
     }
   };
 
@@ -131,42 +137,63 @@ const Users: React.FC = () => {
         )}
 
         <div style={styles.formSection}>
-          <h3>Ajouter un nouvel utilisateur</h3>
-          <form onSubmit={handleSubmit} style={styles.form}>
-            <input
-              type="text"
-              placeholder="Nom d'utilisateur"
-              value={formData.username}
-              onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-              style={styles.input}
-              required
-            />
-            <input
-              type="email"
-              placeholder="Email"
-              value={formData.email}
-              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              style={styles.input}
-              required
-            />
-            <select
-              value={formData.role}
-              onChange={(e) => setFormData({ ...formData, role: e.target.value })}
-              style={styles.select}
-            >
-              <option value="user">Utilisateur</option>
-              <option value="admin">Administrateur</option>
-            </select>
-            <input
-              type="password"
-              placeholder="Mot de passe"
-              value={formData.password}
-              onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-              style={styles.input}
-              required
-            />
-            <button type="submit" style={styles.submitButton}>Ajouter l'utilisateur</button>
-          </form>
+          <div style={styles.sectionHeader}>
+            <h3>Ajouter un nouvel utilisateur</h3>
+            {!showAddForm && (
+              <button 
+                style={styles.addButton} 
+                onClick={() => setShowAddForm(true)}
+              >
+                <FontAwesomeIcon icon={faPen} /> Ajouter
+              </button>
+            )}
+          </div>
+          {showAddForm && (
+            <form onSubmit={handleSubmit} style={styles.form}>
+              <input
+                type="text"
+                placeholder="Nom d'utilisateur"
+                value={formData.username}
+                onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+                style={styles.input}
+                required
+              />
+              <input
+                type="email"
+                placeholder="Email"
+                value={formData.email}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                style={styles.input}
+                required
+              />
+              <select
+                value={formData.role}
+                onChange={(e) => setFormData({ ...formData, role: e.target.value })}
+                style={styles.select}
+              >
+                <option value="user">Utilisateur</option>
+                <option value="admin">Administrateur</option>
+              </select>
+              <input
+                type="password"
+                placeholder="Mot de passe"
+                value={formData.password}
+                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                style={styles.input}
+                required
+              />
+              <div style={styles.formActions}>
+                <button 
+                  type="button" 
+                  style={styles.cancelButton} 
+                  onClick={() => setShowAddForm(false)}
+                >
+                  Annuler
+                </button>
+                <button type="submit" style={styles.submitButton}>Ajouter l'utilisateur</button>
+              </div>
+            </form>
+          )}
         </div>
 
         <div style={styles.tableSection}>
@@ -282,13 +309,15 @@ const Users: React.FC = () => {
   );
 };
 
-const styles = {
+const styles: Record<string, React.CSSProperties> = {
   container: { backgroundColor: 'var(--bg-primary)', minHeight: '100vh' },
   main: { padding: '30px', maxWidth: '1400px', margin: '0 auto', minHeight: 'calc(100vh - 70px)' },
   header: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap' as const, gap: '16px' },
   pageTitle: { margin: 0, fontSize: '24px', display: 'flex', alignItems: 'center', gap: '12px' },
   pageSubtitle: { margin: '4px 0 0', color: 'var(--text-secondary)', fontSize: '14px' },
   formSection: { backgroundColor: 'var(--bg-card)', borderRadius: 'var(--radius-lg)', padding: '24px', marginBottom: '24px', border: '1px solid var(--border-color)', boxShadow: '0 2px 8px var(--shadow-color)' },
+  sectionHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' },
+  addButton: { padding: '10px 20px', backgroundColor: 'var(--success-color)', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 600, fontSize: '14px', display: 'inline-flex', alignItems: 'center', gap: '8px', transition: 'all 0.2s ease', boxShadow: '0 2px 4px rgba(39, 174, 96, 0.2)' },
   tableSection: { backgroundColor: 'var(--bg-card)', borderRadius: 'var(--radius-lg)', padding: '24px', border: '1px solid var(--border-color)', boxShadow: '0 2px 8px var(--shadow-color)' },
   sectionTitle: { margin: '0 0 20px', fontSize: '18px' },
   form: { display: 'flex', flexDirection: 'column' as const, gap: '18px', maxWidth: '760px' },
@@ -299,8 +328,8 @@ const styles = {
   input: { width: '100%', padding: '12px 14px', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', fontSize: '14px', backgroundColor: 'var(--input-bg)', color: 'var(--text-primary)' },
   inputDisabled: { width: '100%', padding: '12px 14px', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', backgroundColor: 'var(--bg-primary)', fontSize: '14px', color: 'var(--text-muted)' },
   select: { width: '100%', padding: '12px 14px', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', fontSize: '14px', backgroundColor: 'var(--input-bg)', color: 'var(--text-primary)' },
-  submitButton: { padding: '12px 20px', backgroundColor: 'var(--success-color)', color: 'white', border: 'none', borderRadius: 'var(--radius-md)', cursor: 'pointer', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px' },
-  cancelButton: { padding: '12px 20px', backgroundColor: 'var(--bg-card)', color: 'var(--text-primary)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', cursor: 'pointer', fontWeight: 500, display: 'flex', alignItems: 'center', gap: '8px' },
+  submitButton: { padding: '12px 24px', backgroundColor: 'var(--success-color)', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 600, fontSize: '14px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '8px', transition: 'all 0.2s ease', minWidth: '120px', boxShadow: '0 2px 4px rgba(39, 174, 96, 0.2)' },
+  cancelButton: { padding: '12px 24px', backgroundColor: 'var(--bg-card)', color: 'var(--text-primary)', border: '1px solid var(--border-color)', borderRadius: '8px', cursor: 'pointer', fontWeight: 500, fontSize: '14px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '8px', transition: 'all 0.2s ease', minWidth: '120px', boxShadow: '0 1px 2px rgba(0, 0, 0, 0.05)' },
   table: { width: '100%', borderCollapse: 'collapse' as const, borderRadius: 'var(--radius-md)', overflow: 'hidden' },
   editButton: { padding: '8px', backgroundColor: 'transparent', color: 'var(--text-secondary)', border: 'none', borderRadius: 'var(--radius-sm)', cursor: 'pointer' },
   deleteButton: { padding: '8px', backgroundColor: 'transparent', color: 'var(--danger-color)', border: 'none', borderRadius: 'var(--radius-sm)', cursor: 'pointer' },

@@ -66,8 +66,9 @@ const Comptes: React.FC = () => {
       setFormData({ applicationId: 0, username: '', code: '', role: '', commentaire: '' });
       setShowCreateModal(false);
       fetchData();
-    } catch (err: any) {
-      setMessage({ type: 'error', text: err.response?.data?.detail || 'Erreur lors de l\'ajout' });
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { detail?: string } } };
+      setMessage({ type: 'error', text: error.response?.data?.detail || 'Erreur lors de l\'ajout' });
     }
   };
 
@@ -76,7 +77,7 @@ const Comptes: React.FC = () => {
     if (!editingCompte) return;
     
     try {
-      const updateData: any = {
+      const updateData: Partial<Compte> = {
         applicationId: editFormData.applicationId,
         username: editFormData.username,
         role: editFormData.role,
@@ -90,8 +91,9 @@ const Comptes: React.FC = () => {
       setEditingCompte(null);
       setEditFormData({ applicationId: 0, username: '', code: '', role: '', commentaire: '' });
       fetchData();
-    } catch (err: any) {
-      setMessage({ type: 'error', text: err.response?.data?.detail || 'Erreur lors de la mise à jour' });
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { detail?: string } } };
+      setMessage({ type: 'error', text: error.response?.data?.detail || 'Erreur lors de la mise à jour' });
     }
   };
 
@@ -102,8 +104,9 @@ const Comptes: React.FC = () => {
       await comptesAPI.delete(id);
       setMessage({ type: 'success', text: 'Compte supprimé avec succès!' });
       fetchData();
-    } catch (err: any) {
-      setMessage({ type: 'error', text: err.response?.data?.detail || 'Erreur lors de la suppression' });
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { detail?: string } } };
+      setMessage({ type: 'error', text: error.response?.data?.detail || 'Erreur lors de la suppression' });
     }
   };
 
@@ -417,7 +420,7 @@ const Comptes: React.FC = () => {
   );
 };
 
-const styles: any = {
+const styles: Record<string, React.CSSProperties> = {
   container: { backgroundColor: 'var(--bg-primary)', minHeight: '100vh' },
   main: { padding: '30px', maxWidth: '1400px', margin: '0 auto', minHeight: 'calc(100vh - 70px)' },
   header: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap' as const, gap: '16px' },

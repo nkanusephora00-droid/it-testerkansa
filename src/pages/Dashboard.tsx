@@ -91,10 +91,11 @@ const Dashboard: React.FC = () => {
           testsEchoues,
           sessions: sessions.length,
         });
-      } catch (err: any) {
+      } catch (err: unknown) {
         if (process.env.NODE_ENV === 'development') {
           console.error('Dashboard auth error:', err);
-          console.error('Dashboard auth response:', err?.response?.status, err?.response?.data);
+          const error = err as { response?: { status?: number; data?: unknown } };
+          console.error('Dashboard auth response:', error?.response?.status, error?.response?.data);
         }
         navigate('/login');
       } finally {

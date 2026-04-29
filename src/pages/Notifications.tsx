@@ -31,7 +31,7 @@ const Notifications: React.FC = () => {
 
       const notifs: Notification[] = [];
 
-      todos.filter((t: any) => !t.completed).forEach((todo: any) => {
+      todos.filter((t: import('../services/api').Todo) => !t.completed).forEach((todo: import('../services/api').Todo) => {
         notifs.push({
           id: todo.id + 1000,
           type: 'info',
@@ -43,33 +43,40 @@ const Notifications: React.FC = () => {
         });
       });
 
-      tests.filter((t: any) => t.statut === 'BUG').forEach((test: any) => {
+      tests.filter((t: import('../services/api').Test) => t.statut === 'BUG').forEach((test: any) => {
         notifs.push({
           id: test.id + 2000,
           type: 'error',
           title: 'Nouveau BUG détecté',
           message: `Test "${test.fonction}" - Statut: BUG`,
           read: false,
-          createdAt: test.createdAt || new Date().toISOString(),
+          createdAt: (test as any).createdAt || new Date().toISOString(),
           link: '/tests'
         });
       });
 
-      tests.filter((t: any) => t.statut === 'EN COURS').forEach((test: any) => {
+      tests.filter((t: import('../services/api').Test) => t.statut === 'EN COURS').forEach((test: any) => {
         notifs.push({
           id: test.id + 3000,
           type: 'warning',
           title: 'Test en cours',
           message: `Test "${test.fonction}" - En cours de vérification`,
           read: false,
-          createdAt: test.createdAt || new Date().toISOString(),
+          createdAt: (test as any).createdAt || new Date().toISOString(),
           link: '/tests'
         });
       });
 
       notifs.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
-      setNotifications(notifs);
+      // Restaurer le statut "read" depuis localStorage
+      const readNotifs = JSON.parse(localStorage.getItem('readNotifications') || '[]');
+      const notifsWithReadStatus = notifs.map(n => ({
+        ...n,
+        read: readNotifs.includes(n.id)
+      }));
+
+      setNotifications(notifsWithReadStatus);
     } catch (err) {
       if (process.env.NODE_ENV === 'development') {
         console.error('Error fetching notifications:', err);
@@ -83,12 +90,23 @@ const Notifications: React.FC = () => {
     setNotifications(notifs =>
       notifs.map(n => n.id === id ? { ...n, read: true } : n)
     );
+    
+    // Sauvegarder dans localStorage
+    const readNotifs = JSON.parse(localStorage.getItem('readNotifications') || '[]');
+    if (!readNotifs.includes(id)) {
+      readNotifs.push(id);
+      localStorage.setItem('readNotifications', JSON.stringify(readNotifs));
+    }
   };
 
   const markAllAsRead = () => {
     setNotifications(notifs =>
       notifs.map(n => ({ ...n, read: true }))
     );
+    
+    // Sauvegarder tous les IDs dans localStorage
+    const allIds = notifications.map(n => n.id);
+    localStorage.setItem('readNotifications', JSON.stringify(allIds));
   };
 
   const getIcon = (type: string) => {
@@ -164,7 +182,7 @@ const Notifications: React.FC = () => {
         <div style={styles.notifList}>
           {filteredNotifs.length === 0 ? (
             <div style={styles.emptyState}>
-              <FontAwesomeIcon icon={faBell} style={styles.emptyIcon} />
+              <FontAwesomeIcon icon={faBell} style={styles.emptyIcon as any} />
               <h3>Aucune notification</h3>
               <p>{filter === 'unread' ? 'Toutes vos notifications ont été lues' : 'Vous n\'avez aucune notification'}</p>
             </div>
@@ -205,7 +223,7 @@ const Notifications: React.FC = () => {
   );
 };
 
-const styles: any = {
+const styles: Record<string, React.CSSProperties> = {
   container: { backgroundColor: 'var(--bg-primary)', minHeight: '100vh' },
   main: { padding: '30px', maxWidth: '900px', margin: '0 auto', width: '100%', minHeight: 'calc(100vh - 70px)' },
   loading: { display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh', color: 'var(--text-secondary)' },

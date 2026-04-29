@@ -34,13 +34,14 @@ export const useAuth = () => {
       });
       
       return { success: true };
-    } catch (err: any) {
+    } catch (err: unknown) {
       if (process.env.NODE_ENV === 'development') {
         console.error('Login error:', err);
       }
+      const error = err as { response?: { data?: { detail?: string } }; message?: string };
       return { 
         success: false, 
-        error: err.response?.data?.detail || err.message || 'Erreur de connexion' 
+        error: error.response?.data?.detail || error.message || 'Erreur de connexion' 
       };
     }
   }, []);

@@ -51,8 +51,9 @@ const Applications: React.FC = () => {
       setFormData({ nom: '', description: '', version: '', environnement: '' });
       setShowCreateModal(false);
       fetchApplications();
-    } catch (err: any) {
-      setMessage({ type: 'error', text: err.response?.data?.detail || 'Erreur lors de l\'ajout' });
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { detail?: string } } };
+      setMessage({ type: 'error', text: error.response?.data?.detail || 'Erreur lors de l\'ajout' });
     }
   };
 
@@ -67,8 +68,9 @@ const Applications: React.FC = () => {
       setEditingApp(null);
       setEditFormData({ nom: '', description: '', version: '', environnement: '' });
       fetchApplications();
-    } catch (err: any) {
-      setMessage({ type: 'error', text: err.response?.data?.detail || 'Erreur lors de la mise à jour' });
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { detail?: string } } };
+      setMessage({ type: 'error', text: error.response?.data?.detail || 'Erreur lors de la mise à jour' });
     }
   };
 
@@ -79,8 +81,9 @@ const Applications: React.FC = () => {
       await applicationsAPI.delete(id);
       setMessage({ type: 'success', text: 'Application supprimée avec succès!' });
       fetchApplications();
-    } catch (err: any) {
-      setMessage({ type: 'error', text: err.response?.data?.detail || 'Erreur lors de la suppression' });
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { detail?: string } } };
+      setMessage({ type: 'error', text: error.response?.data?.detail || 'Erreur lors de la suppression' });
     }
   };
 
@@ -289,7 +292,7 @@ const Applications: React.FC = () => {
   );
 };
 
-const styles: any = {
+const styles: Record<string, React.CSSProperties> = {
   container: { backgroundColor: 'var(--bg-primary)', minHeight: '100vh' },
   main: { padding: '30px', maxWidth: '1400px', margin: '0 auto', minHeight: 'calc(100vh - 70px)' },
   header: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap' as const, gap: '16px' },

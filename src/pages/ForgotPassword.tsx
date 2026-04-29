@@ -24,11 +24,12 @@ const ForgotPassword: React.FC = () => {
       if (process.env.NODE_ENV === 'development') {
         console.log("ForgotPassword: Reset email sent successfully");
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       if (process.env.NODE_ENV === 'development') {
         console.error('ForgotPassword: Error:', err);
       }
-      const errorMessage = err.response?.data?.detail || err.message || 'Erreur lors de la demande de réinitialisation';
+      const error = err as { response?: { data?: { detail?: string } }; message?: string };
+      const errorMessage = error.response?.data?.detail || error.message || 'Erreur lors de la demande de réinitialisation';
       setError(errorMessage);
     } finally {
       setLoading(false);

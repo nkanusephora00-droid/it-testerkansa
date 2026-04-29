@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { usersAPI, applicationsAPI, testsAPI, todosAPI, comptesAPI } from '../services/api';
+import { usersAPI, applicationsAPI, testsAPI, todosAPI, comptesAPI, Application } from '../services/api';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChartBar, faChartPie, faCheckCircle, faTimesCircle, faClock, faUsers, faDatabase, faTasks } from '@fortawesome/free-solid-svg-icons';
 
@@ -20,6 +20,7 @@ interface Stats {
 const Reports: React.FC = () => {
   const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [period, setPeriod] = useState<'week' | 'month' | 'year'>('month');
 
   useEffect(() => {
@@ -27,63 +28,80 @@ const Reports: React.FC = () => {
   }, [period]);
 
   const fetchStats = async () => {
+    setLoading(true);
+    setError(null);
     try {
       // Faire les requêtes séquentiellement pour éviter les erreurs 429
-      let apps: any[] = [];
-      let comptes: any[] = [];
-      let tests: any[] = [];
-      let users: any[] = [];
-      let todos: any[] = [];
+      let apps: Application[] = [];
+      let comptes: import('../services/api').Compte[] = [];
+      let tests: import('../services/api').Test[] = [];
+      let users: import('../services/api').User[] = [];
+      let todos: import('../services/api').Todo[] = [];
 
       try {
         apps = await applicationsAPI.getAll();
-      } catch (e) {
+      } catch (e: any) {
         if (process.env.NODE_ENV === 'development') {
           console.error('Error fetching apps:', e);
+        }
+        if (e?.response?.status === 429) {
+          setError('Trop de requêtes. Veuillez réessayer dans quelques secondes.');
         }
       }
 
       try {
         comptes = await comptesAPI.getAll();
-      } catch (e) {
+      } catch (e: any) {
         if (process.env.NODE_ENV === 'development') {
           console.error('Error fetching comptes:', e);
+        }
+        if (e?.response?.status === 429) {
+          setError('Trop de requêtes. Veuillez réessayer dans quelques secondes.');
         }
       }
 
       try {
         tests = await testsAPI.getAll();
-      } catch (e) {
+      } catch (e: any) {
         if (process.env.NODE_ENV === 'development') {
           console.error('Error fetching tests:', e);
+        }
+        if (e?.response?.status === 429) {
+          setError('Trop de requêtes. Veuillez réessayer dans quelques secondes.');
         }
       }
 
       try {
         users = await usersAPI.getAll();
-      } catch (e) {
+      } catch (e: any) {
         if (process.env.NODE_ENV === 'development') {
           console.error('Error fetching users:', e);
+        }
+        if (e?.response?.status === 429) {
+          setError('Trop de requêtes. Veuillez réessayer dans quelques secondes.');
         }
       }
 
       try {
         todos = await todosAPI.getAll();
-      } catch (e) {
+      } catch (e: any) {
         if (process.env.NODE_ENV === 'development') {
           console.error('Error fetching todos:', e);
         }
+        if (e?.response?.status === 429) {
+          setError('Trop de requêtes. Veuillez réessayer dans quelques secondes.');
+        }
       }
 
-      const testsOK = tests.filter((t: any) => t.statut === 'OK').length;
-      const testsBug = tests.filter((t: any) => t.statut === 'BUG').length;
-      const testsEnCours = tests.filter((t: any) => t.statut === 'EN COURS').length;
+      const testsOK = tests.filter((t: import('../services/api').Test) => t.statut === 'OK').length;
+      const testsBug = tests.filter((t: import('../services/api').Test) => t.statut === 'BUG').length;
+      const testsEnCours = tests.filter((t: import('../services/api').Test) => t.statut === 'EN COURS').length;
       const totalTests = tests.length;
       const tauxReussite = totalTests > 0 ? Math.round((testsOK / totalTests) * 100) : 0;
 
       const usersActifs = users.filter((u: any) => u.isActive).length;
-      const pendingTodos = todos.filter((t: any) => !t.completed).length;
-      const completedTodos = todos.filter((t: any) => t.completed).length;
+      const pendingTodos = todos.filter((t: import('../services/api').Todo) => !t.completed).length;
+      const completedTodos = todos.filter((t: import('../services/api').Todo) => t.completed).length;
 
       setStats({
         totalTests,
@@ -102,13 +120,27 @@ const Reports: React.FC = () => {
       if (process.env.NODE_ENV === 'development') {
         console.error('Error fetching stats:', err);
       }
+      setError('Erreur lors du chargement des statistiques. Veuillez réessayer.');
     } finally {
       setLoading(false);
     }
   };
 
-  if (loading || !stats) {
+  if (loading) {
     return <div style={styles.loading}>Chargement des statistiques...</div>;
+  }
+
+  if (error) {
+    return (
+      <div style={styles.errorContainer}>
+        <div style={styles.error}>{error}</div>
+        <button onClick={fetchStats} style={styles.retryButton}>Réessayer</button>
+      </div>
+    );
+  }
+
+  if (!stats) {
+    return <div style={styles.loading}>Aucune donnée disponible</div>;
   }
 
   return (
@@ -287,10 +319,13 @@ const Reports: React.FC = () => {
   );
 };
 
-const styles: any = {
+const styles: Record<string, React.CSSProperties> = {
   container: { backgroundColor: 'var(--bg-primary)', minHeight: '100vh' },
   main: { padding: '30px', maxWidth: '1400px', margin: '0 auto', width: '100%', minHeight: 'calc(100vh - 70px)' },
   loading: { display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh', color: 'var(--text-secondary)' },
+  errorContainer: { display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '50vh', gap: '16px' },
+  error: { padding: '16px 24px', backgroundColor: 'var(--danger-color)', color: 'white', borderRadius: '8px', textAlign: 'center' },
+  retryButton: { padding: '12px 24px', backgroundColor: 'var(--info-color)', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '14px', fontWeight: '600' },
   header: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px', flexWrap: 'wrap', gap: '16px' },
   pageTitle: { margin: 0, fontSize: '24px', fontWeight: '700', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '12px' },
   pageSubtitle: { margin: '4px 0 0', color: 'var(--text-secondary)', fontSize: '14px' },

@@ -36,7 +36,7 @@ const Todos: React.FC = () => {
     try {
       const data = await todosAPI.getAll();
       setTodos(data);
-    } catch (err: any) {
+    } catch (err: unknown) {
       if (process.env.NODE_ENV === 'development') {
         console.error('Error fetching todos:', err);
       }
@@ -73,7 +73,7 @@ const Todos: React.FC = () => {
         }
       }
       fetchTodos();
-    } catch (err: any) {
+    } catch (err: unknown) {
       setMessage({ type: 'error', text: 'Erreur lors de la sauvegarde' });
     }
   };
@@ -82,7 +82,7 @@ const Todos: React.FC = () => {
     try {
       await todosAPI.toggle(id);
       fetchTodos();
-    } catch (err: any) {
+    } catch (err: unknown) {
       setMessage({ type: 'error', text: 'Erreur lors de la mise à jour' });
     }
   };
@@ -93,7 +93,7 @@ const Todos: React.FC = () => {
       await todosAPI.delete(id);
       setMessage({ type: 'success', text: 'Tâche supprimée!' });
       fetchTodos();
-    } catch (err: any) {
+    } catch (err: unknown) {
       setMessage({ type: 'error', text: 'Erreur lors de la suppression' });
     }
   };

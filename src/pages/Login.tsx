@@ -35,11 +35,12 @@ const Login: React.FC = () => {
         console.log("Login: Navigating to dashboard");
        }
        navigate('/dashboard');
-    } catch (err: any) {
+    } catch (err: unknown) {
       if (process.env.NODE_ENV === 'development') {
         console.error('Login: Erreur de connexion:', err);
       }
-      const errorMessage = err.response?.data?.detail || err.response?.data?.accessToken || err.message || 'Erreur de connexion';
+      const error = err as { response?: { data?: { detail?: string; accessToken?: string } }; message?: string };
+      const errorMessage = error.response?.data?.detail || error.response?.data?.accessToken || error.message || 'Erreur de connexion';
       setError(errorMessage);
     } finally {
       setLoading(false);

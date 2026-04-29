@@ -69,19 +69,20 @@ const Profile: React.FC = () => {
     e.preventDefault();
     setSaving(true);
     try {
-      const updateData: any = {
+      const updateData: { email: string; profilePhoto?: string } = {
         email: formData.email,
       };
       
       if (previewPhoto !== profile?.profilePhoto) {
-        updateData.profilePhoto = previewPhoto;
+        updateData.profilePhoto = previewPhoto || undefined;
       }
       
       await profileAPI.updateMe(updateData);
       setMessage({ type: 'success', text: 'Profil mis à jour avec succès!' });
       fetchProfile();
-    } catch (err: any) {
-      setMessage({ type: 'error', text: err.response?.data?.detail || 'Erreur lors de la mise à jour' });
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { detail?: string } } };
+      setMessage({ type: 'error', text: error.response?.data?.detail || 'Erreur lors de la mise à jour' });
     } finally {
       setSaving(false);
     }
@@ -105,8 +106,9 @@ const Profile: React.FC = () => {
       await profileAPI.changePassword(passwordData.oldPassword, passwordData.newPassword);
       setMessage({ type: 'success', text: 'Mot de passe changé avec succès!' });
       setPasswordData({ oldPassword: '', newPassword: '', confirmPassword: '' });
-    } catch (err: any) {
-      setMessage({ type: 'error', text: err.response?.data?.detail || 'Erreur lors du changement de mot de passe' });
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { detail?: string } } };
+      setMessage({ type: 'error', text: error.response?.data?.detail || 'Erreur lors du changement de mot de passe' });
     } finally {
       setSaving(false);
     }

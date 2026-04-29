@@ -38,15 +38,16 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         if (process.env.NODE_ENV === 'development') {
           console.log("Layout: Token validation successful:", response);
         }
-      } catch (error: any) {
+      } catch (error: unknown) {
         if (process.env.NODE_ENV === 'development') {
           console.error("Layout: Token validation error:", error);
-          console.error("Layout: Token validation response:", error?.response?.status, error?.response?.data);
+          console.error("Layout: Token validation response:", (error as { response?: { status?: number; data?: unknown } })?.response?.status, (error as { response?: { data?: unknown } })?.response?.data);
         }
         
         // Ne déconnecter que si c'est une vraie erreur 401 (token invalide/expiré)
         // Ne pas déconnecter pour 429 (rate limiting) ou autres erreurs temporaires
-        if (error?.response?.status === 401) {
+        const err = error as { response?: { status?: number } };
+        if (err?.response?.status === 401) {
           if (process.env.NODE_ENV === 'development') {
             console.log("Layout: Token invalid (401), redirecting to login");
           }
@@ -76,7 +77,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     { path: "/dashboard", label: "Tableau de bord", icon: "fa-home" },
     { path: "/applications", label: "Applications", icon: "fa-mobile-alt" },
     { path: "/comptes", label: "Comptes", icon: "fa-user" },
-    { path: "/apk", label: "APK", icon: "fa-android" },
     { path: "/tests", label: "Tests", icon: "fa-check-square" },
     { path: "/todos", label: "Tâches", icon: "fa-tasks" },
     { path: "/reports", label: "Rapports", icon: "fa-chart-bar" },
@@ -123,10 +123,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       {/* Sidebar */}
       <aside
         className={`sidebar ${mobileMenuOpen ? "sidebar-open" : ""}`}
-        style={{
-          ...styles.sidebar,
-          ...(mobileMenuOpen ? styles.sidebarMobileOpen : {}),
-        }}
+        style={styles.sidebar}
       >
         <div style={styles.logo}>
           <h2>
@@ -226,7 +223,10 @@ const styles = {
     flexDirection: "column" as const,
     position: "fixed" as const,
     height: "100vh",
+    left: 0,
+    top: 0,
     boxShadow: "2px 0 8px var(--shadow-color)",
+    transition: "transform 0.3s ease, left 0.3s ease",
   },
   logo: {
     padding: "24px 20px",
@@ -308,8 +308,10 @@ const styles = {
     justifyContent: "space-between",
     padding: "0 30px",
     boxShadow: "0 2px 8px var(--shadow-color)",
-    position: "sticky" as const,
+    position: "fixed" as const,
     top: 0,
+    left: "260px",
+    right: 0,
     zIndex: 100,
   },
   headerTitle: {
@@ -365,7 +367,7 @@ const styles = {
   },
   content: {
     flex: 1,
-    padding: "30px",
+    padding: "100px 30px 30px 30px",
     overflowY: "auto" as const,
     backgroundColor: "var(--bg-primary)",
     minHeight: "100vh",
@@ -376,15 +378,15 @@ const styles = {
     top: "8px",
     left: "8px",
     zIndex: 1001,
-    width: "44px",
-    height: "44px",
-    borderRadius: "8px",
-    border: "none",
+    width: "48px",
+    height: "48px",
+    borderRadius: "12px",
+    border: "2px solid var(--border-color)",
     backgroundColor: "var(--bg-card)",
     color: "var(--text-primary)",
-    fontSize: "18px",
+    fontSize: "20px",
     cursor: "pointer",
-    boxShadow: "0 2px 8px var(--shadow-color)",
+    boxShadow: "0 4px 12px var(--shadow-strong)",
     alignItems: "center",
     justifyContent: "center",
   },
@@ -403,7 +405,7 @@ const styles = {
     zIndex: 199,
   },
   sidebarMobileOpen: {
-    transform: "translateX(0)",
+    left: 0,
   },
 };
 
