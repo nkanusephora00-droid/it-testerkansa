@@ -64,8 +64,9 @@ const Messages: React.FC = () => {
     if (!currentUser) {
       loadCurrentUser();
     }
-    // Clear unread count for this user
+    // Clear unread count for this user and reload unread counts
     setUnreadCounts(prev => ({ ...prev, [user.id]: 0 }));
+    loadUnreadCounts();
   };
 
   const handleBackToList = () => {

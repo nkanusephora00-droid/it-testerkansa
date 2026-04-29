@@ -35,6 +35,12 @@ const Chat: React.FC<ChatProps> = ({ currentUser, selectedUser }) => {
     try {
       const data = await messagesAPI.getConversation(selectedUser.id);
       setMessages(data);
+      
+      // Mark unread messages as read
+      const unreadMessages = data.filter(m => !m.read && m.receiverId === currentUser.id);
+      for (const msg of unreadMessages) {
+        await messagesAPI.markAsRead(msg.id);
+      }
     } catch (err) {
       console.error('Error loading messages:', err);
     } finally {
@@ -186,16 +192,16 @@ const styles: Record<string, React.CSSProperties> = {
     boxShadow: '0 1px 2px rgba(0,0,0,0.1)',
   },
   ownMessage: {
-    alignSelf: 'flex-end' as const,
-    backgroundColor: '#007AFF',
+    alignSelf: 'flex-start' as const,
+    backgroundColor: '#4CAF50',
     color: 'white',
-    borderBottomRightRadius: '4px',
+    borderBottomLeftRadius: '4px',
   },
   otherMessage: {
-    alignSelf: 'flex-start' as const,
-    backgroundColor: '#E5E5EA',
-    color: 'var(--text-primary)',
-    borderBottomLeftRadius: '4px',
+    alignSelf: 'flex-end' as const,
+    backgroundColor: '#2196F3',
+    color: 'white',
+    borderBottomRightRadius: '4px',
   },
   messageContent: {
     display: 'flex',
