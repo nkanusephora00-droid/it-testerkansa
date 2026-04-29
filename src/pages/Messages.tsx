@@ -26,10 +26,9 @@ const Messages: React.FC = () => {
 
   const loadUsers = async () => {
     try {
-      const data: any = await usersAPI.getAll();
+      const data: any = await usersAPI.getAvailable();
       const userList = Array.isArray(data) ? data : (data?.content || []);
-      // Filter out current user
-      setUsers(userList.filter((u: User) => u.id !== currentUserId));
+      setUsers(userList);
     } catch (err) {
       console.error('Error loading users:', err);
     } finally {
@@ -48,15 +47,13 @@ const Messages: React.FC = () => {
 
   const loadUnreadCounts = async () => {
     try {
-      // For now, we'll simulate unread counts since the API might not be implemented yet
-      // In production, this would call messagesAPI.getUnreadCount() for each conversation
-      const counts: Record<number, number> = {};
-      users.forEach(user => {
-        counts[user.id] = Math.floor(Math.random() * 3); // Simulated for demo
-      });
+      // Get actual unread counts from API grouped by sender
+      const counts = await messagesAPI.getUnreadByUser();
       setUnreadCounts(counts);
     } catch (err) {
       console.error('Error loading unread counts:', err);
+      // Fallback to empty counts
+      setUnreadCounts({});
     }
   };
 

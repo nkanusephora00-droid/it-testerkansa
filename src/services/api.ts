@@ -207,6 +207,7 @@ export const authAPI = {
 // Users API
 export const usersAPI = {
   getAll: async () => (await api.get<User[]>("/users")).data,
+  getAvailable: async () => (await api.get<User[]>("/users/available")).data,
   getById: async (id: number) => (await api.get<User>(`/users/${id}`)).data,
   create: async (data: Partial<User>) => (await api.post<User>("/users", data)).data,
   update: async (id: number, data: Partial<User>) => (await api.put<User>(`/users/${id}`, data)).data,
@@ -309,6 +310,7 @@ export const messagesAPI = {
   create: async (data: { receiverId: number; content: string }) => (await api.post<Message>("/messages", data)).data,
   markAsRead: async (messageId: number) => (await api.patch(`/messages/${messageId}/read`)).data,
   getUnreadCount: async () => (await api.get<number>("/messages/unread-count")).data,
+  getUnreadByUser: async () => (await api.get<Record<number, number>>("/messages/unread-by-user")).data,
 };
 
 export default api;
