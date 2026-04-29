@@ -10,9 +10,18 @@ const Applications: React.FC = () => {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [editingApp, setEditingApp] = useState<Application | null>(null);
   const [message, setMessage] = useState({ type: '', text: '' });
-  
   const [formData, setFormData] = useState({ nom: '', description: '', version: '', environnement: '' });
   const [editFormData, setEditFormData] = useState({ nom: '', description: '', version: '', environnement: '' });
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   // Récupérer le rôle de l'utilisateur
   const userRole = localStorage.getItem('user_role');
@@ -117,7 +126,7 @@ const Applications: React.FC = () => {
           </div>
         )}
 
-        <div style={window.innerWidth <= 768 ? { ...styles.tableSection, ...styles.tableSectionMobile } : styles.tableSection}>
+        <div style={isMobile ? { ...styles.tableSection, ...styles.tableSectionMobile } : styles.tableSection}>
           <div style={styles.listHeader}>
             <div>
               <h3 style={styles.sectionTitle}>Liste des applications</h3>

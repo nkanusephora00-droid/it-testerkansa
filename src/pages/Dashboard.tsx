@@ -47,6 +47,16 @@ const Dashboard: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [hoveredCard, setHoveredCard] = useState<string | null>(null);
   const [todos, setTodos] = useState<Todo[]>([]);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -130,25 +140,25 @@ const Dashboard: React.FC = () => {
     <div style={styles.container}>
       <main style={styles.main}>
         {/* En-tête de bienvenue */}
-        <div style={window.innerWidth <= 768 ? { ...styles.welcomeSection, ...styles.welcomeSectionMobile } : styles.welcomeSection}>
+        <div style={isMobile ? { ...styles.welcomeSection, ...styles.welcomeSectionMobile } : styles.welcomeSection}>
           <div style={styles.welcomeContent}>
-            <h1 style={window.innerWidth <= 768 ? { ...styles.welcomeTitle, fontSize: '24px' } : styles.welcomeTitle}>{getGreeting()}, <span style={styles.userName}>{user?.username}</span></h1>
+            <h1 style={isMobile ? { ...styles.welcomeTitle, fontSize: '24px' } : styles.welcomeTitle}>{getGreeting()}, <span style={styles.userName}>{user?.username}</span></h1>
             <p style={styles.welcomeSubtitle}>{dateFormatted}</p>
             <p style={styles.welcomeRole}>
               <span style={styles.roleBadge}>{user?.role === 'admin' ? 'Administrateur' : 'Utilisateur'}</span>
             </p>
           </div>
-          <div style={window.innerWidth <= 768 ? { ...styles.welcomeIcon, fontSize: '50px' } : styles.welcomeIcon}>
+          <div style={isMobile ? { ...styles.welcomeIcon, fontSize: '50px' } : styles.welcomeIcon}>
             <i className={`fas ${user?.role === 'admin' ? 'fa-user-shield' : 'fa-user'}`}></i>
           </div>
         </div>
 
         {/* Cartes de statistiques principales */}
-        <div style={window.innerWidth <= 768 ? { ...styles.statsGrid, gridTemplateColumns: 'repeat(2, 1fr)', gap: '16px' } : styles.statsGrid}>
+        <div style={isMobile ? { ...styles.statsGrid, gridTemplateColumns: 'repeat(2, 1fr)', gap: '16px' } : styles.statsGrid}>
           <div
             style={{
               ...styles.statCard,
-              ...(window.innerWidth <= 768 ? styles.statCardMobile : {}),
+              ...(isMobile ? styles.statCardMobile : {}),
               ...(hoveredCard === 'applications' ? styles.statCardHover : null),
             }}
             onMouseEnter={() => setHoveredCard('applications')}
@@ -168,7 +178,7 @@ const Dashboard: React.FC = () => {
           <div
             style={{
               ...styles.statCard,
-              ...(window.innerWidth <= 768 ? styles.statCardMobile : {}),
+              ...(isMobile ? styles.statCardMobile : {}),
               ...(hoveredCard === 'comptes' ? styles.statCardHover : null),
             }}
             onMouseEnter={() => setHoveredCard('comptes')}
@@ -188,7 +198,7 @@ const Dashboard: React.FC = () => {
           <div
             style={{
               ...styles.statCard,
-              ...(window.innerWidth <= 768 ? styles.statCardMobile : {}),
+              ...(isMobile ? styles.statCardMobile : {}),
               ...(hoveredCard === 'tests' ? styles.statCardHover : null),
             }}
             onMouseEnter={() => setHoveredCard('tests')}
@@ -204,11 +214,11 @@ const Dashboard: React.FC = () => {
               <span style={styles.statFooter}>Voir les tests</span>
             </div>
           </div>
-          
+
           <div
             style={{
               ...styles.statCard,
-              ...(window.innerWidth <= 768 ? styles.statCardMobile : {}),
+              ...(isMobile ? styles.statCardMobile : {}),
               ...(hoveredCard === 'users' ? styles.statCardHover : null),
             }}
             onMouseEnter={() => setHoveredCard('users')}
@@ -224,11 +234,11 @@ const Dashboard: React.FC = () => {
               <span style={styles.statFooter}>{stats.usersActive} actifs</span>
             </div>
           </div>
-          
+
           <div
             style={{
               ...styles.statCard,
-              ...(window.innerWidth <= 768 ? styles.statCardMobile : {}),
+              ...(isMobile ? styles.statCardMobile : {}),
               ...(hoveredCard === 'sessions' ? styles.statCardHover : null),
             }}
             onMouseEnter={() => setHoveredCard('sessions')}
