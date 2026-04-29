@@ -202,19 +202,56 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
         {/* Bottom Navigation for Mobile */}
         <div style={styles.bottomNav}>
-          {mainMenuItems.slice(0, 5).map((item) => (
-            <button
-              key={item.path}
-              onClick={() => handleNavClick(item.path)}
-              style={{
-                ...styles.bottomNavItem,
-                ...(currentPath === item.path ? styles.bottomNavItemActive : {}),
-              }}
-            >
-              <i className={`fas ${item.icon}`}></i>
-              <span>{item.label}</span>
-            </button>
-          ))}
+          <button
+            onClick={() => handleNavClick('/dashboard')}
+            style={{
+              ...styles.bottomNavItem,
+              ...(currentPath === '/dashboard' ? styles.bottomNavItemActive : {}),
+            }}
+          >
+            <i className="fas fa-home"></i>
+            <span>Dashboard</span>
+          </button>
+          <button
+            onClick={() => handleNavClick('/applications')}
+            style={{
+              ...styles.bottomNavItem,
+              ...(currentPath === '/applications' ? styles.bottomNavItemActive : {}),
+            }}
+          >
+            <i className="fas fa-mobile-alt"></i>
+            <span>Applications</span>
+          </button>
+          <button
+            onClick={() => handleNavClick('/tests')}
+            style={{
+              ...styles.bottomNavItem,
+              ...(currentPath === '/tests' ? styles.bottomNavItemActive : {}),
+            }}
+          >
+            <i className="fas fa-check-square"></i>
+            <span>Tests</span>
+          </button>
+          <button
+            onClick={() => handleNavClick('/messages')}
+            style={{
+              ...styles.bottomNavItem,
+              ...(currentPath === '/messages' ? styles.bottomNavItemActive : {}),
+            }}
+          >
+            <i className="fas fa-comments"></i>
+            <span>Messages</span>
+          </button>
+          <button
+            onClick={() => handleNavClick('/profile')}
+            style={{
+              ...styles.bottomNavItem,
+              ...(currentPath === '/profile' ? styles.bottomNavItemActive : {}),
+            }}
+          >
+            <i className="fas fa-user-circle"></i>
+            <span>Profile</span>
+          </button>
         </div>
       </div>
     </div>
