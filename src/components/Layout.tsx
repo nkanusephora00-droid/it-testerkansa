@@ -180,12 +180,11 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
              <i className="fas fa-bell"></i>
            </button>
            <button
-             onClick={handleLogout}
-             style={styles.logoutIconButton}
-             title="Se déconnecter"
-           >
-             <i className="fas fa-sign-out-alt"></i>
-           </button>
+            onClick={handleLogout}
+            style={styles.logoutIconButton}
+            title="Se déconnecter"
+          >
+          </button>
            <div style={styles.userBadgeContainer}>
             <span style={styles.onlineIndicator}></span>
             <span style={styles.userBadge}>
