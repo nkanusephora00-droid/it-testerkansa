@@ -21,6 +21,7 @@ const Messages: React.FC = () => {
     // Poll for unread counts every 10 seconds
     const interval = setInterval(loadUnreadCounts, 10000);
     return () => clearInterval(interval);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const loadUsers = async () => {

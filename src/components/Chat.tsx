@@ -28,6 +28,7 @@ const Chat: React.FC<ChatProps> = ({ currentUser, selectedUser }) => {
     // Poll for new messages every 5 seconds
     const interval = setInterval(loadMessages, 5000);
     return () => clearInterval(interval);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedUser.id]);
 
   const loadMessages = async () => {
