@@ -17,6 +17,7 @@ const Tests: React.FC = () => {
   // Récupérer le rôle de l'utilisateur
   const userRole = localStorage.getItem('user_role');
   const isAdmin = userRole === 'admin';
+  console.log('User role:', userRole, 'Is admin:', isAdmin);
   
   // Session form state
   const [showSessionModal, setShowSessionModal] = useState(false);
@@ -109,8 +110,11 @@ const Tests: React.FC = () => {
 
   async function fetchUsers() {
     try {
+      console.log('Fetching users...');
       const response = await api.get('/users');
+      console.log('Users API response:', response.data);
       setUsers(Array.isArray(response.data) ? response.data : []);
+      console.log('Users set:', Array.isArray(response.data) ? response.data.length : 'not an array');
     } catch (err) {
       if (process.env.NODE_ENV === 'development') {
         console.error('Error fetching users:', err);
@@ -481,9 +485,12 @@ const Tests: React.FC = () => {
                 style={styles.filterSelect}
               >
                 <option value="">Tous les utilisateurs</option>
-                {Array.isArray(users) ? users.map(user => (
-                  <option key={user.id} value={user.id}>{user.username}</option>
-                )) : null}
+                {(() => {
+                  console.log('Rendering users filter, users:', users);
+                  return Array.isArray(users) ? users.map(user => (
+                    <option key={user.id} value={user.id}>{user.username}</option>
+                  )) : null;
+                })()}
               </select>
             </div>
           )}
