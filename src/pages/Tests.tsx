@@ -126,6 +126,11 @@ const Tests: React.FC = () => {
   };
 
   const handleDeleteSession = async (id: number) => {
+    const session = sessions.find(s => s.id === id);
+    if (session && session.statut === 'Terminé') {
+      setMessage({ type: 'error', text: 'Impossible de supprimer une session terminée!' });
+      return;
+    }
     if (!window.confirm('Voulez-vous vraiment supprimer cette session et tous ses tests?')) return;
     try {
       await testSessionsAPI.delete(id);
@@ -479,7 +484,7 @@ const Tests: React.FC = () => {
               <button style={styles.exportButton} onClick={() => handleExportSessionPDF(session)}>
                 <FontAwesomeIcon icon={faFilePdf} /> PDF
               </button>
-              {isAdmin && (
+              {session.statut !== 'Terminé' && (
                 <button style={{...styles.deleteButton, padding: '6px', backgroundColor: 'transparent', color: '#ff6b6b'}} onClick={() => handleDeleteSession(session.id)} title="Supprimer">
                   <FontAwesomeIcon icon={faTrash} />
                 </button>
@@ -553,7 +558,12 @@ const Tests: React.FC = () => {
               <tr>
                 <th>ID</th>
                 <th>Fonction</th>
+                <th>Précondition</th>
+                <th>Étapes</th>
+                <th>Résultat Attendu</th>
+                <th>Résultat Obtenu</th>
                 <th>Statut</th>
+                <th>Commentaires</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -562,16 +572,19 @@ const Tests: React.FC = () => {
                 <tr key={test.id}>
                   <td>{test.id}</td>
                   <td>{test.fonction}</td>
+                  <td>{test.precondition || '-'}</td>
+                  <td>{test.etapes || '-'}</td>
+                  <td>{test.resultatAttendu || '-'}</td>
+                  <td>{test.resultatObtenu || '-'}</td>
                   <td><span style={getStatutClass(test.statut)}>{test.statut}</span></td>
+                  <td>{test.commentaires || '-'}</td>
                   <td style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
                     <button style={{...styles.editButton, padding: '6px', backgroundColor: 'transparent', color: '#4a90e2'}} onClick={() => handleEditTest(test)} title="Modifier">
                       <FontAwesomeIcon icon={faEdit} />
                     </button>
-                    {isAdmin && (
-                      <button style={{...styles.deleteButton, padding: '6px', backgroundColor: 'transparent', color: '#ff6b6b'}} onClick={() => handleDeleteTest(test.id)} title="Supprimer">
-                        <FontAwesomeIcon icon={faTrash} />
-                      </button>
-                    )}
+                    <button style={{...styles.deleteButton, padding: '6px', backgroundColor: 'transparent', color: '#ff6b6b'}} onClick={() => handleDeleteTest(test.id)} title="Supprimer">
+                      <FontAwesomeIcon icon={faTrash} />
+                    </button>
                   </td>
                 </tr>
               ))}

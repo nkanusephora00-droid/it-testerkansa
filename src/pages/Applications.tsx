@@ -23,9 +23,6 @@ const Applications: React.FC = () => {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // Récupérer le rôle de l'utilisateur
-  const userRole = localStorage.getItem('user_role');
-  const isAdmin = userRole === 'admin';
 
   useEffect(() => {
     fetchApplications();
@@ -140,9 +137,9 @@ const Applications: React.FC = () => {
           {loading ? (
             <p>Chargement...</p>
           ) : (
-            <div style={styles.applicationsGrid}>
+            <div style={isMobile ? { ...styles.applicationsGrid, ...styles.applicationsGridMobile } : styles.applicationsGrid}>
               {applications.map((app) => (
-                <div key={app.id} style={styles.appCard}>
+                <div key={app.id} style={isMobile ? { ...styles.appCard, ...styles.appCardMobile } : styles.appCard}>
                   <div style={styles.appCardHeader}>
                     <div style={styles.appIcon}>
                       <i className="fas fa-mobile-alt"></i>
@@ -151,11 +148,9 @@ const Applications: React.FC = () => {
                       <button style={styles.iconButton} onClick={() => openEditModal(app)} title="Modifier">
                         <FontAwesomeIcon icon={faPen} />
                       </button>
-                      {isAdmin && (
-                        <button style={{...styles.iconButton, color: '#ff6b6b'}} onClick={() => handleDelete(app.id)} title="Supprimer">
-                          <FontAwesomeIcon icon={faTrash} />
-                        </button>
-                      )}
+                      <button style={{...styles.iconButton, color: '#ff6b6b'}} onClick={() => handleDelete(app.id)} title="Supprimer">
+                        <FontAwesomeIcon icon={faTrash} />
+                      </button>
                     </div>
                   </div>
                   <h4 style={styles.appName}>{app.nom}</h4>
@@ -302,7 +297,9 @@ const styles: Record<string, React.CSSProperties> = {
   tableSection: { backgroundColor: 'var(--bg-card)', borderRadius: 'var(--radius-lg)', padding: '24px', marginBottom: '24px', border: '1px solid var(--border-color)', boxShadow: '0 2px 8px var(--shadow-color)' },
   tableSectionMobile: { padding: '16px', marginBottom: '16px' },
   applicationsGrid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '20px' },
+  applicationsGridMobile: { gridTemplateColumns: '1fr', gap: '16px' },
   appCard: { backgroundColor: 'var(--bg-primary)', borderRadius: '12px', padding: '20px', border: '1px solid var(--border-color)', transition: 'all 0.2s ease', cursor: 'pointer' },
+  appCardMobile: { padding: '16px' },
   appCardHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' },
   appIcon: { width: '50px', height: '50px', borderRadius: '10px', backgroundColor: 'var(--info-color)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: '20px' },
   appCardActions: { display: 'flex', gap: '8px' },

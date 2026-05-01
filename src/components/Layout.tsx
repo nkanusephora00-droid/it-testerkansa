@@ -179,13 +179,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           >
             <i className="fas fa-sign-out-alt"></i>
           </button>
-          <button
-            className="menuButton"
-            style={styles.menuButton}
-            title="Menu"
-          >
-            <i className="fas fa-bars"></i>
-          </button>
          </div>
        </header>
 
@@ -388,20 +381,6 @@ const styles = {
     borderRadius: "8px",
     border: "none",
     backgroundColor: "var(--danger-color)",
-    color: "white",
-    fontSize: "16px",
-    cursor: "pointer",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    transition: "all 0.2s ease",
-  },
-  menuButton: {
-    width: "40px",
-    height: "40px",
-    borderRadius: "8px",
-    border: "none",
-    backgroundColor: "var(--info-color)",
     color: "white",
     fontSize: "16px",
     cursor: "pointer",

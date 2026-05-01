@@ -134,11 +134,6 @@
     display: none !important;
   }
 
-  /* Show menu button on mobile */
-  .menuButton {
-    display: flex !important;
-  }
-
   /* Show bottom navigation on mobile */
   .bottomNav {
     display: flex !important;
