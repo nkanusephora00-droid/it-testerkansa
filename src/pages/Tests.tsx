@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { testsAPI, applicationsAPI, api, testSessionsAPI, Application, Test, TestSession } from '../services/api';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash, faEye, faFilePdf, faCheck, faTimes, faPlus, faEdit } from '@fortawesome/free-solid-svg-icons';
@@ -68,7 +68,7 @@ const Tests: React.FC = () => {
     fetchData();
   }, [fetchData, isAdmin]);
 
-  async function fetchData() {
+  const fetchData = useCallback(async () => {
     try {
       const [testsData, appsData] = await Promise.all([
         testsAPI.getAll(),
@@ -84,7 +84,7 @@ const Tests: React.FC = () => {
       if (process.env.NODE_ENV === 'development') { console.error(err); }
       setMessage({ type: 'error', text: 'Erreur de chargement' });
     }
-  }
+  }, [isAdmin]);
 
   useEffect(() => {
     if (selectedUser !== null) {
