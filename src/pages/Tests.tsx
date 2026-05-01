@@ -1,18 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import { testsAPI, applicationsAPI, api, testSessionsAPI, usersAPI, Application, Test, TestSession, User } from '../services/api';
+import { testsAPI, applicationsAPI, api, testSessionsAPI, Application, Test, TestSession } from '../services/api';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash, faEye, faFilePdf, faCheck, faTimes, faPlus, faEdit, faUser, faUsers } from '@fortawesome/free-solid-svg-icons';
+import { faTrash, faEye, faFilePdf, faCheck, faTimes, faPlus, faEdit } from '@fortawesome/free-solid-svg-icons';
 
 const Tests: React.FC = () => {
   const [tests, setTests] = useState<Test[]>([]);
   const [sessions, setSessions] = useState<TestSession[]>([]);
+  const [allSessions, setAllSessions] = useState<TestSession[]>([]);
   const [applications, setApplications] = useState<Application[]>([]);
-  const [users, setUsers] = useState<User[]>([]);
+  const [users, setUsers] = useState<any[]>([]);
   const [message, setMessage] = useState({ type: '', text: '' });
   const [view, setView] = useState<'sessions' | 'tests'>('sessions');
   const [selectedSession, setSelectedSession] = useState<number | null>(null);
   const [selectedUser, setSelectedUser] = useState<number | null>(null);
-
+  
   // Récupérer le rôle de l'utilisateur
   const userRole = localStorage.getItem('user_role');
   const isAdmin = userRole === 'admin';
@@ -65,12 +66,9 @@ const Tests: React.FC = () => {
 
   useEffect(() => {
     fetchData();
-    if (isAdmin) {
-      fetchUsers();
-    }
-  }, []);
+  }, [fetchData, isAdmin]);
 
-  const fetchData = async () => {
+  async function fetchData() {
     try {
       const [testsData, appsData] = await Promise.all([
         testsAPI.getAll(),
@@ -79,30 +77,43 @@ const Tests: React.FC = () => {
       setTests(testsData);
       setApplications(appsData);
       await fetchSessions();
+      if (isAdmin) {
+        await fetchUsers();
+      }
     } catch (err) {
       if (process.env.NODE_ENV === 'development') { console.error(err); }
       setMessage({ type: 'error', text: 'Erreur de chargement' });
     }
   }
 
-  const fetchUsers = async () => {
-    try {
-      const usersData = await usersAPI.getAll();
-      setUsers(usersData);
-    } catch (err) {
-      if (process.env.NODE_ENV === 'development') {
-        console.error('Error fetching users:', err);
-      }
+  useEffect(() => {
+    if (selectedUser !== null) {
+      const filteredSessions = allSessions.filter(session => session.created_by === selectedUser);
+      setSessions(filteredSessions);
+    } else {
+      setSessions(allSessions);
     }
-  };
+  }, [selectedUser, allSessions]);
 
   async function fetchSessions() {
     try {
       const response = await api.get('/test-sessions');
+      setAllSessions(response.data);
       setSessions(response.data);
     } catch (err) {
       if (process.env.NODE_ENV === 'development') {
         console.error('Error fetching sessions:', err);
+      }
+    }
+  };
+
+  async function fetchUsers() {
+    try {
+      const response = await api.get('/users');
+      setUsers(response.data);
+    } catch (err) {
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Error fetching users:', err);
       }
     }
   };
@@ -456,46 +467,32 @@ const Tests: React.FC = () => {
   };
 
   // Render Sessions List
-  const renderSessions = () => {
-    const filteredSessions = selectedUser
-      ? sessions.filter(session => session.created_by === selectedUser)
-      : sessions;
-
-    return (
-      <div>
-        <div style={styles.sessionsHeader}>
-          <button style={styles.newSessionButton} onClick={() => { setShowSessionModal(true); }}>
-            <FontAwesomeIcon icon={faPlus} /> Nouvelle Session
-          </button>
-        </div>
-
-        {isAdmin && (
-          <div style={styles.usersFilter}>
-            <div style={styles.usersFilterTitle}>
-              <FontAwesomeIcon icon={faUsers} /> Filtrer par utilisateur
-            </div>
-            <div style={styles.usersList}>
-              <button
-                style={selectedUser === null ? styles.userButtonActive : styles.userButton}
-                onClick={() => setSelectedUser(null)}
+  const renderSessions = () => (
+    <div>
+      <div style={styles.sessionsHeader}>
+        <div style={styles.headerLeft}>
+          {isAdmin && (
+            <div style={styles.userFilter}>
+              <label style={styles.filterLabel}>Filtrer par utilisateur:</label>
+              <select 
+                value={selectedUser || ''} 
+                onChange={(e) => setSelectedUser(e.target.value ? Number(e.target.value) : null)}
+                style={styles.filterSelect}
               >
-                <FontAwesomeIcon icon={faUsers} /> Tous
-              </button>
-              {users.map(user => (
-                <button
-                  key={user.id}
-                  style={selectedUser === user.id ? styles.userButtonActive : styles.userButton}
-                  onClick={() => setSelectedUser(user.id)}
-                >
-                  <FontAwesomeIcon icon={faUser} /> {user.username}
-                </button>
-              ))}
+                <option value="">Tous les utilisateurs</option>
+                {users.map(user => (
+                  <option key={user.id} value={user.id}>{user.username}</option>
+                ))}
+              </select>
             </div>
-          </div>
-        )}
-
-        <div style={styles.sessionsGrid}>
-          {filteredSessions.map(session => (
+          )}
+        </div>
+        <button style={styles.newSessionButton} onClick={() => { setShowSessionModal(true); }}>
+          <FontAwesomeIcon icon={faPlus} /> Nouvelle Session
+        </button>
+      </div>
+      <div style={styles.sessionsGrid}>
+        {sessions.map(session => (
           <div key={session.id} style={styles.sessionCard}>
             <div style={styles.sessionHeader}>
               <h3 style={styles.sessionTitle}>{session.nom}</h3>
@@ -540,8 +537,7 @@ const Tests: React.FC = () => {
         ))}
       </div>
     </div>
-    );
-  };
+  );
 
   // Render Tests for selected session
   const renderTests = () => {
@@ -563,37 +559,30 @@ const Tests: React.FC = () => {
         )}
 
         <div style={styles.formSection}>
-          {currentSession && currentSession.statut !== 'Terminé' && (
-            <button
-              style={styles.addTestButton}
-              onClick={() => {
-                // Pré-remplir le formulaire avec les infos de la session
-                const currentSession = sessions.find(s => s.id === selectedSession);
-                if (currentSession) {
-                  setFormData({
-                    sessionId: selectedSession || 0,
-                    applicationId: currentSession.applicationId || 0,
-                    fonction: '',
-                    precondition: '',
-                    etapes: '',
-                    resultatAttendu: '',
-                    resultatObtenu: '',
-                    statut: '',
-                    commentaires: '',
-                    image: ''
-                  });
-                }
-                setShowTestForm(true);
-              }}
-            >
-              <FontAwesomeIcon icon={faPlus} /> Ajouter un test
-            </button>
-          )}
-          {currentSession && currentSession.statut === 'Terminé' && (
-            <div style={styles.sessionTerminatedMessage}>
-              <i className="fas fa-lock"></i> Cette session est terminée. Les modifications ne sont plus possibles.
-            </div>
-          )}
+          <button 
+            style={styles.addTestButton} 
+            onClick={() => {
+              // Pré-remplir le formulaire avec les infos de la session
+              const currentSession = sessions.find(s => s.id === selectedSession);
+              if (currentSession) {
+                setFormData({
+                  sessionId: selectedSession || 0,
+                  applicationId: currentSession.applicationId || 0,
+                  fonction: '',
+                  precondition: '',
+                  etapes: '',
+                  resultatAttendu: '',
+                  resultatObtenu: '',
+                  statut: '',
+                  commentaires: '',
+                  image: ''
+                });
+              }
+              setShowTestForm(true);
+            }}
+          >
+            <FontAwesomeIcon icon={faPlus} /> Ajouter un test
+          </button>
         </div>
 
         <div style={styles.tableSection}>
@@ -633,20 +622,12 @@ const Tests: React.FC = () => {
                   <td><span style={getStatutClass(test.statut)}>{test.statut}</span></td>
                   <td>{test.commentaires || '-'}</td>
                   <td style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
-                    {currentSession && currentSession.statut !== 'Terminé' ? (
-                      <>
-                        <button style={{...styles.editButton, padding: '6px', backgroundColor: 'transparent', color: '#4a90e2'}} onClick={() => handleEditTest(test)} title="Modifier">
-                          <FontAwesomeIcon icon={faEdit} />
-                        </button>
-                        <button style={{...styles.deleteButton, padding: '6px', backgroundColor: 'transparent', color: '#e74c3c'}} onClick={() => handleDeleteTest(test.id)} title="Supprimer">
-                          <FontAwesomeIcon icon={faTrash} />
-                        </button>
-                      </>
-                    ) : (
-                      <span style={{ color: 'var(--text-muted)', fontSize: '12px' }}>
-                        <i className="fas fa-lock"></i> Verrouillé
-                      </span>
-                    )}
+                    <button style={{...styles.editButton, padding: '6px', backgroundColor: 'transparent', color: '#4a90e2'}} onClick={() => handleEditTest(test)} title="Modifier">
+                      <FontAwesomeIcon icon={faEdit} />
+                    </button>
+                    <button style={{...styles.deleteButton, padding: '6px', backgroundColor: 'transparent', color: '#ff6b6b'}} onClick={() => handleDeleteTest(test.id)} title="Supprimer">
+                      <FontAwesomeIcon icon={faTrash} />
+                    </button>
                   </td>
                 </tr>
               ))}
@@ -1050,13 +1031,11 @@ input: { padding: '4px 6px', border: '1px solid var(--border-color)', borderRadi
   testForm: { display: 'flex', flexDirection: 'column' as const, gap: '6px', width: '100%', maxWidth: '400px', margin: '0 auto' },
   sessionsGrid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '16px' },
   sessionsHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap' as const, gap: '12px' },
+  headerLeft: { display: 'flex', alignItems: 'center', gap: '12px', flex: 1 },
+  userFilter: { display: 'flex', alignItems: 'center', gap: '8px' },
+  filterLabel: { fontSize: '13px', color: 'var(--text-secondary)', fontWeight: '500' },
+  filterSelect: { padding: '8px 12px', border: '1px solid var(--border-color)', borderRadius: '6px', backgroundColor: 'var(--bg-card)', color: 'var(--text-primary)', fontSize: '13px', minWidth: '200px' },
   newSessionButton: { padding: '10px 18px', backgroundColor: 'var(--info-color)', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: '600', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '6px', transition: 'background-color 0.2s, transform 0.1s' },
-  usersFilter: { backgroundColor: 'var(--bg-card)', padding: '16px', borderRadius: '10px', marginBottom: '20px', border: '1px solid var(--border-light)' },
-  usersFilterTitle: { fontSize: '14px', fontWeight: '600', color: 'var(--text-primary)', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' },
-  usersList: { display: 'flex', gap: '8px', flexWrap: 'wrap' as const },
-  userButton: { padding: '8px 16px', backgroundColor: 'var(--hover-bg)', color: 'var(--text-secondary)', border: '1px solid var(--border-color)', borderRadius: '6px', cursor: 'pointer', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '6px', transition: 'all 0.2s ease' },
-  userButtonActive: { padding: '8px 16px', backgroundColor: 'var(--info-color)', color: 'white', border: '1px solid var(--info-color)', borderRadius: '6px', cursor: 'pointer', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '6px', transition: 'all 0.2s ease' },
-  sessionTerminatedMessage: { padding: '12px 16px', backgroundColor: 'var(--warning-bg)', color: 'var(--warning-color)', borderRadius: '6px', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '8px', border: '1px solid var(--warning-color)' },
   sessionCard: { backgroundColor: 'var(--bg-card)', padding: '14px', borderRadius: '10px', cursor: 'pointer', transition: 'all 0.2s ease', boxShadow: '0 2px 8px var(--shadow-color)', border: '1px solid var(--border-light)' },
   sessionHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px', gap: '8px' },
   sessionTitle: { margin: 0, color: 'var(--text-primary)', fontSize: '16px', fontWeight: '600', flex: 1 },

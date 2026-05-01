@@ -208,10 +208,7 @@ export const authAPI = {
 
 // Users API
 export const usersAPI = {
-  getAll: async () => {
-    const response = await api.get("/users", { params: { page: 0, size: 1000 } });
-    return response.data.content || response.data;
-  },
+  getAll: async () => (await api.get<User[]>("/users")).data,
   getAvailable: async () => (await api.get<User[]>("/users/available")).data,
   getById: async (id: number) => (await api.get<User>(`/users/${id}`)).data,
   create: async (data: Partial<User>) => (await api.post<User>("/users", data)).data,
