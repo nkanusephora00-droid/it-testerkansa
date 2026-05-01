@@ -16,6 +16,7 @@ interface Compte {
 
 const Comptes: React.FC = () => {
   const [comptes, setComptes] = useState<Compte[]>([]);
+  const [filteredComptes, setFilteredComptes] = useState<Compte[]>([]);
   const [applications, setApplications] = useState<Application[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -25,6 +26,7 @@ const Comptes: React.FC = () => {
   const [showViewModal, setShowViewModal] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [message, setMessage] = useState({ type: '', text: '' });
+  const [searchTerm, setSearchTerm] = useState('');
   
   const [formData, setFormData] = useState({ applicationId: 0, username: '', code: '', role: '', commentaire: '' });
   const [editFormData, setEditFormData] = useState({ applicationId: 0, username: '', code: '', role: '', commentaire: '' });
@@ -33,6 +35,16 @@ const Comptes: React.FC = () => {
   useEffect(() => {
     fetchData();
   }, []);
+
+  useEffect(() => {
+    const filtered = comptes.filter(compte => 
+      compte.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (compte.role && compte.role.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (compte.commentaire && compte.commentaire.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      getAppName(compte.applicationId).toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setFilteredComptes(filtered);
+  }, [searchTerm, comptes, applications]);
 
   const fetchData = async () => {
     try {
@@ -43,7 +55,9 @@ const Comptes: React.FC = () => {
       // Gérer à la fois les réponses tableau direct et PageResponse
       const comptes: any = comptesData;
       const apps: any = appsData;
-      setComptes(Array.isArray(comptes) ? comptes : (comptes?.content || []));
+      const comptesList = Array.isArray(comptes) ? comptes : (comptes?.content || []);
+      setComptes(comptesList);
+      setFilteredComptes(comptesList);
       setApplications(Array.isArray(apps) ? apps : (apps?.content || []));
     } catch (err) {
       if (process.env.NODE_ENV === 'development') {
@@ -147,45 +161,57 @@ const Comptes: React.FC = () => {
           <div style={styles.listHeader}>
             <div>
               <h3 style={styles.sectionTitle}>Liste des comptes</h3>
-              <p style={styles.listSubtitle}>
-                {comptes.length === 0
-                  ? 'Aucun compte n’a encore été enregistré.'
-                  : `${comptes.length} compte${comptes.length > 1 ? 's' : ''} géré${comptes.length > 1 ? 's' : ''} dans le référentiel.`}
-              </p>
+              <div style={styles.stats}>
+                <span style={styles.statItem}>Total: {comptes.length}</span>
+                <span style={styles.statItem}>Affichées: {filteredComptes.length}</span>
+              </div>
             </div>
+            <input
+              type="text"
+              placeholder="Rechercher..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              style={styles.searchInput}
+            />
           </div>
           {loading ? (
             <p>Chargement...</p>
           ) : (
-            <div style={styles.comptesGrid}>
-              {comptes.map((compte) => (
-                <div key={compte.id} style={styles.compteCard}>
-                  <div style={styles.compteCardTop}>
-                    <div style={styles.compteIcon}>
-                      <i className="fas fa-user-cog"></i>
-                    </div>
-                  </div>
-                  <div style={styles.compteCardContent}>
-                    <h4 style={styles.compteUsername}>{compte.username}</h4>
-                    <div style={styles.compteDetails}>
-                      <div style={styles.compteDetail}><span style={styles.detailLabel}>App:</span> {getAppName(compte.applicationId)}</div>
-                      {compte.role && <div style={styles.compteDetail}><span style={styles.detailLabel}>Rôle:</span> {compte.role}</div>}
-                    </div>
-                    {compte.commentaire && <p style={styles.compteCommentaire}>{compte.commentaire}</p>}
-                  </div>
-                  <div style={styles.compteCardActions}>
-                    <button style={styles.iconButton} onClick={() => { setViewingCompte(compte); setShowViewModal(true); }} title="Voir">
-                      <FontAwesomeIcon icon={faEye} />
-                    </button>
-                    <button style={styles.iconButton} onClick={() => openEditModal(compte)} title="Modifier">
-                      <FontAwesomeIcon icon={faPen} />
-                    </button>
-                    <button style={{...styles.iconButton, color: '#ff6b6b'}} onClick={() => handleDelete(compte.id)} title="Supprimer">
-                      <FontAwesomeIcon icon={faTrash} />
-                    </button>
-                  </div>
-                </div>
-              ))}
+            <div className="table-container" style={{ overflowX: 'auto', margin: '0 -12px', padding: '0 12px' }}>
+              <table style={styles.table}>
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Username</th>
+                    <th>Application</th>
+                    <th>Rôle</th>
+                    <th>Commentaire</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredComptes.map((compte) => (
+                    <tr key={compte.id}>
+                      <td>{compte.id}</td>
+                      <td>{compte.username}</td>
+                      <td>{getAppName(compte.applicationId)}</td>
+                      <td>{compte.role || '-'}</td>
+                      <td>{compte.commentaire || '-'}</td>
+                      <td style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
+                        <button style={{...styles.viewButton, padding: '8px 12px', backgroundColor: 'transparent', color: '#27ae60'}} onClick={() => { setViewingCompte(compte); setShowViewModal(true); }} title="Voir">
+                          <FontAwesomeIcon icon={faEye} />
+                        </button>
+                        <button style={{...styles.editButton, padding: '8px 12px', backgroundColor: 'transparent', color: '#3498db'}} onClick={() => openEditModal(compte)} title="Modifier">
+                          <FontAwesomeIcon icon={faPen} />
+                        </button>
+                        <button style={{...styles.deleteButton, padding: '8px 12px', backgroundColor: 'transparent', color: '#ff6b6b'}} onClick={() => handleDelete(compte.id)} title="Supprimer">
+                          <FontAwesomeIcon icon={faTrash} />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           )}
         </div>
@@ -394,6 +420,9 @@ const styles: Record<string, React.CSSProperties> = {
   primaryButton: { padding: '12px 20px', backgroundColor: 'var(--success-color)', color: 'white', border: 'none', borderRadius: 'var(--radius-md)', cursor: 'pointer', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px' },
   secondaryButton: { padding: '12px 20px', backgroundColor: 'var(--bg-card)', color: 'var(--text-primary)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', cursor: 'pointer', fontWeight: 500, display: 'flex', alignItems: 'center', gap: '8px' },
   table: { width: '100%', borderCollapse: 'collapse' as const, borderRadius: 'var(--radius-md)', overflow: 'hidden' },
+  searchInput: { padding: '10px 16px', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', fontSize: '14px', backgroundColor: 'var(--input-bg)', color: 'var(--text-primary)', minWidth: '250px' },
+  stats: { display: 'flex', gap: '16px', marginBottom: '8px' },
+  statItem: { fontSize: '13px', color: 'var(--text-secondary)', fontWeight: '500' },
   editButton: { padding: '8px', backgroundColor: 'transparent', color: 'var(--text-secondary)', border: 'none', borderRadius: 'var(--radius-sm)', cursor: 'pointer' },
   deleteButton: { padding: '8px', backgroundColor: 'transparent', color: 'var(--danger-color)', border: 'none', borderRadius: 'var(--radius-sm)', cursor: 'pointer' },
   viewButton: { padding: '8px', backgroundColor: 'transparent', color: 'var(--success-color)', border: 'none', borderRadius: 'var(--radius-sm)', cursor: 'pointer' },

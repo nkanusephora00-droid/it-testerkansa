@@ -5,6 +5,7 @@ import { faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
 
 const Applications: React.FC = () => {
   const [applications, setApplications] = useState<Application[]>([]);
+  const [filteredApplications, setFilteredApplications] = useState<Application[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -12,33 +13,28 @@ const Applications: React.FC = () => {
   const [message, setMessage] = useState({ type: '', text: '' });
   const [formData, setFormData] = useState({ nom: '', description: '', version: '', environnement: '' });
   const [editFormData, setEditFormData] = useState({ nom: '', description: '', version: '', environnement: '' });
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth <= 768);
-    };
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
-
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     fetchApplications();
   }, []);
 
+  useEffect(() => {
+    const filtered = applications.filter(app => 
+      app.nom.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (app.description && app.description.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (app.version && app.version.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (app.environnement && app.environnement.toLowerCase().includes(searchTerm.toLowerCase()))
+    );
+    setFilteredApplications(filtered);
+  }, [searchTerm, applications]);
+
   const fetchApplications = async () => {
     try {
       const data: any = await applicationsAPI.getAll();
-      // Gérer à la fois les réponses tableau direct et PageResponse
-      if (Array.isArray(data)) {
-        setApplications(data);
-      } else if (data && data.content && Array.isArray(data.content)) {
-        setApplications(data.content);
-      } else {
-        setApplications([]);
-      }
+      const apps = Array.isArray(data) ? data : (data?.content || []);
+      setApplications(apps);
+      setFilteredApplications(apps);
     } catch (err) {
       if (process.env.NODE_ENV === 'development') {
         console.error(err);
@@ -123,46 +119,58 @@ const Applications: React.FC = () => {
           </div>
         )}
 
-        <div style={isMobile ? { ...styles.tableSection, ...styles.tableSectionMobile } : styles.tableSection}>
+        <div style={styles.tableSection}>
           <div style={styles.listHeader}>
             <div>
               <h3 style={styles.sectionTitle}>Liste des applications</h3>
-              <p style={styles.listSubtitle}>
-                {applications.length === 0
-                  ? 'Aucune application enregistrée pour le moment.'
-                  : `${applications.length} application${applications.length > 1 ? 's' : ''} configurée${applications.length > 1 ? 's' : ''}.`}
-              </p>
+              <div style={styles.stats}>
+                <span style={styles.statItem}>Total: {applications.length}</span>
+                <span style={styles.statItem}>Affichées: {filteredApplications.length}</span>
+              </div>
             </div>
+            <input
+              type="text"
+              placeholder="Rechercher..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              style={styles.searchInput}
+            />
           </div>
           {loading ? (
             <p>Chargement...</p>
           ) : (
-            <div style={isMobile ? { ...styles.applicationsGrid, ...styles.applicationsGridMobile } : styles.applicationsGrid}>
-              {applications.map((app) => (
-                <div key={app.id} style={isMobile ? { ...styles.appCard, ...styles.appCardMobile } : styles.appCard}>
-                  <div style={styles.appCardTop}>
-                    <div style={styles.appIcon}>
-                      <i className="fas fa-mobile-alt"></i>
-                    </div>
-                  </div>
-                  <div style={styles.appCardContent}>
-                    <h4 style={styles.appName}>{app.nom}</h4>
-                    <div style={styles.appDetails}>
-                      {app.version && <div style={styles.appDetail}><span style={styles.detailLabel}>Version:</span> {app.version}</div>}
-                      {app.environnement && <div style={styles.appDetail}><span style={styles.detailLabel}>Env:</span> {app.environnement}</div>}
-                    </div>
-                    {app.description && <p style={styles.appDescription}>{app.description}</p>}
-                  </div>
-                  <div style={styles.appCardActions}>
-                    <button style={styles.iconButton} onClick={() => openEditModal(app)} title="Modifier">
-                      <FontAwesomeIcon icon={faPen} />
-                    </button>
-                    <button style={{...styles.iconButton, color: '#ff6b6b'}} onClick={() => handleDelete(app.id)} title="Supprimer">
-                      <FontAwesomeIcon icon={faTrash} />
-                    </button>
-                  </div>
-                </div>
-              ))}
+            <div className="table-container" style={{ overflowX: 'auto', margin: '0 -12px', padding: '0 12px' }}>
+              <table style={styles.table}>
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Nom</th>
+                    <th>Version</th>
+                    <th>Environnement</th>
+                    <th>Description</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredApplications.map((app) => (
+                    <tr key={app.id}>
+                      <td>{app.id}</td>
+                      <td>{app.nom}</td>
+                      <td>{app.version || '-'}</td>
+                      <td>{app.environnement || '-'}</td>
+                      <td>{app.description || '-'}</td>
+                      <td style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
+                        <button style={{...styles.editButton, padding: '8px 12px', backgroundColor: 'transparent', color: '#3498db'}} onClick={() => openEditModal(app)} title="Modifier">
+                          <FontAwesomeIcon icon={faPen} />
+                        </button>
+                        <button style={{...styles.deleteButton, padding: '8px 12px', backgroundColor: 'transparent', color: '#ff6b6b'}} onClick={() => handleDelete(app.id)} title="Supprimer">
+                          <FontAwesomeIcon icon={faTrash} />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           )}
         </div>
@@ -372,6 +380,9 @@ const styles: Record<string, React.CSSProperties> = {
     gap: '8px'
   },
   table: { width: '100%', borderCollapse: 'collapse' as const, borderRadius: 'var(--radius-md)', overflow: 'hidden' },
+  searchInput: { padding: '10px 16px', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', fontSize: '14px', backgroundColor: 'var(--input-bg)', color: 'var(--text-primary)', minWidth: '250px' },
+  stats: { display: 'flex', gap: '16px', marginBottom: '8px' },
+  statItem: { fontSize: '13px', color: 'var(--text-secondary)', fontWeight: '500' },
   deleteButton: { 
     padding: '8px', 
     backgroundColor: 'transparent', 
