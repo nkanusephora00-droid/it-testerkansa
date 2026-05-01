@@ -180,6 +180,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             <i className="fas fa-sign-out-alt"></i>
           </button>
           <button
+            className="menuButton"
             style={styles.menuButton}
             title="Menu"
           >
