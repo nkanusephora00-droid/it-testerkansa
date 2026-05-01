@@ -164,17 +164,6 @@ const Comptes: React.FC = () => {
                     <div style={styles.compteIcon}>
                       <i className="fas fa-user-cog"></i>
                     </div>
-                    <div style={styles.compteCardActions}>
-                      <button style={styles.iconButton} onClick={() => { setViewingCompte(compte); setShowViewModal(true); }} title="Voir">
-                        <FontAwesomeIcon icon={faEye} />
-                      </button>
-                      <button style={styles.iconButton} onClick={() => openEditModal(compte)} title="Modifier">
-                        <FontAwesomeIcon icon={faPen} />
-                      </button>
-                      <button style={{...styles.iconButton, color: '#ff6b6b'}} onClick={() => handleDelete(compte.id)} title="Supprimer">
-                        <FontAwesomeIcon icon={faTrash} />
-                      </button>
-                    </div>
                   </div>
                   <div style={styles.compteCardContent}>
                     <h4 style={styles.compteUsername}>{compte.username}</h4>
@@ -183,6 +172,17 @@ const Comptes: React.FC = () => {
                       {compte.role && <div style={styles.compteDetail}><span style={styles.detailLabel}>Rôle:</span> {compte.role}</div>}
                     </div>
                     {compte.commentaire && <p style={styles.compteCommentaire}>{compte.commentaire}</p>}
+                  </div>
+                  <div style={styles.compteCardActions}>
+                    <button style={styles.iconButton} onClick={() => { setViewingCompte(compte); setShowViewModal(true); }} title="Voir">
+                      <FontAwesomeIcon icon={faEye} />
+                    </button>
+                    <button style={styles.iconButton} onClick={() => openEditModal(compte)} title="Modifier">
+                      <FontAwesomeIcon icon={faPen} />
+                    </button>
+                    <button style={{...styles.iconButton, color: '#ff6b6b'}} onClick={() => handleDelete(compte.id)} title="Supprimer">
+                      <FontAwesomeIcon icon={faTrash} />
+                    </button>
                   </div>
                 </div>
               ))}
@@ -408,10 +408,10 @@ const styles: Record<string, React.CSSProperties> = {
   modalSubtitle: { fontSize: '14px', color: 'var(--text-secondary)', marginTop: '6px', fontWeight: 400 },
   comptesGrid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '20px' },
   compteCard: { backgroundColor: 'var(--bg-card)', borderRadius: '16px', padding: '0', border: '1px solid var(--border-color)', transition: 'all 0.2s ease', cursor: 'pointer', overflow: 'hidden' },
-  compteCardTop: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 20px', borderBottom: '1px solid var(--border-light)' },
+  compteCardTop: { display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '16px 20px', borderBottom: '1px solid var(--border-light)' },
   compteCardContent: { padding: '20px' },
+  compteCardActions: { display: 'flex', gap: '8px', justifyContent: 'flex-end', padding: '12px 20px', borderTop: '1px solid var(--border-light)' },
   compteIcon: { width: '50px', height: '50px', borderRadius: '10px', backgroundColor: 'var(--primary-color)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: '20px' },
-  compteCardActions: { display: 'flex', gap: '8px' },
   iconButton: { width: '32px', height: '32px', borderRadius: '6px', border: 'none', backgroundColor: 'var(--hover-bg)', color: 'var(--text-secondary)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s ease' },
   compteUsername: { margin: '0 0 12px 0', color: 'var(--text-primary)', fontSize: '18px', fontWeight: '600' },
   compteDetails: { display: 'flex', gap: '16px', marginBottom: '12px', flexWrap: 'wrap' as const },

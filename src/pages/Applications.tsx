@@ -144,14 +144,6 @@ const Applications: React.FC = () => {
                     <div style={styles.appIcon}>
                       <i className="fas fa-mobile-alt"></i>
                     </div>
-                    <div style={styles.appCardActions}>
-                      <button style={styles.iconButton} onClick={() => openEditModal(app)} title="Modifier">
-                        <FontAwesomeIcon icon={faPen} />
-                      </button>
-                      <button style={{...styles.iconButton, color: '#ff6b6b'}} onClick={() => handleDelete(app.id)} title="Supprimer">
-                        <FontAwesomeIcon icon={faTrash} />
-                      </button>
-                    </div>
                   </div>
                   <div style={styles.appCardContent}>
                     <h4 style={styles.appName}>{app.nom}</h4>
@@ -160,6 +152,14 @@ const Applications: React.FC = () => {
                       {app.environnement && <div style={styles.appDetail}><span style={styles.detailLabel}>Env:</span> {app.environnement}</div>}
                     </div>
                     {app.description && <p style={styles.appDescription}>{app.description}</p>}
+                  </div>
+                  <div style={styles.appCardActions}>
+                    <button style={styles.iconButton} onClick={() => openEditModal(app)} title="Modifier">
+                      <FontAwesomeIcon icon={faPen} />
+                    </button>
+                    <button style={{...styles.iconButton, color: '#ff6b6b'}} onClick={() => handleDelete(app.id)} title="Supprimer">
+                      <FontAwesomeIcon icon={faTrash} />
+                    </button>
                   </div>
                 </div>
               ))}
@@ -302,10 +302,10 @@ const styles: Record<string, React.CSSProperties> = {
   applicationsGridMobile: { gridTemplateColumns: '1fr', gap: '16px' },
   appCard: { backgroundColor: 'var(--bg-card)', borderRadius: '16px', padding: '0', border: '1px solid var(--border-color)', transition: 'all 0.2s ease', cursor: 'pointer', overflow: 'hidden' },
   appCardMobile: { padding: '0' },
-  appCardTop: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 20px', borderBottom: '1px solid var(--border-light)' },
+  appCardTop: { display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '16px 20px', borderBottom: '1px solid var(--border-light)' },
   appCardContent: { padding: '20px' },
+  appCardActions: { display: 'flex', gap: '8px', justifyContent: 'flex-end', padding: '12px 20px', borderTop: '1px solid var(--border-light)' },
   appIcon: { width: '50px', height: '50px', borderRadius: '10px', backgroundColor: 'var(--info-color)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: '20px' },
-  appCardActions: { display: 'flex', gap: '8px' },
   iconButton: { width: '32px', height: '32px', borderRadius: '6px', border: 'none', backgroundColor: 'var(--hover-bg)', color: 'var(--text-secondary)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s ease' },
   appName: { margin: '0 0 12px 0', color: 'var(--text-primary)', fontSize: '18px', fontWeight: '600' },
   appDetails: { display: 'flex', gap: '16px', marginBottom: '12px', flexWrap: 'wrap' as const },
