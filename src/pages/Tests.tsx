@@ -1,7 +1,8 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { testsAPI, applicationsAPI, api, testSessionsAPI, Application, Test, TestSession } from '../services/api';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash, faEye, faFilePdf, faCheck, faTimes, faPlus, faEdit } from '@fortawesome/free-solid-svg-icons';
+import { faTrash, faEye, faFilePdf, faCheck, faTimes, faPlus, faEdit, faCompress, faExpand } from '@fortawesome/free-solid-svg-icons';
+import { consolidateSessionsByUser, consolidateAllSessions, ConsolidatedSession } from '../utils/sessionConsolidation';
 
 const Tests: React.FC = () => {
   const [tests, setTests] = useState<Test[]>([]);
@@ -13,6 +14,8 @@ const Tests: React.FC = () => {
   const [view, setView] = useState<'sessions' | 'tests'>('sessions');
   const [selectedSession, setSelectedSession] = useState<number | null>(null);
   const [selectedUser, setSelectedUser] = useState<number | null>(null);
+  const [consolidationMode, setConsolidationMode] = useState<'none' | 'byUser' | 'global'>('none');
+  const [consolidatedSessions, setConsolidatedSessions] = useState<ConsolidatedSession[]>([]);
   
   // Récupérer le rôle de l'utilisateur
   const userRole = localStorage.getItem('user_role');
@@ -121,6 +124,27 @@ const Tests: React.FC = () => {
       }
       setUsers([]);
     }
+  };
+
+  const handleConsolidateByUser = () => {
+    const consolidated = consolidateSessionsByUser(allSessions);
+    setConsolidatedSessions(consolidated);
+    setConsolidationMode('byUser');
+    setMessage({ type: 'success', text: `Consolidation par utilisateur: ${consolidated.length} session(s) créée(s)` });
+  };
+
+  const handleConsolidateGlobal = () => {
+    const globalSession = consolidateAllSessions(allSessions);
+    setConsolidatedSessions([globalSession]);
+    setConsolidationMode('global');
+    setMessage({ type: 'success', text: `Consolidation globale: 1 session créée avec ${globalSession.total_tests} tests` });
+  };
+
+  const handleResetConsolidation = () => {
+    setConsolidationMode('none');
+    setConsolidatedSessions([]);
+    setSessions(allSessions);
+    setMessage({ type: 'info', text: 'Affichage des sessions normales réactivé' });
   };
 
   const handleCreateSession = async (e: React.FormEvent) => {
@@ -494,13 +518,74 @@ const Tests: React.FC = () => {
               </select>
             </div>
           )}
+          <div style={styles.consolidationButtons}>
+            {consolidationMode === 'none' ? (
+              <>
+                <button 
+                  style={styles.consolidationButton} 
+                  onClick={handleConsolidateByUser}
+                  title="Consolider par utilisateur"
+                >
+                  <FontAwesomeIcon icon={faCompress} /> Par utilisateur
+                </button>
+                <button 
+                  style={styles.consolidationButton} 
+                  onClick={handleConsolidateGlobal}
+                  title="Consolider globalement"
+                >
+                  <FontAwesomeIcon icon={faCompress} /> Global
+                </button>
+              </>
+            ) : (
+              <button 
+                style={styles.resetButton} 
+                onClick={handleResetConsolidation}
+                title="Réinitialiser la consolidation"
+              >
+                <FontAwesomeIcon icon={faExpand} /> Réinitialiser
+              </button>
+            )}
+          </div>
         </div>
         <button style={styles.newSessionButton} onClick={() => { setShowSessionModal(true); }}>
           <FontAwesomeIcon icon={faPlus} /> Nouvelle Session
         </button>
       </div>
       <div style={styles.sessionsGrid}>
-        {sessions.map(session => (
+        {consolidationMode !== 'none' ? (
+          consolidatedSessions.map(consolidated => (
+            <div key={consolidated.id} style={{...styles.sessionCard, border: '2px solid #007bff', backgroundColor: '#f8f9ff'}}>
+              <div style={styles.sessionHeader}>
+                <h3 style={styles.sessionTitle}>{consolidated.nom}</h3>
+                <span style={{...styles.statusBadge, backgroundColor: getStatusColor(consolidated.statut)}}>
+                  {consolidated.statut}
+                </span>
+              </div>
+              <p style={styles.sessionDescription}>{consolidated.description}</p>
+              <div style={styles.sessionMeta}>
+                <span><strong>Utilisateur:</strong> {consolidated.username}</span>
+                <span><strong>Tests:</strong> {consolidated.total_tests}</span>
+                <span><strong>OK:</strong> {consolidated.tests_ok}</span>
+                <span><strong>BUG:</strong> {consolidated.tests_bug}</span>
+                <span><strong>En cours:</strong> {consolidated.tests_en_cours}</span>
+              </div>
+              <div style={styles.sessionMeta}>
+                <span><strong>Sessions originales:</strong> {consolidated.originalSessions.length}</span>
+                <span><strong>Créé le:</strong> {new Date(consolidated.date_creation).toLocaleDateString()}</span>
+              </div>
+              <div style={styles.sessionActions}>
+                <button 
+                  style={styles.viewButton}
+                  onClick={() => setSelectedSession(consolidated.id)}
+                  title="Voir les détails"
+                >
+                  <FontAwesomeIcon icon={faEye} />
+                </button>
+              </div>
+            </div>
+          ))
+        ) : (
+          sessions.map(session => (
           <div key={session.id} style={styles.sessionCard}>
             <div style={styles.sessionHeader}>
               <h3 style={styles.sessionTitle}>{session.nom}</h3>
@@ -542,7 +627,8 @@ const Tests: React.FC = () => {
               )}
             </div>
           </div>
-        ))}
+        ))
+        )}
       </div>
     </div>
   );
@@ -1044,6 +1130,9 @@ input: { padding: '4px 6px', border: '1px solid var(--border-color)', borderRadi
   filterLabel: { fontSize: '13px', color: 'var(--text-secondary)', fontWeight: '500' },
   filterSelect: { padding: '8px 12px', border: '1px solid var(--border-color)', borderRadius: '6px', backgroundColor: 'var(--bg-card)', color: 'var(--text-primary)', fontSize: '13px', minWidth: '200px' },
   newSessionButton: { padding: '10px 18px', backgroundColor: 'var(--info-color)', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: '600', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '6px', transition: 'background-color 0.2s, transform 0.1s' },
+  consolidationButtons: { display: 'flex', gap: '8px', alignItems: 'center' },
+  consolidationButton: { padding: '8px 12px', backgroundColor: '#6c757d', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: '500', fontSize: '12px', display: 'flex', alignItems: 'center', gap: '4px', transition: 'background-color 0.2s' },
+  resetButton: { padding: '8px 12px', backgroundColor: '#dc3545', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: '500', fontSize: '12px', display: 'flex', alignItems: 'center', gap: '4px', transition: 'background-color 0.2s' },
   sessionCard: { backgroundColor: 'var(--bg-card)', padding: '14px', borderRadius: '10px', cursor: 'pointer', transition: 'all 0.2s ease', boxShadow: '0 2px 8px var(--shadow-color)', border: '1px solid var(--border-light)' },
   sessionHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px', gap: '8px' },
   sessionTitle: { margin: 0, color: 'var(--text-primary)', fontSize: '16px', fontWeight: '600', flex: 1 },
