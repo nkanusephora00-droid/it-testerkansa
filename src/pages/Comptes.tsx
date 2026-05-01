@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { comptesAPI, applicationsAPI, Application, ApplicationInfoDTO } from '../services/api';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPen, faTrash, faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
@@ -31,6 +31,10 @@ const Comptes: React.FC = () => {
   const [formData, setFormData] = useState({ applicationId: 0, username: '', code: '', role: '', commentaire: '' });
   const [editFormData, setEditFormData] = useState({ applicationId: 0, username: '', code: '', role: '', commentaire: '' });
 
+  const getAppName = useCallback((appId: number) => {
+    const app = applications.find(a => a.id === appId);
+    return app ? app.nom : 'Application inconnue';
+  }, [applications]);
 
   useEffect(() => {
     fetchData();
@@ -44,7 +48,7 @@ const Comptes: React.FC = () => {
       getAppName(compte.applicationId).toLowerCase().includes(searchTerm.toLowerCase())
     );
     setFilteredComptes(filtered);
-  }, [searchTerm, comptes, applications]);
+  }, [searchTerm, comptes, applications, getAppName]);
 
   const fetchData = async () => {
     try {
@@ -131,11 +135,6 @@ const Comptes: React.FC = () => {
       commentaire: compte.commentaire || '',
     });
     setShowModal(true);
-  };
-
-  const getAppName = (appId: number) => {
-    const app = applications.find(a => a.id === appId);
-    return app ? app.nom : 'Application inconnue';
   };
 
   return (
