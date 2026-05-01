@@ -64,10 +64,6 @@ const Tests: React.FC = () => {
     }
   }, [selectedSession, sessions]);
 
-  useEffect(() => {
-    fetchData();
-  }, [fetchData, isAdmin]);
-
   const fetchData = useCallback(async () => {
     try {
       const [testsData, appsData] = await Promise.all([
@@ -85,6 +81,10 @@ const Tests: React.FC = () => {
       setMessage({ type: 'error', text: 'Erreur de chargement' });
     }
   }, [isAdmin]);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
   useEffect(() => {
     if (selectedUser !== null) {
