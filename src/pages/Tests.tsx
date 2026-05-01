@@ -110,11 +110,12 @@ const Tests: React.FC = () => {
   async function fetchUsers() {
     try {
       const response = await api.get('/users');
-      setUsers(response.data);
+      setUsers(Array.isArray(response.data) ? response.data : []);
     } catch (err) {
       if (process.env.NODE_ENV === 'development') {
         console.error('Error fetching users:', err);
       }
+      setUsers([]);
     }
   };
 
@@ -480,9 +481,9 @@ const Tests: React.FC = () => {
                 style={styles.filterSelect}
               >
                 <option value="">Tous les utilisateurs</option>
-                {users.map(user => (
+                {Array.isArray(users) ? users.map(user => (
                   <option key={user.id} value={user.id}>{user.username}</option>
-                ))}
+                )) : null}
               </select>
             </div>
           )}
