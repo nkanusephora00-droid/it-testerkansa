@@ -16,6 +16,8 @@ const Tests: React.FC = () => {
   const [selectedUser, setSelectedUser] = useState<number | null>(null);
   const [consolidationMode, setConsolidationMode] = useState<'none' | 'byUser' | 'global'>('none');
   const [consolidatedSessions, setConsolidatedSessions] = useState<ConsolidatedSession[]>([]);
+  const [selectedSessions, setSelectedSessions] = useState<number[]>([]);
+  const [selectionMode, setSelectionMode] = useState<boolean>(false);
   
   // Récupérer le rôle de l'utilisateur
   const userRole = localStorage.getItem('user_role');
@@ -127,17 +129,39 @@ const Tests: React.FC = () => {
   };
 
   const handleConsolidateByUser = () => {
-    const consolidated = consolidateSessionsByUser(allSessions);
+    const sessionsToConsolidate = selectedSessions.length > 0 
+      ? allSessions.filter(s => selectedSessions.includes(s.id))
+      : allSessions;
+    
+    if (sessionsToConsolidate.length === 0) {
+      setMessage({ type: 'error', text: 'Veuillez sélectionner au moins une session à consolider' });
+      return;
+    }
+    
+    const consolidated = consolidateSessionsByUser(sessionsToConsolidate);
     setConsolidatedSessions(consolidated);
     setConsolidationMode('byUser');
-    setMessage({ type: 'success', text: `Consolidation par utilisateur: ${consolidated.length} session(s) créée(s)` });
+    setSelectionMode(false);
+    setSelectedSessions([]);
+    setMessage({ type: 'success', text: `Consolidation par utilisateur: ${consolidated.length} session(s) créée(s) à partir de ${sessionsToConsolidate.length} session(s) sélectionnée(s)` });
   };
 
   const handleConsolidateGlobal = () => {
-    const globalSession = consolidateAllSessions(allSessions);
+    const sessionsToConsolidate = selectedSessions.length > 0 
+      ? allSessions.filter(s => selectedSessions.includes(s.id))
+      : allSessions;
+    
+    if (sessionsToConsolidate.length === 0) {
+      setMessage({ type: 'error', text: 'Veuillez sélectionner au moins une session à consolider' });
+      return;
+    }
+    
+    const globalSession = consolidateAllSessions(sessionsToConsolidate);
     setConsolidatedSessions([globalSession]);
     setConsolidationMode('global');
-    setMessage({ type: 'success', text: `Consolidation globale: 1 session créée avec ${globalSession.total_tests} tests` });
+    setSelectionMode(false);
+    setSelectedSessions([]);
+    setMessage({ type: 'success', text: `Consolidation globale: 1 session créée avec ${globalSession.total_tests} tests à partir de ${sessionsToConsolidate.length} session(s) sélectionnée(s)` });
   };
 
   const handleResetConsolidation = () => {
@@ -156,6 +180,182 @@ const Tests: React.FC = () => {
       case 'En cours':
       default:
         return '#ffc107';
+    }
+  };
+
+  const handleToggleSessionSelection = (sessionId: number) => {
+    setSelectedSessions(prev => 
+      prev.includes(sessionId) 
+        ? prev.filter(id => id !== sessionId)
+        : [...prev, sessionId]
+    );
+  };
+
+  const handleSelectAllSessions = () => {
+    setSelectedSessions(allSessions.map(s => s.id));
+  };
+
+  const handleClearSelection = () => {
+    setSelectedSessions([]);
+  };
+
+  const handleToggleSelectionMode = () => {
+    setSelectionMode(!selectionMode);
+    setSelectedSessions([]);
+  };
+
+  const handleViewConsolidatedSession = (consolidated: ConsolidatedSession) => {
+    // Créer une session temporaire pour les tests consolidés
+    const tempSession: TestSession = {
+      id: consolidated.id,
+      nom: consolidated.nom,
+      description: consolidated.description,
+      date_creation: consolidated.date_creation,
+      statut: consolidated.statut,
+      created_by: consolidated.userId,
+      createdByUsername: consolidated.username,
+      tests: consolidated.consolidatedTests,
+      total_tests: consolidated.total_tests,
+      tests_ok: consolidated.tests_ok,
+      tests_bug: consolidated.tests_bug,
+      tests_en_cours: consolidated.tests_en_cours
+    };
+    
+    setSelectedSession(consolidated.id);
+    setView('tests');
+    
+    // Stocker temporairement les données consolidées pour l'affichage
+    (window as any).tempConsolidatedSession = tempSession;
+  };
+
+  const handleExportConsolidatedPDF = (consolidated: ConsolidatedSession) => {
+    const today = new Date();
+    const formattedDate = today.toLocaleDateString('fr-FR', { 
+      weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' 
+    });
+
+    const printContent = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>${consolidated.nom}</title>
+        <style>
+          @page { 
+            size: A4 landscape;
+            margin: 15mm; 
+          }
+          * { margin: 0; padding: 0; box-sizing: border-box; }
+          html, body { height: auto; }
+          body { font-family: 'Segoe UI', Arial, sans-serif; padding: 20px; color: #333; font-size: 14px; line-height: 1.4; }
+          .header { text-align: center; margin-bottom: 20px; border-bottom: 3px solid #2c3e50; padding-bottom: 12px; page-break-after: avoid; }
+          .header h1 { font-size: 22px; color: #2c3e50; margin-bottom: 8px; }
+          .session-name { font-size: 14px; color: #7f8c8d; margin-top: 4px; font-style: italic; }
+          .session-info { display: flex; justify-content: center; gap: 25px; margin: 12px 0; flex-wrap: wrap; }
+          .info-item { text-align: center; }
+          .info-label { font-size: 10px; color: #7f8c8d; text-transform: uppercase; font-weight: 600; }
+          .info-value { font-size: 13px; font-weight: 600; color: #2c3e50; }
+          .stats { display: flex; justify-content: center; gap: 12px; margin-bottom: 15px; flex-wrap: wrap; }
+          .stat-box { padding: 8px 15px; border-radius: 6px; text-align: center; }
+          .stat-total { background: #3498db; color: white; }
+          .stat-ok { background: #27ae60; color: white; }
+          .stat-bug { background: #e74c3c; color: white; }
+          .stat-encours { background: #f39c12; color: white; }
+          .consolidation-info { background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 15px; margin: 15px 0; }
+          .consolidation-title { font-weight: 600; color: #495057; margin-bottom: 8px; }
+          .original-sessions { font-size: 12px; color: #6c757d; }
+          table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+          th, td { padding: 8px; border: 1px solid #ddd; text-align: left; }
+          th { background-color: #f8f9fa; font-weight: 600; }
+          tr:nth-child(even) { background-color: #f8f9fa; }
+          .statut-ok { color: #27ae60; font-weight: 600; }
+          .statut-bug { color: #e74c3c; font-weight: 600; }
+          .statut-encours { color: #f39c12; font-weight: 600; }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <h1>Rapport de Tests Consolidés</h1>
+          <div class="session-name">${consolidated.nom}</div>
+        </div>
+        
+        <div class="session-info">
+          <div class="info-item">
+            <div class="info-label">Utilisateur</div>
+            <div class="info-value">${consolidated.username}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Date</div>
+            <div class="info-value">${new Date(consolidated.date_creation).toLocaleDateString('fr-FR')}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Statut</div>
+            <div class="info-value">${consolidated.statut}</div>
+          </div>
+        </div>
+
+        <div class="stats">
+          <div class="stat-box stat-total">
+            <div>Total: ${consolidated.total_tests}</div>
+          </div>
+          <div class="stat-box stat-ok">
+            <div>OK: ${consolidated.tests_ok}</div>
+          </div>
+          <div class="stat-box stat-bug">
+            <div>BUG: ${consolidated.tests_bug}</div>
+          </div>
+          <div class="stat-box stat-encours">
+            <div>En cours: ${consolidated.tests_en_cours}</div>
+          </div>
+        </div>
+
+        <div class="consolidation-info">
+          <div class="consolidation-title">Information de Consolidation</div>
+          <div>Cette session consolidée fusionne ${consolidated.originalSessions.length} session(s) originale(s)</div>
+          <div class="original-sessions">
+            Sessions originales: ${consolidated.originalSessions.map(s => s.nom).join(', ')}
+          </div>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Fonction</th>
+              <th>Précondition</th>
+              <th>Étapes</th>
+              <th>Résultat Attendu</th>
+              <th>Résultat Obtenu</th>
+              <th>Statut</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${consolidated.consolidatedTests.map(test => `
+              <tr>
+                <td>${test.fonction || ''}</td>
+                <td>${test.precondition || ''}</td>
+                <td>${test.etapes || ''}</td>
+                <td>${test.resultatAttendu || ''}</td>
+                <td>${test.resultatObtenu || ''}</td>
+                <td class="statut-${test.statut?.toLowerCase().replace(' ', '')}">${test.statut || ''}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+
+        <div style="margin-top: 20px; text-align: center; color: #7f8c8d; font-size: 12px;">
+          Généré le ${formattedDate} - Session consolidée de ${consolidated.username}
+        </div>
+      </body>
+      </html>
+    `;
+
+    const printWindow = window.open('', '_blank');
+    if (printWindow) {
+      printWindow.document.write(printContent);
+      printWindow.document.close();
+      printWindow.focus();
+      setTimeout(() => {
+        printWindow.print();
+      }, 500);
     }
   };
 
@@ -384,6 +584,13 @@ const Tests: React.FC = () => {
   };
 
   const getSessionTests = (sessionId: number) => {
+    // Vérifier si c'est une session consolidée
+    const tempConsolidated = (window as any).tempConsolidatedSession;
+    if (tempConsolidated && tempConsolidated.id === sessionId) {
+      return tempConsolidated.tests || [];
+    }
+    
+    // Sinon, retourner les tests normaux
     return tests.filter(t => t.sessionId === sessionId);
   };
 
@@ -539,34 +746,66 @@ const Tests: React.FC = () => {
               </select>
             </div>
           )}
-          <div style={styles.consolidationButtons}>
-            {consolidationMode === 'none' ? (
-              <>
+          {isAdmin && (
+            <div style={styles.consolidationButtons}>
+              {consolidationMode === 'none' ? (
+                <>
+                  <button 
+                    style={{...styles.consolidationButton, backgroundColor: selectionMode ? '#dc3545' : '#6c757d'}} 
+                    onClick={handleToggleSelectionMode}
+                    title={selectionMode ? "Arrêter la sélection" : "Sélectionner des sessions"}
+                  >
+                    <FontAwesomeIcon icon={faCompress} /> {selectionMode ? 'Sélection active' : 'Sélectionner'}
+                  </button>
+                  {selectionMode && (
+                    <>
+                      <button 
+                        style={styles.consolidationButton} 
+                        onClick={handleSelectAllSessions}
+                        title="Tout sélectionner"
+                      >
+                        Tout
+                      </button>
+                      <button 
+                        style={styles.consolidationButton} 
+                        onClick={handleClearSelection}
+                        title="Effacer la sélection"
+                      >
+                        Effacer
+                      </button>
+                      <span style={styles.selectionInfo}>
+                        {selectedSessions.length} session(s) sélectionnée(s)
+                      </span>
+                    </>
+                  )}
+                  <button 
+                    style={styles.consolidationButton} 
+                    onClick={handleConsolidateByUser}
+                    title="Consolider par utilisateur"
+                    disabled={selectionMode && selectedSessions.length === 0}
+                  >
+                    <FontAwesomeIcon icon={faCompress} /> Par utilisateur
+                  </button>
+                  <button 
+                    style={styles.consolidationButton} 
+                    onClick={handleConsolidateGlobal}
+                    title="Consolider globalement"
+                    disabled={selectionMode && selectedSessions.length === 0}
+                  >
+                    <FontAwesomeIcon icon={faCompress} /> Global
+                  </button>
+                </>
+              ) : (
                 <button 
-                  style={styles.consolidationButton} 
-                  onClick={handleConsolidateByUser}
-                  title="Consolider par utilisateur"
+                  style={styles.resetButton} 
+                  onClick={handleResetConsolidation}
+                  title="Réinitialiser la consolidation"
                 >
-                  <FontAwesomeIcon icon={faCompress} /> Par utilisateur
+                  <FontAwesomeIcon icon={faExpand} /> Réinitialiser
                 </button>
-                <button 
-                  style={styles.consolidationButton} 
-                  onClick={handleConsolidateGlobal}
-                  title="Consolider globalement"
-                >
-                  <FontAwesomeIcon icon={faCompress} /> Global
-                </button>
-              </>
-            ) : (
-              <button 
-                style={styles.resetButton} 
-                onClick={handleResetConsolidation}
-                title="Réinitialiser la consolidation"
-              >
-                <FontAwesomeIcon icon={faExpand} /> Réinitialiser
-              </button>
-            )}
-          </div>
+              )}
+            </div>
+          )}
         </div>
         <button style={styles.newSessionButton} onClick={() => { setShowSessionModal(true); }}>
           <FontAwesomeIcon icon={faPlus} /> Nouvelle Session
@@ -597,17 +836,38 @@ const Tests: React.FC = () => {
               <div style={styles.sessionActions}>
                 <button 
                   style={styles.viewButton}
-                  onClick={() => setSelectedSession(consolidated.id)}
+                  onClick={() => handleViewConsolidatedSession(consolidated)}
                   title="Voir les détails"
                 >
-                  <FontAwesomeIcon icon={faEye} />
+                  <FontAwesomeIcon icon={faEye} /> Voir les tests
+                </button>
+                <button 
+                  style={styles.exportButton}
+                  onClick={() => handleExportConsolidatedPDF(consolidated)}
+                  title="Exporter en PDF"
+                >
+                  <FontAwesomeIcon icon={faFilePdf} /> PDF
                 </button>
               </div>
             </div>
           ))
         ) : (
           sessions.map(session => (
-          <div key={session.id} style={styles.sessionCard}>
+          <div key={session.id} style={{
+            ...styles.sessionCard, 
+            ...(selectionMode && selectedSessions.includes(session.id) ? { border: '2px solid #007bff', backgroundColor: '#f8f9ff' } : {}),
+            ...(selectionMode ? { cursor: 'pointer' } : {})
+          }}>
+            {selectionMode && (
+              <div style={styles.selectionCheckbox}>
+                <input 
+                  type="checkbox"
+                  checked={selectedSessions.includes(session.id)}
+                  onChange={() => handleToggleSessionSelection(session.id)}
+                  style={{ cursor: 'pointer' }}
+                />
+              </div>
+            )}
             <div style={styles.sessionHeader}>
               <h3 style={styles.sessionTitle}>{session.nom}</h3>
               <select
@@ -1154,6 +1414,8 @@ input: { padding: '4px 6px', border: '1px solid var(--border-color)', borderRadi
   consolidationButtons: { display: 'flex', gap: '8px', alignItems: 'center' },
   consolidationButton: { padding: '8px 12px', backgroundColor: '#6c757d', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: '500', fontSize: '12px', display: 'flex', alignItems: 'center', gap: '4px', transition: 'background-color 0.2s' },
   resetButton: { padding: '8px 12px', backgroundColor: '#dc3545', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: '500', fontSize: '12px', display: 'flex', alignItems: 'center', gap: '4px', transition: 'background-color 0.2s' },
+  selectionInfo: { padding: '6px 10px', backgroundColor: '#e9ecef', color: '#495057', borderRadius: '4px', fontSize: '12px', fontWeight: '500' },
+  selectionCheckbox: { position: 'absolute' as const, top: '10px', right: '10px', zIndex: 10 },
   sessionCard: { backgroundColor: 'var(--bg-card)', padding: '14px', borderRadius: '10px', cursor: 'pointer', transition: 'all 0.2s ease', boxShadow: '0 2px 8px var(--shadow-color)', border: '1px solid var(--border-light)' },
   sessionHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px', gap: '8px' },
   sessionTitle: { margin: 0, color: 'var(--text-primary)', fontSize: '16px', fontWeight: '600', flex: 1 },
