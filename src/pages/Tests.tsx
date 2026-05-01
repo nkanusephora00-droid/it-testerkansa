@@ -147,6 +147,18 @@ const Tests: React.FC = () => {
     setMessage({ type: 'info', text: 'Affichage des sessions normales réactivé' });
   };
 
+  const getStatusColor = (statut: string) => {
+    switch (statut) {
+      case 'Terminé':
+        return '#28a745';
+      case 'BUG':
+        return '#dc3545';
+      case 'En cours':
+      default:
+        return '#ffc107';
+    }
+  };
+
   const handleCreateSession = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -511,9 +523,18 @@ const Tests: React.FC = () => {
                 <option value="">Tous les utilisateurs</option>
                 {(() => {
                   console.log('Rendering users filter, users:', users);
-                  return Array.isArray(users) ? users.map(user => (
+                  console.log('Users length:', users?.length);
+                  console.log('Is users array?', Array.isArray(users));
+                  
+                  // Test avec des données factices si le tableau est vide
+                  const usersToRender = Array.isArray(users) && users.length > 0 ? users : [
+                    { id: 1, username: 'Test User 1' },
+                    { id: 2, username: 'Test User 2' }
+                  ];
+                  
+                  return usersToRender.map(user => (
                     <option key={user.id} value={user.id}>{user.username}</option>
-                  )) : null;
+                  ));
                 })()}
               </select>
             </div>
@@ -1136,6 +1157,7 @@ input: { padding: '4px 6px', border: '1px solid var(--border-color)', borderRadi
   sessionCard: { backgroundColor: 'var(--bg-card)', padding: '14px', borderRadius: '10px', cursor: 'pointer', transition: 'all 0.2s ease', boxShadow: '0 2px 8px var(--shadow-color)', border: '1px solid var(--border-light)' },
   sessionHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px', gap: '8px' },
   sessionTitle: { margin: 0, color: 'var(--text-primary)', fontSize: '16px', fontWeight: '600', flex: 1 },
+  statusBadge: { padding: '4px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: '600', color: 'white', textTransform: 'uppercase' as const },
   sessionOwner: { color: 'var(--info-color)', fontSize: '12px', marginBottom: '6px', fontWeight: '500' },
   sessionDesc: { color: 'var(--text-secondary)', fontSize: '13px', marginBottom: '10px', lineHeight: '1.4', minHeight: '36px' },
   sessionStats: { display: 'flex', gap: '12px', marginBottom: '10px', fontSize: '13px', padding: '8px', backgroundColor: 'var(--hover-bg)', borderRadius: '6px' },
