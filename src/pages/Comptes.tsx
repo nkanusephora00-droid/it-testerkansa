@@ -29,9 +29,6 @@ const Comptes: React.FC = () => {
   const [formData, setFormData] = useState({ applicationId: 0, username: '', code: '', role: '', commentaire: '' });
   const [editFormData, setEditFormData] = useState({ applicationId: 0, username: '', code: '', role: '', commentaire: '' });
 
-  // Récupérer le rôle de l'utilisateur
-  const userRole = localStorage.getItem('user_role');
-  const isAdmin = userRole === 'admin';
 
   useEffect(() => {
     fetchData();
@@ -163,7 +160,7 @@ const Comptes: React.FC = () => {
             <div style={styles.comptesGrid}>
               {comptes.map((compte) => (
                 <div key={compte.id} style={styles.compteCard}>
-                  <div style={styles.compteCardHeader}>
+                  <div style={styles.compteCardTop}>
                     <div style={styles.compteIcon}>
                       <i className="fas fa-user-cog"></i>
                     </div>
@@ -174,19 +171,19 @@ const Comptes: React.FC = () => {
                       <button style={styles.iconButton} onClick={() => openEditModal(compte)} title="Modifier">
                         <FontAwesomeIcon icon={faPen} />
                       </button>
-                      {isAdmin && (
-                        <button style={{...styles.iconButton, color: '#ff6b6b'}} onClick={() => handleDelete(compte.id)} title="Supprimer">
-                          <FontAwesomeIcon icon={faTrash} />
-                        </button>
-                      )}
+                      <button style={{...styles.iconButton, color: '#ff6b6b'}} onClick={() => handleDelete(compte.id)} title="Supprimer">
+                        <FontAwesomeIcon icon={faTrash} />
+                      </button>
                     </div>
                   </div>
-                  <h4 style={styles.compteUsername}>{compte.username}</h4>
-                  <div style={styles.compteDetails}>
-                    <div style={styles.compteDetail}><span style={styles.detailLabel}>App:</span> {getAppName(compte.applicationId)}</div>
-                    {compte.role && <div style={styles.compteDetail}><span style={styles.detailLabel}>Rôle:</span> {compte.role}</div>}
+                  <div style={styles.compteCardContent}>
+                    <h4 style={styles.compteUsername}>{compte.username}</h4>
+                    <div style={styles.compteDetails}>
+                      <div style={styles.compteDetail}><span style={styles.detailLabel}>App:</span> {getAppName(compte.applicationId)}</div>
+                      {compte.role && <div style={styles.compteDetail}><span style={styles.detailLabel}>Rôle:</span> {compte.role}</div>}
+                    </div>
+                    {compte.commentaire && <p style={styles.compteCommentaire}>{compte.commentaire}</p>}
                   </div>
-                  {compte.commentaire && <p style={styles.compteCommentaire}>{compte.commentaire}</p>}
                 </div>
               ))}
             </div>
@@ -410,8 +407,9 @@ const styles: Record<string, React.CSSProperties> = {
   modalHeader: { marginBottom: '24px' },
   modalSubtitle: { fontSize: '14px', color: 'var(--text-secondary)', marginTop: '6px', fontWeight: 400 },
   comptesGrid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '20px' },
-  compteCard: { backgroundColor: 'var(--bg-primary)', borderRadius: '12px', padding: '20px', border: '1px solid var(--border-color)', transition: 'all 0.2s ease', cursor: 'pointer' },
-  compteCardHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' },
+  compteCard: { backgroundColor: 'var(--bg-card)', borderRadius: '16px', padding: '0', border: '1px solid var(--border-color)', transition: 'all 0.2s ease', cursor: 'pointer', overflow: 'hidden' },
+  compteCardTop: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 20px', borderBottom: '1px solid var(--border-light)' },
+  compteCardContent: { padding: '20px' },
   compteIcon: { width: '50px', height: '50px', borderRadius: '10px', backgroundColor: 'var(--primary-color)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: '20px' },
   compteCardActions: { display: 'flex', gap: '8px' },
   iconButton: { width: '32px', height: '32px', borderRadius: '6px', border: 'none', backgroundColor: 'var(--hover-bg)', color: 'var(--text-secondary)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s ease' },

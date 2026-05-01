@@ -140,7 +140,7 @@ const Applications: React.FC = () => {
             <div style={isMobile ? { ...styles.applicationsGrid, ...styles.applicationsGridMobile } : styles.applicationsGrid}>
               {applications.map((app) => (
                 <div key={app.id} style={isMobile ? { ...styles.appCard, ...styles.appCardMobile } : styles.appCard}>
-                  <div style={styles.appCardHeader}>
+                  <div style={styles.appCardTop}>
                     <div style={styles.appIcon}>
                       <i className="fas fa-mobile-alt"></i>
                     </div>
@@ -153,12 +153,14 @@ const Applications: React.FC = () => {
                       </button>
                     </div>
                   </div>
-                  <h4 style={styles.appName}>{app.nom}</h4>
-                  <div style={styles.appDetails}>
-                    {app.version && <div style={styles.appDetail}><span style={styles.detailLabel}>Version:</span> {app.version}</div>}
-                    {app.environnement && <div style={styles.appDetail}><span style={styles.detailLabel}>Env:</span> {app.environnement}</div>}
+                  <div style={styles.appCardContent}>
+                    <h4 style={styles.appName}>{app.nom}</h4>
+                    <div style={styles.appDetails}>
+                      {app.version && <div style={styles.appDetail}><span style={styles.detailLabel}>Version:</span> {app.version}</div>}
+                      {app.environnement && <div style={styles.appDetail}><span style={styles.detailLabel}>Env:</span> {app.environnement}</div>}
+                    </div>
+                    {app.description && <p style={styles.appDescription}>{app.description}</p>}
                   </div>
-                  {app.description && <p style={styles.appDescription}>{app.description}</p>}
                 </div>
               ))}
             </div>
@@ -298,9 +300,10 @@ const styles: Record<string, React.CSSProperties> = {
   tableSectionMobile: { padding: '16px', marginBottom: '16px' },
   applicationsGrid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '20px' },
   applicationsGridMobile: { gridTemplateColumns: '1fr', gap: '16px' },
-  appCard: { backgroundColor: 'var(--bg-primary)', borderRadius: '12px', padding: '20px', border: '1px solid var(--border-color)', transition: 'all 0.2s ease', cursor: 'pointer' },
-  appCardMobile: { padding: '16px' },
-  appCardHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' },
+  appCard: { backgroundColor: 'var(--bg-card)', borderRadius: '16px', padding: '0', border: '1px solid var(--border-color)', transition: 'all 0.2s ease', cursor: 'pointer', overflow: 'hidden' },
+  appCardMobile: { padding: '0' },
+  appCardTop: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 20px', borderBottom: '1px solid var(--border-light)' },
+  appCardContent: { padding: '20px' },
   appIcon: { width: '50px', height: '50px', borderRadius: '10px', backgroundColor: 'var(--info-color)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: '20px' },
   appCardActions: { display: 'flex', gap: '8px' },
   iconButton: { width: '32px', height: '32px', borderRadius: '6px', border: 'none', backgroundColor: 'var(--hover-bg)', color: 'var(--text-secondary)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s ease' },
