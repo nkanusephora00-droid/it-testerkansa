@@ -171,18 +171,6 @@ const Tests: React.FC = () => {
     setMessage({ type: 'info', text: 'Affichage des sessions normales réactivé' });
   };
 
-  const getStatusColor = (statut: string) => {
-    switch (statut) {
-      case 'Terminé':
-        return '#28a745';
-      case 'BUG':
-        return '#dc3545';
-      case 'En cours':
-      default:
-        return '#ffc107';
-    }
-  };
-
   const handleToggleSessionSelection = (sessionId: number) => {
     setSelectedSessions(prev => 
       prev.includes(sessionId) 
