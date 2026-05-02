@@ -162,7 +162,7 @@ const Applications: React.FC = () => {
                         <td>{app.version || '-'}</td>
                         <td>{app.environnement || '-'}</td>
                         <td>{app.description || '-'}</td>
-                        <td style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
+                        <td style={{ display: 'flex', gap: '8px', justifyContent: 'center', alignItems: 'center', flexWrap: 'wrap' }}>
                           <button style={{...styles.editButton, padding: '8px 12px', backgroundColor: 'transparent', color: '#3498db'}} onClick={() => openEditModal(app)} title="Modifier">
                             <FontAwesomeIcon icon={faPen} />
                           </button>

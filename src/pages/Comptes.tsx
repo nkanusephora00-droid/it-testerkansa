@@ -199,7 +199,7 @@ const Comptes: React.FC = () => {
                         <td>{getAppName(compte.applicationId)}</td>
                         <td>{compte.role || '-'}</td>
                         <td>{compte.commentaire || '-'}</td>
-                        <td style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
+                        <td style={{ display: 'flex', gap: '8px', justifyContent: 'center', alignItems: 'center', flexWrap: 'wrap' }}>
                           <button style={{...styles.viewButton, padding: '8px 12px', backgroundColor: 'transparent', color: '#27ae60'}} onClick={() => { setViewingCompte(compte); setShowViewModal(true); }} title="Voir">
                             <FontAwesomeIcon icon={faEye} />
                           </button>

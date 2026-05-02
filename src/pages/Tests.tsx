@@ -3,6 +3,7 @@ import { testsAPI, applicationsAPI, api, testSessionsAPI, Application, Test, Tes
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash, faEye, faFilePdf, faCheck, faTimes, faPlus, faEdit, faCompress, faExpand } from '@fortawesome/free-solid-svg-icons';
 import { consolidateSessionsByUser, consolidateAllSessions, ConsolidatedSession } from '../utils/sessionConsolidation';
+import './Responsive.css';
 
 const Tests: React.FC = () => {
   const [tests, setTests] = useState<Test[]>([]);
@@ -852,63 +853,139 @@ const Tests: React.FC = () => {
             </div>
           ))
         ) : (
-          sessions.map(session => (
-          <div key={session.id} style={{
-            ...styles.sessionCard, 
-            ...(selectionMode && selectedSessions.includes(session.id) ? { border: '2px solid #007bff', backgroundColor: '#f8f9ff' } : {}),
-            ...(selectionMode ? { cursor: 'pointer' } : {})
-          }}>
-            {selectionMode && (
-              <div style={styles.selectionCheckbox}>
-                <input 
-                  type="checkbox"
-                  checked={selectedSessions.includes(session.id)}
-                  onChange={() => handleToggleSessionSelection(session.id)}
-                  style={{ cursor: 'pointer' }}
-                />
-              </div>
-            )}
-            <div style={styles.sessionHeader}>
-              <h3 style={styles.sessionTitle}>{session.nom}</h3>
-              <select
-                value={session.statut}
-                onChange={(e) => handleUpdateSessionStatus(session.id, e.target.value)}
-                style={{
-                  ...styles.sessionStatusSelect,
-                  ...(session.statut === 'Terminé' ? styles.sessionStatusDone : styles.sessionStatusInProgress),
-                }}
-              >
-                <option value="En cours">En cours</option>
-                <option value="Terminé">Terminé</option>
-              </select>
+          <>
+            {/* Tableau pour desktop */}
+            <div className="desktop-view" style={{ overflowX: 'auto', margin: '0 -12px', padding: '0 12px', display: 'none' }}>
+              <table style={styles.table}>
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Nom</th>
+                    <th>Statut</th>
+                    <th>Créé par</th>
+                    <th>Description</th>
+                    <th>Tests</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {sessions.map((session) => (
+                    <tr key={session.id}>
+                      <td>{session.id}</td>
+                      <td>{session.nom}</td>
+                      <td>
+                        <span style={{...styles.statusBadge, backgroundColor: getStatusColor(session.statut)}}>
+                          {session.statut}
+                        </span>
+                      </td>
+                      <td>{session.createdByUsername || '-'}</td>
+                      <td>{session.description || '-'}</td>
+                      <td>
+                        <span>Total: {getSessionTests(session.id).length}</span><br/>
+                        <span style={styles.statOk}><FontAwesomeIcon icon={faCheck} /> {getSessionTests(session.id).filter((t: Test) => t.statut === 'OK').length}</span><br/>
+                        <span style={styles.statBug}><FontAwesomeIcon icon={faTimes} /> {getSessionTests(session.id).filter((t: Test) => t.statut === 'BUG').length}</span>
+                      </td>
+                      <td style={{ display: 'flex', gap: '8px', justifyContent: 'center', alignItems: 'center', flexWrap: 'wrap' }}>
+                        <button style={{...styles.viewButton, padding: '8px 12px', backgroundColor: 'transparent', color: '#3498db'}} onClick={() => { setSelectedSession(session.id); setView('tests'); }} title="Voir">
+                          <FontAwesomeIcon icon={faEye} />
+                        </button>
+                        <button style={{...styles.exportButton, padding: '8px 12px', backgroundColor: 'transparent', color: '#dc3545'}} onClick={() => handleExportSessionPDF(session)} title="PDF">
+                          <FontAwesomeIcon icon={faFilePdf} />
+                        </button>
+                        {session.statut !== 'Terminé' && (
+                          <button style={{...styles.deleteButton, padding: '8px 12px', backgroundColor: 'transparent', color: '#ff6b6b'}} onClick={() => handleDeleteSession(session.id)} title="Supprimer">
+                            <FontAwesomeIcon icon={faTrash} />
+                          </button>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
-            {session.createdByUsername && (
-              <p style={styles.sessionOwner}><i className="fas fa-user"></i> Créé par: {session.createdByUsername}</p>
-            )}
-            <p style={styles.sessionDesc}>{session.description || 'Aucune description'}</p>
-            {session.nom_document && (
-              <p style={styles.sessionInfo}><i className="fas fa-file"></i> Document: {session.nom_document}</p>
-            )}
-            <div style={styles.sessionStats}>
-              <span>Total: {getSessionTests(session.id).length}</span>
-              <span style={styles.statOk}><FontAwesomeIcon icon={faCheck} /> {getSessionTests(session.id).filter((t: Test) => t.statut === 'OK').length}</span>
-              <span style={styles.statBug}><FontAwesomeIcon icon={faTimes} /> {getSessionTests(session.id).filter((t: Test) => t.statut === 'BUG').length}</span>
+
+            {/* Cartes unifiées pour mobile */}
+            <div className="mobile-view" style={styles.sessionsGrid}>
+              {sessions.map((session) => (
+                <div key={session.id} style={{
+                  ...styles.sessionCard, 
+                  ...(selectionMode && selectedSessions.includes(session.id) ? { border: '2px solid #007bff', backgroundColor: '#f8f9ff' } : {}),
+                  ...(selectionMode ? { cursor: 'pointer' } : {})
+                }}>
+                  {selectionMode && (
+                    <div style={styles.selectionCheckbox}>
+                      <input 
+                        type="checkbox"
+                        checked={selectedSessions.includes(session.id)}
+                        onChange={() => handleToggleSessionSelection(session.id)}
+                        style={{
+                          width: '20px',
+                          height: '20px',
+                          cursor: 'pointer',
+                          accentColor: '#007bff',
+                          border: '2px solid #007bff',
+                          borderRadius: '4px'
+                        }}
+                      />
+                    </div>
+                  )}
+                  <div style={styles.sessionCardTop}>
+                    <div style={styles.sessionIcon}>
+                      {session.nom.charAt(0).toUpperCase()}
+                    </div>
+                  </div>
+                  <div style={styles.sessionCardContent}>
+                    <h3 style={styles.sessionTitle}>{session.nom}</h3>
+                    <div style={styles.sessionDetails}>
+                      <div style={styles.sessionDetail}>
+                        <span style={styles.detailLabel}>Statut:</span>
+                        <span style={{...styles.statusBadge, backgroundColor: getStatusColor(session.statut)}}>
+                          {session.statut}
+                        </span>
+                      </div>
+                      {session.createdByUsername && (
+                        <div style={styles.sessionDetail}>
+                          <span style={styles.detailLabel}>Créé par:</span>
+                          {session.createdByUsername}
+                        </div>
+                      )}
+                    </div>
+                    <p style={styles.sessionDesc}>{session.description || 'Aucune description'}</p>
+                    <div style={styles.sessionStats}>
+                      <span>Total: {getSessionTests(session.id).length}</span>
+                      <span style={styles.statOk}><FontAwesomeIcon icon={faCheck} /> {getSessionTests(session.id).filter((t: Test) => t.statut === 'OK').length}</span>
+                      <span style={styles.statBug}><FontAwesomeIcon icon={faTimes} /> {getSessionTests(session.id).filter((t: Test) => t.statut === 'BUG').length}</span>
+                    </div>
+                  </div>
+                  <div style={styles.sessionCardActions}>
+                    <button 
+                      style={styles.iconButton}
+                      onClick={() => { setSelectedSession(session.id); setView('tests'); }}
+                      title="Voir les tests"
+                    >
+                      <FontAwesomeIcon icon={faEye} />
+                    </button>
+                    <button 
+                      style={styles.iconButton}
+                      onClick={() => handleExportSessionPDF(session)}
+                      title="Exporter en PDF"
+                    >
+                      <FontAwesomeIcon icon={faFilePdf} />
+                    </button>
+                    {session.statut !== 'Terminé' && (
+                      <button 
+                        style={{...styles.iconButton, color: '#ff6b6b'}} 
+                        onClick={() => handleDeleteSession(session.id)} 
+                        title="Supprimer"
+                      >
+                        <FontAwesomeIcon icon={faTrash} />
+                      </button>
+                    )}
+                  </div>
+                </div>
+              ))}
             </div>
-            <div style={styles.sessionActions}>
-              <button style={styles.viewButton} onClick={() => { setSelectedSession(session.id); setView('tests'); }}>
-                <FontAwesomeIcon icon={faEye} /> Voir les tests
-              </button>
-              <button style={styles.exportButton} onClick={() => handleExportSessionPDF(session)}>
-                <FontAwesomeIcon icon={faFilePdf} /> PDF
-              </button>
-              {session.statut !== 'Terminé' && (
-                <button style={{...styles.deleteButton, padding: '6px', backgroundColor: 'transparent', color: '#ff6b6b'}} onClick={() => handleDeleteSession(session.id)} title="Supprimer">
-                  <FontAwesomeIcon icon={faTrash} />
-                </button>
-              )}
-            </div>
-          </div>
-        ))
+          </>
         )}
       </div>
     </div>
@@ -1415,7 +1492,24 @@ input: { padding: '4px 6px', border: '1px solid var(--border-color)', borderRadi
   consolidationButton: { padding: '8px 12px', backgroundColor: '#6c757d', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: '500', fontSize: '12px', display: 'flex', alignItems: 'center', gap: '4px', transition: 'background-color 0.2s' },
   resetButton: { padding: '8px 12px', backgroundColor: '#dc3545', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: '500', fontSize: '12px', display: 'flex', alignItems: 'center', gap: '4px', transition: 'background-color 0.2s' },
   selectionInfo: { padding: '6px 10px', backgroundColor: '#e9ecef', color: '#495057', borderRadius: '4px', fontSize: '12px', fontWeight: '500' },
-  selectionCheckbox: { position: 'absolute' as const, top: '10px', right: '10px', zIndex: 10 },
+  selectionCheckbox: { 
+  position: 'absolute' as const, 
+  top: '10px', 
+  right: '10px', 
+  zIndex: 10,
+  backgroundColor: 'rgba(255, 255, 255, 0.95)',
+  padding: '4px',
+  borderRadius: '6px',
+  boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+},
+  sessionsGrid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '20px' },
+  sessionCardTop: { display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '16px 20px', borderBottom: '1px solid var(--border-light)' },
+  sessionIcon: { width: '50px', height: '50px', borderRadius: '10px', backgroundColor: 'var(--info-color)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: '20px' },
+  sessionCardContent: { padding: '20px' },
+  sessionDetails: { display: 'flex', gap: '16px', marginBottom: '12px', flexWrap: 'wrap' as const },
+  sessionDetail: { fontSize: '13px', color: 'var(--text-secondary)' },
+  sessionCardActions: { display: 'flex', gap: '8px', justifyContent: 'flex-end', padding: '16px 20px', borderTop: '1px solid var(--border-light)' },
+  table: { width: '100%', borderCollapse: 'collapse' as const, borderRadius: 'var(--radius-md)', overflow: 'hidden' },
   sessionCard: { backgroundColor: 'var(--bg-card)', padding: '14px', borderRadius: '10px', cursor: 'pointer', transition: 'all 0.2s ease', boxShadow: '0 2px 8px var(--shadow-color)', border: '1px solid var(--border-light)' },
   sessionHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px', gap: '8px' },
   sessionTitle: { margin: 0, color: 'var(--text-primary)', fontSize: '16px', fontWeight: '600', flex: 1 },
