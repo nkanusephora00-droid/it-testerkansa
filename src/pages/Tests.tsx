@@ -413,31 +413,7 @@ const Tests: React.FC = () => {
     }
   };
 
-  const handleUpdateSessionStatus = async (id: number, newStatut: string) => {
-    try {
-      const session = sessions.find(s => s.id === id);
-      if (!session) return;
-      
-      await testSessionsAPI.update(id, {
-        nom: session.nom,
-        description: session.description,
-        applicationId: session.applicationId,
-        environnement: session.environnement,
-        version: session.version,
-        nom_document: session.nom_document,
-        statut: newStatut
-      });
-      setMessage({ type: 'success', text: 'Statut mis à jour!' });
-      fetchSessions();
-    } catch (err: unknown) {
-      const error = err as { response?: { data?: { detail?: string } } };
-      const detail = error.response?.data?.detail;
-      let errorText = 'Erreur lors de la mise à jour';
-      if (typeof detail === 'string') errorText = detail;
-      setMessage({ type: 'error', text: errorText });
-    }
-  };
-
+  
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
