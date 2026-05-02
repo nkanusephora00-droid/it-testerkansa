@@ -2,7 +2,6 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { comptesAPI, applicationsAPI, Application, ApplicationInfoDTO } from '../services/api';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPen, faTrash, faEye, faEyeSlash, faUser } from '@fortawesome/free-solid-svg-icons';
-import './Responsive.css';
 
 interface Compte {
   id: number;
@@ -177,99 +176,42 @@ const Comptes: React.FC = () => {
           {loading ? (
             <p>Chargement...</p>
           ) : (
-            <>
-              {/* Tableau pour desktop */}
-              <div className="desktop-view" style={{ overflowX: 'auto', margin: '0 -12px', padding: '0 12px' }}>
-                <table style={styles.table}>
-                  <thead>
-                    <tr>
-                      <th style={styles.tableTh}>ID</th>
-                      <th style={styles.tableTh}>Username</th>
-                      <th style={styles.tableTh}>Application</th>
-                      <th style={styles.tableTh}>Rôle</th>
-                      <th style={styles.tableTh}>Commentaire</th>
-                      <th style={styles.tableTh}>Actions</th>
+            <div style={{ overflowX: 'auto', margin: '0 -12px', padding: '0 12px' }}>
+              <table style={styles.table}>
+                <thead>
+                  <tr>
+                    <th style={styles.tableTh}>ID</th>
+                    <th style={styles.tableTh}>Username</th>
+                    <th style={styles.tableTh}>Application</th>
+                    <th style={styles.tableTh}>Rôle</th>
+                    <th style={styles.tableTh}>Commentaire</th>
+                    <th style={styles.tableTh}>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredComptes.map((compte) => (
+                    <tr key={compte.id} style={styles.tableTrHover}>
+                      <td style={styles.tableTd}>{compte.id}</td>
+                      <td style={styles.tableTd}>{compte.username}</td>
+                      <td style={styles.tableTd}>{getAppName(compte.applicationId)}</td>
+                      <td style={styles.tableTd}>{compte.role || '-'}</td>
+                      <td style={styles.tableTd}>{compte.commentaire || '-'}</td>
+                      <td style={{...styles.tableTd, display: 'flex', gap: '8px', justifyContent: 'center', alignItems: 'center', flexWrap: 'wrap' }}>
+                        <button style={{...styles.viewButton, padding: '8px 12px', backgroundColor: 'transparent', color: '#27ae60'}} onClick={() => { setViewingCompte(compte); setShowViewModal(true); }} title="Voir">
+                          <FontAwesomeIcon icon={faEye} />
+                        </button>
+                        <button style={{...styles.editButton, padding: '8px 12px', backgroundColor: 'transparent', color: '#3498db'}} onClick={() => openEditModal(compte)} title="Modifier">
+                          <FontAwesomeIcon icon={faPen} />
+                        </button>
+                        <button style={{...styles.deleteButton, padding: '8px 12px', backgroundColor: 'transparent', color: '#ff6b6b'}} onClick={() => handleDelete(compte.id)} title="Supprimer">
+                          <FontAwesomeIcon icon={faTrash} />
+                        </button>
+                      </td>
                     </tr>
-                  </thead>
-                  <tbody>
-                    {filteredComptes.map((compte) => (
-                      <tr key={compte.id} style={styles.tableTrHover}>
-                        <td style={styles.tableTd}>{compte.id}</td>
-                        <td style={styles.tableTd}>{compte.username}</td>
-                        <td style={styles.tableTd}>{getAppName(compte.applicationId)}</td>
-                        <td style={styles.tableTd}>{compte.role || '-'}</td>
-                        <td style={styles.tableTd}>{compte.commentaire || '-'}</td>
-                        <td style={{...styles.tableTd, display: 'flex', gap: '8px', justifyContent: 'center', alignItems: 'center', flexWrap: 'wrap' }}>
-                          <button style={{...styles.viewButton, padding: '8px 12px', backgroundColor: 'transparent', color: '#27ae60'}} onClick={() => { setViewingCompte(compte); setShowViewModal(true); }} title="Voir">
-                            <FontAwesomeIcon icon={faEye} />
-                          </button>
-                          <button style={{...styles.editButton, padding: '8px 12px', backgroundColor: 'transparent', color: '#3498db'}} onClick={() => openEditModal(compte)} title="Modifier">
-                            <FontAwesomeIcon icon={faPen} />
-                          </button>
-                          <button style={{...styles.deleteButton, padding: '8px 12px', backgroundColor: 'transparent', color: '#ff6b6b'}} onClick={() => handleDelete(compte.id)} title="Supprimer">
-                            <FontAwesomeIcon icon={faTrash} />
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-
-              {/* Cartes unifiées pour mobile */}
-              <div className="mobile-view" style={styles.comptesGrid}>
-                {filteredComptes.map((compte) => (
-                  <div key={compte.id} style={styles.compteCard}>
-                    <div style={styles.compteCardHeader}>
-                      <div style={styles.compteIcon}>
-                        <FontAwesomeIcon icon={faUser} />
-                      </div>
-                      <div style={styles.compteInfo}>
-                        <h3 style={styles.compteUsername}>{compte.username}</h3>
-                        <span style={styles.compteApp}>{getAppName(compte.applicationId)}</span>
-                      </div>
-                    </div>
-                    <div style={styles.compteCardContent}>
-                      {compte.role && (
-                        <div style={styles.compteDetail}>
-                          <span style={styles.detailLabel}>Rôle:</span>
-                          {compte.role}
-                        </div>
-                      )}
-                      {compte.commentaire && (
-                        <div style={styles.compteDetail}>
-                          <span style={styles.detailLabel}>Commentaire:</span>
-                          {compte.commentaire}
-                        </div>
-                      )}
-                    </div>
-                    <div style={{...styles.compteCardActions, flexDirection: 'row'}}>
-                      <button 
-                        style={styles.iconButton} 
-                        onClick={() => { setViewingCompte(compte); setShowViewModal(true); }} 
-                        title="Voir"
-                      >
-                        <FontAwesomeIcon icon={faEye} />
-                      </button>
-                      <button 
-                        style={styles.iconButton} 
-                        onClick={() => openEditModal(compte)} 
-                        title="Modifier"
-                      >
-                        <FontAwesomeIcon icon={faPen} />
-                      </button>
-                      <button 
-                        style={{...styles.iconButton, color: '#ff6b6b'}} 
-                        onClick={() => handleDelete(compte.id)} 
-                        title="Supprimer"
-                      >
-                        <FontAwesomeIcon icon={faTrash} />
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
         </div>
       </main>

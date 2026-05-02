@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { applicationsAPI, Application } from '../services/api';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
-import './Responsive.css';
 
 const Applications: React.FC = () => {
   const [applications, setApplications] = useState<Application[]>([]);
@@ -140,91 +139,39 @@ const Applications: React.FC = () => {
           {loading ? (
             <p>Chargement...</p>
           ) : (
-            <>
-              {/* Tableau pour desktop */}
-              <div className="desktop-view" style={{ overflowX: 'auto', margin: '0 -12px', padding: '0 12px' }}>
-                <table style={styles.table}>
-                  <thead>
-                    <tr>
-                      <th style={styles.tableTh}>ID</th>
-                      <th style={styles.tableTh}>Nom</th>
-                      <th style={styles.tableTh}>Version</th>
-                      <th style={styles.tableTh}>Environnement</th>
-                      <th style={styles.tableTh}>Description</th>
-                      <th style={styles.tableTh}>Actions</th>
+            <div style={{ overflowX: 'auto', margin: '0 -12px', padding: '0 12px' }}>
+              <table style={styles.table}>
+                <thead>
+                  <tr>
+                    <th style={styles.tableTh}>ID</th>
+                    <th style={styles.tableTh}>Nom</th>
+                    <th style={styles.tableTh}>Version</th>
+                    <th style={styles.tableTh}>Environnement</th>
+                    <th style={styles.tableTh}>Description</th>
+                    <th style={styles.tableTh}>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredApplications.map((app) => (
+                    <tr key={app.id} style={styles.tableTrHover}>
+                      <td style={styles.tableTd}>{app.id}</td>
+                      <td style={styles.tableTd}>{app.nom}</td>
+                      <td style={styles.tableTd}>{app.version || '-'}</td>
+                      <td style={styles.tableTd}>{app.environnement || '-'}</td>
+                      <td style={styles.tableTd}>{app.description || '-'}</td>
+                      <td style={{...styles.tableTd, display: 'flex', gap: '8px', justifyContent: 'center', alignItems: 'center', flexWrap: 'wrap' }}>
+                        <button style={{...styles.editButton, padding: '8px 12px', backgroundColor: 'transparent', color: '#3498db'}} onClick={() => openEditModal(app)} title="Modifier">
+                          <FontAwesomeIcon icon={faPen} />
+                        </button>
+                        <button style={{...styles.deleteButton, padding: '8px 12px', backgroundColor: 'transparent', color: '#ff6b6b'}} onClick={() => handleDelete(app.id)} title="Supprimer">
+                          <FontAwesomeIcon icon={faTrash} />
+                        </button>
+                      </td>
                     </tr>
-                  </thead>
-                  <tbody>
-                    {filteredApplications.map((app) => (
-                      <tr key={app.id} style={styles.tableTrHover}>
-                        <td style={styles.tableTd}>{app.id}</td>
-                        <td style={styles.tableTd}>{app.nom}</td>
-                        <td style={styles.tableTd}>{app.version || '-'}</td>
-                        <td style={styles.tableTd}>{app.environnement || '-'}</td>
-                        <td style={styles.tableTd}>{app.description || '-'}</td>
-                        <td style={{...styles.tableTd, display: 'flex', gap: '8px', justifyContent: 'center', alignItems: 'center', flexWrap: 'wrap' }}>
-                          <button style={{...styles.editButton, padding: '8px 12px', backgroundColor: 'transparent', color: '#3498db'}} onClick={() => openEditModal(app)} title="Modifier">
-                            <FontAwesomeIcon icon={faPen} />
-                          </button>
-                          <button style={{...styles.deleteButton, padding: '8px 12px', backgroundColor: 'transparent', color: '#ff6b6b'}} onClick={() => handleDelete(app.id)} title="Supprimer">
-                            <FontAwesomeIcon icon={faTrash} />
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-
-              {/* Cartes unifiées pour mobile */}
-              <div className="mobile-view" style={styles.applicationsGrid}>
-                {filteredApplications.map((app) => (
-                  <div key={app.id} style={styles.appCard}>
-                    <div style={styles.appCardTop}>
-                      <div style={styles.appIcon}>
-                        {app.nom.charAt(0).toUpperCase()}
-                      </div>
-                    </div>
-                    <div style={styles.appCardContent}>
-                      <h3 style={styles.appName}>{app.nom}</h3>
-                      <div style={styles.appDetails}>
-                        {app.version && (
-                          <div style={styles.appDetail}>
-                            <span style={styles.detailLabel}>Version:</span>
-                            {app.version}
-                          </div>
-                        )}
-                        {app.environnement && (
-                          <div style={styles.appDetail}>
-                            <span style={styles.detailLabel}>Env:</span>
-                            {app.environnement}
-                          </div>
-                        )}
-                      </div>
-                      <p style={styles.appDescription}>
-                        {app.description || 'Aucune description disponible'}
-                      </p>
-                    </div>
-                    <div style={{...styles.appCardActions, flexDirection: 'row'}}>
-                      <button 
-                        style={styles.iconButton} 
-                        onClick={() => openEditModal(app)} 
-                        title="Modifier"
-                      >
-                        <FontAwesomeIcon icon={faPen} />
-                      </button>
-                      <button 
-                        style={{...styles.iconButton, color: '#ff6b6b'}} 
-                        onClick={() => handleDelete(app.id)} 
-                        title="Supprimer"
-                      >
-                        <FontAwesomeIcon icon={faTrash} />
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
         </div>
       </main>
