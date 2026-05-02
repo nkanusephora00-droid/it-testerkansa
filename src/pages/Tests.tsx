@@ -115,9 +115,9 @@ const Tests: React.FC = () => {
 
   async function fetchSessions() {
     try {
-      const response = await api.get('/test-sessions');
-      setAllSessions(response.data);
-      setSessions(response.data);
+      const data = await testSessionsAPI.getAll();
+      setAllSessions(data);
+      setSessions(data);
     } catch (err) {
       if (process.env.NODE_ENV === 'development') {
         console.error('Error fetching sessions:', err);

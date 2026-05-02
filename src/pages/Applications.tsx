@@ -146,23 +146,23 @@ const Applications: React.FC = () => {
                 <table style={styles.table}>
                   <thead>
                     <tr>
-                      <th>ID</th>
-                      <th>Nom</th>
-                      <th>Version</th>
-                      <th>Environnement</th>
-                      <th>Description</th>
-                      <th>Actions</th>
+                      <th style={styles.tableTh}>ID</th>
+                      <th style={styles.tableTh}>Nom</th>
+                      <th style={styles.tableTh}>Version</th>
+                      <th style={styles.tableTh}>Environnement</th>
+                      <th style={styles.tableTh}>Description</th>
+                      <th style={styles.tableTh}>Actions</th>
                     </tr>
                   </thead>
                   <tbody>
                     {filteredApplications.map((app) => (
-                      <tr key={app.id}>
-                        <td>{app.id}</td>
-                        <td>{app.nom}</td>
-                        <td>{app.version || '-'}</td>
-                        <td>{app.environnement || '-'}</td>
-                        <td>{app.description || '-'}</td>
-                        <td style={{ display: 'flex', gap: '8px', justifyContent: 'center', alignItems: 'center', flexWrap: 'wrap' }}>
+                      <tr key={app.id} style={styles.tableTrHover}>
+                        <td style={styles.tableTd}>{app.id}</td>
+                        <td style={styles.tableTd}>{app.nom}</td>
+                        <td style={styles.tableTd}>{app.version || '-'}</td>
+                        <td style={styles.tableTd}>{app.environnement || '-'}</td>
+                        <td style={styles.tableTd}>{app.description || '-'}</td>
+                        <td style={{...styles.tableTd, display: 'flex', gap: '8px', justifyContent: 'center', alignItems: 'center', flexWrap: 'wrap' }}>
                           <button style={{...styles.editButton, padding: '8px 12px', backgroundColor: 'transparent', color: '#3498db'}} onClick={() => openEditModal(app)} title="Modifier">
                             <FontAwesomeIcon icon={faPen} />
                           </button>
@@ -432,7 +432,33 @@ const styles: Record<string, React.CSSProperties> = {
     alignItems: 'center', 
     gap: '8px'
   },
-  table: { width: '100%', borderCollapse: 'collapse' as const, borderRadius: 'var(--radius-md)', overflow: 'hidden' },
+  table: { 
+    width: '100%', 
+    borderCollapse: 'collapse' as const, 
+    borderRadius: 'var(--radius-md)', 
+    overflow: 'hidden',
+    border: '1px solid var(--border-color)',
+    backgroundColor: 'var(--bg-card)'
+  },
+  tableTh: { 
+    padding: '12px', 
+    textAlign: 'left', 
+    backgroundColor: 'var(--hover-bg)', 
+    fontWeight: '600', 
+    color: 'var(--text-primary)',
+    borderBottom: '1px solid var(--border-color)',
+    fontSize: '13px'
+  },
+  tableTd: { 
+    padding: '12px', 
+    borderBottom: '1px solid var(--border-color)', 
+    color: 'var(--text-primary)',
+    fontSize: '13px'
+  },
+  tableTrHover: { 
+    backgroundColor: 'var(--hover-bg)',
+    transition: 'background-color 0.2s ease'
+  },
   searchInput: { padding: '10px 16px', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', fontSize: '14px', backgroundColor: 'var(--input-bg)', color: 'var(--text-primary)', minWidth: '250px' },
   stats: { display: 'flex', gap: '16px', marginBottom: '8px' },
   statItem: { fontSize: '13px', color: 'var(--text-secondary)', fontWeight: '500' },
