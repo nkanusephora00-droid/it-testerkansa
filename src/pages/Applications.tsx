@@ -142,7 +142,7 @@ const Applications: React.FC = () => {
           ) : (
             <>
               {/* Tableau pour desktop */}
-              <div className="desktop-view" style={{ overflowX: 'auto', margin: '0 -12px', padding: '0 12px', display: 'none' }}>
+              <div className="desktop-view" style={{ overflowX: 'auto', margin: '0 -12px', padding: '0 12px' }}>
                 <table style={styles.table}>
                   <thead>
                     <tr>
@@ -205,7 +205,7 @@ const Applications: React.FC = () => {
                         {app.description || 'Aucune description disponible'}
                       </p>
                     </div>
-                    <div style={styles.appCardActions}>
+                    <div style={{...styles.appCardActions, flexDirection: 'row'}}>
                       <button 
                         style={styles.iconButton} 
                         onClick={() => openEditModal(app)} 

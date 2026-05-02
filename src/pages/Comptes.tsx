@@ -179,7 +179,7 @@ const Comptes: React.FC = () => {
           ) : (
             <>
               {/* Tableau pour desktop */}
-              <div className="desktop-view" style={{ overflowX: 'auto', margin: '0 -12px', padding: '0 12px', display: 'none' }}>
+              <div className="desktop-view" style={{ overflowX: 'auto', margin: '0 -12px', padding: '0 12px' }}>
                 <table style={styles.table}>
                   <thead>
                     <tr>
@@ -243,7 +243,7 @@ const Comptes: React.FC = () => {
                         </div>
                       )}
                     </div>
-                    <div style={styles.compteCardActions}>
+                    <div style={{...styles.compteCardActions, flexDirection: 'row'}}>
                       <button 
                         style={styles.iconButton} 
                         onClick={() => { setViewingCompte(compte); setShowViewModal(true); }} 
