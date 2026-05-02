@@ -23,12 +23,20 @@
     height: auto !important;
     min-height: 100vh;
     overflow-x: hidden;
+    margin: 0 !important;
+    padding: 0 !important;
   }
   
-  /* Container takes full height */
+  /* Container unified for mobile */
   .container {
     min-height: 100vh !important;
     height: auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    margin: 0 !important;
+    padding: 0 !important;
   }
   
   /* Sidebar hidden by default on mobile */
@@ -54,18 +62,21 @@
     -webkit-overflow-scrolling: touch;
   }
   
-  /* Main wrapper settings for mobile */
+  /* Main wrapper unified - no more division */
   .main-wrapper {
-    margin-left: 0 !important;
+    margin: 0 !important;
     width: 100% !important;
     display: flex !important;
     flex-direction: column !important;
-    min-height: calc(100vh - 60px) !important;
+    min-height: 100vh !important;
+    height: auto !important;
+    position: relative !important;
+    flex: 1 !important;
   }
   
   /* Header fixed on top */
   header {
-    padding: 0 16px 0 60px !important;
+    padding: 0 16px !important;
     height: 60px !important;
     position: fixed !important;
     top: 0;
@@ -73,6 +84,8 @@
     right: 0;
     z-index: 100;
     flex-shrink: 0;
+    background: var(--bg-card) !important;
+    border-bottom: 1px solid var(--border-color) !important;
   }
   
   header h1 {
@@ -103,7 +116,7 @@
     font-size: 14px !important;
   }
   
-  /* Main content - scrollable on mobile */
+  /* Main content - unified and scrollable on mobile */
   main {
     padding: 75px 16px 80px 16px !important;
     flex: 1 !important;
@@ -113,20 +126,26 @@
     height: auto !important;
     display: block !important;
     width: 100% !important;
+    position: relative !important;
+    background: transparent !important;
   }
   
-  /* Ensure all pages content is visible */
+  /* Ensure all pages content is unified */
   main > div,
   main > section,
   main > form {
     display: block !important;
     width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
   }
   
-  /* Page container scrollable */
+  /* Page container unified */
   .container > div > main,
   [class*="main"] {
     min-height: calc(100vh - 60px) !important;
+    width: 100% !important;
   }
   
   /* Hide hamburger menu button on mobile (using bottom nav instead) */
@@ -134,9 +153,19 @@
     display: none !important;
   }
 
-  /* Show bottom navigation on mobile */
+  /* Show bottom navigation on mobile - unified */
   .bottomNav {
     display: flex !important;
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    height: 60px !important;
+    background: var(--bg-card) !important;
+    border-top: 1px solid var(--border-color) !important;
+    z-index: 100 !important;
+    margin: 0 !important;
+    padding: 0 !important;
   }
   
   /* Mobile overlay */
