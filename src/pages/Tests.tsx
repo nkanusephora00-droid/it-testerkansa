@@ -23,6 +23,18 @@ const Tests: React.FC = () => {
   const userRole = localStorage.getItem('user_role');
   const isAdmin = userRole === 'admin';
   console.log('User role:', userRole, 'Is admin:', isAdmin);
+
+  const getStatusColor = (statut: string) => {
+    switch (statut) {
+      case 'Terminé':
+        return '#28a745';
+      case 'BUG':
+        return '#dc3545';
+      case 'En cours':
+      default:
+        return '#ffc107';
+    }
+  };
   
   // Session form state
   const [showSessionModal, setShowSessionModal] = useState(false);
@@ -316,7 +328,7 @@ const Tests: React.FC = () => {
             </tr>
           </thead>
           <tbody>
-            ${consolidated.consolidatedTests.map(test => `
+            ${consolidated.consolidatedTests.map((test: Test) => `
               <tr>
                 <td>${test.fonction || ''}</td>
                 <td>${test.precondition || ''}</td>
@@ -657,9 +669,9 @@ const Tests: React.FC = () => {
         </div>
         <div class="stats">
           <div class="stat-box stat-total"><strong>${sessionTests.length}</strong><br/>Total</div>
-          <div class="stat-box stat-ok"><strong>${sessionTests.filter(t => t.statut === 'OK').length}</strong><br/>OK</div>
-          <div class="stat-box stat-bug"><strong>${sessionTests.filter(t => t.statut === 'BUG').length}</strong><br/>BUG</div>
-          <div class="stat-box stat-en-cours"><strong>${sessionTests.filter(t => t.statut === 'EN COURS').length}</strong><br/>En Cours</div>
+          <div class="stat-box stat-ok"><strong>${sessionTests.filter((t: Test) => t.statut === 'OK').length}</strong><br/>OK</div>
+          <div class="stat-box stat-bug"><strong>${sessionTests.filter((t: Test) => t.statut === 'BUG').length}</strong><br/>BUG</div>
+          <div class="stat-box stat-en-cours"><strong>${sessionTests.filter((t: Test) => t.statut === 'EN COURS').length}</strong><br/>En Cours</div>
         </div>
         <table>
           <thead>
@@ -675,7 +687,7 @@ const Tests: React.FC = () => {
             </tr>
           </thead>
           <tbody>
-            ${sessionTests.map(test => `
+            ${sessionTests.map((test: Test) => `
               <tr>
                 <td>${test.id}</td>
                 <td>${test.fonction || '-'}</td>
@@ -879,8 +891,8 @@ const Tests: React.FC = () => {
             )}
             <div style={styles.sessionStats}>
               <span>Total: {getSessionTests(session.id).length}</span>
-              <span style={styles.statOk}><FontAwesomeIcon icon={faCheck} /> {getSessionTests(session.id).filter(t => t.statut === 'OK').length}</span>
-              <span style={styles.statBug}><FontAwesomeIcon icon={faTimes} /> {getSessionTests(session.id).filter(t => t.statut === 'BUG').length}</span>
+              <span style={styles.statOk}><FontAwesomeIcon icon={faCheck} /> {getSessionTests(session.id).filter((t: Test) => t.statut === 'OK').length}</span>
+              <span style={styles.statBug}><FontAwesomeIcon icon={faTimes} /> {getSessionTests(session.id).filter((t: Test) => t.statut === 'BUG').length}</span>
             </div>
             <div style={styles.sessionActions}>
               <button style={styles.viewButton} onClick={() => { setSelectedSession(session.id); setView('tests'); }}>
@@ -974,7 +986,7 @@ const Tests: React.FC = () => {
               </tr>
             </thead>
             <tbody>
-              {sessionTests.map(test => (
+              {sessionTests.map((test: Test) => (
                 <tr key={test.id}>
                   <td>{test.id}</td>
                   <td>{test.fonction}</td>
