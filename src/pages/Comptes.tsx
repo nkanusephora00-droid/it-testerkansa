@@ -183,23 +183,23 @@ const Comptes: React.FC = () => {
                 <table style={styles.table}>
                   <thead>
                     <tr>
-                      <th>ID</th>
-                      <th>Username</th>
-                      <th>Application</th>
-                      <th>Rôle</th>
-                      <th>Commentaire</th>
-                      <th>Actions</th>
+                      <th style={styles.tableTh}>ID</th>
+                      <th style={styles.tableTh}>Username</th>
+                      <th style={styles.tableTh}>Application</th>
+                      <th style={styles.tableTh}>Rôle</th>
+                      <th style={styles.tableTh}>Commentaire</th>
+                      <th style={styles.tableTh}>Actions</th>
                     </tr>
                   </thead>
                   <tbody>
                     {filteredComptes.map((compte) => (
-                      <tr key={compte.id}>
-                        <td>{compte.id}</td>
-                        <td>{compte.username}</td>
-                        <td>{getAppName(compte.applicationId)}</td>
-                        <td>{compte.role || '-'}</td>
-                        <td>{compte.commentaire || '-'}</td>
-                        <td style={{ display: 'flex', gap: '8px', justifyContent: 'center', alignItems: 'center', flexWrap: 'wrap' }}>
+                      <tr key={compte.id} style={styles.tableTrHover}>
+                        <td style={styles.tableTd}>{compte.id}</td>
+                        <td style={styles.tableTd}>{compte.username}</td>
+                        <td style={styles.tableTd}>{getAppName(compte.applicationId)}</td>
+                        <td style={styles.tableTd}>{compte.role || '-'}</td>
+                        <td style={styles.tableTd}>{compte.commentaire || '-'}</td>
+                        <td style={{...styles.tableTd, display: 'flex', gap: '8px', justifyContent: 'center', alignItems: 'center', flexWrap: 'wrap' }}>
                           <button style={{...styles.viewButton, padding: '8px 12px', backgroundColor: 'transparent', color: '#27ae60'}} onClick={() => { setViewingCompte(compte); setShowViewModal(true); }} title="Voir">
                             <FontAwesomeIcon icon={faEye} />
                           </button>
