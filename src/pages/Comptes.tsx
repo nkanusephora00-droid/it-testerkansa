@@ -476,7 +476,15 @@ const styles: Record<string, React.CSSProperties> = {
   formActions: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', marginTop: '20px', flexWrap: 'wrap' },
   primaryButton: { padding: '12px 20px', backgroundColor: 'var(--success-color)', color: 'white', border: 'none', borderRadius: 'var(--radius-md)', cursor: 'pointer', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px' },
   secondaryButton: { padding: '12px 20px', backgroundColor: 'var(--bg-card)', color: 'var(--text-primary)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', cursor: 'pointer', fontWeight: 500, display: 'flex', alignItems: 'center', gap: '8px' },
-  table: { width: '100%', borderCollapse: 'collapse' as const, borderRadius: 'var(--radius-md)', overflow: 'hidden' },
+  table: { 
+    width: '100%', 
+    borderCollapse: 'separate' as const, 
+    borderSpacing: '0',
+    borderRadius: 'var(--radius-md)', 
+    overflow: 'hidden',
+    border: '1px solid var(--border-color)',
+    backgroundColor: 'var(--bg-card)'
+  },
   searchInput: { padding: '10px 16px', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', fontSize: '14px', backgroundColor: 'var(--input-bg)', color: 'var(--text-primary)', minWidth: '250px' },
   stats: { display: 'flex', gap: '16px', marginBottom: '8px' },
   statItem: { fontSize: '13px', color: 'var(--text-secondary)', fontWeight: '500' },

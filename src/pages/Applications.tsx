@@ -434,7 +434,8 @@ const styles: Record<string, React.CSSProperties> = {
   },
   table: { 
     width: '100%', 
-    borderCollapse: 'collapse' as const, 
+    borderCollapse: 'separate' as const, 
+    borderSpacing: '0',
     borderRadius: 'var(--radius-md)', 
     overflow: 'hidden',
     border: '1px solid var(--border-color)',

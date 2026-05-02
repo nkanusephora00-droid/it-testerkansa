@@ -836,18 +836,26 @@ const Tests: React.FC = () => {
               ...(selectionMode ? { cursor: 'pointer' } : {})
             }}>
               {selectionMode && (
-                <div style={styles.selectionCheckbox}>
+                <div style={{
+                  ...styles.selectionCheckbox,
+                  border: '3px solid #007bff',
+                  backgroundColor: 'white',
+                  padding: '8px',
+                  borderRadius: '8px',
+                  boxShadow: '0 2px 8px rgba(0,123,255,0.3)'
+                }}>
                   <input 
                     type="checkbox"
                     checked={selectedSessions.includes(session.id)}
                     onChange={() => handleToggleSessionSelection(session.id)}
                     style={{
-                      width: '20px',
-                      height: '20px',
+                      width: '24px',
+                      height: '24px',
                       cursor: 'pointer',
                       accentColor: '#007bff',
                       border: '2px solid #007bff',
-                      borderRadius: '4px'
+                      borderRadius: '4px',
+                      transform: 'scale(1.2)'
                     }}
                   />
                 </div>
@@ -1403,9 +1411,10 @@ input: { padding: '4px 6px', border: '1px solid var(--border-color)', borderRadi
 },
   sessionsGrid: { 
   display: 'grid', 
-  gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', 
-  gap: '20px',
-  padding: '0 20px'
+  gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', 
+  gap: '16px',
+  padding: '0 16px',
+  width: '100%'
 },
   sessionHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px', gap: '8px' },
   sessionTitle: { margin: 0, color: 'var(--text-primary)', fontSize: '16px', fontWeight: '600', flex: 1 },
