@@ -1416,6 +1416,15 @@ input: { padding: '4px 6px', border: '1px solid var(--border-color)', borderRadi
   padding: '0 20px',
   width: '100%'
 },
+sessionCard: {
+  backgroundColor: 'var(--bg-card)',
+  borderRadius: '12px',
+  padding: '20px',
+  border: '1px solid var(--border-color)',
+  boxShadow: '0 2px 8px var(--shadow-color)',
+  transition: 'all 0.2s ease',
+  position: 'relative' as const
+},
   sessionHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px', gap: '8px' },
   sessionTitle: { margin: 0, color: 'var(--text-primary)', fontSize: '16px', fontWeight: '600', flex: 1 },
   statusBadge: { padding: '4px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: '600', color: 'white', textTransform: 'uppercase' as const },
