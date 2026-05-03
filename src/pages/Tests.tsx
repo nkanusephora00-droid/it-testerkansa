@@ -1411,9 +1411,9 @@ input: { padding: '4px 6px', border: '1px solid var(--border-color)', borderRadi
 },
   sessionsGrid: { 
   display: 'grid', 
-  gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', 
-  gap: '16px',
-  padding: '0 16px',
+  gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', 
+  gap: '20px',
+  padding: '0 20px',
   width: '100%'
 },
   sessionHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px', gap: '8px' },
