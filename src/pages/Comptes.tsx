@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { comptesAPI, applicationsAPI, Application, ApplicationInfoDTO } from '../services/api';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPen, faTrash, faEye, faEyeSlash, faUser } from '@fortawesome/free-solid-svg-icons';
+import { faPen, faTrash, faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 
 interface Compte {
   id: number;
