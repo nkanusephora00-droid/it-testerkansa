@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { testsAPI, applicationsAPI, testSessionsAPI, Application, Test, TestSession } from '../services/api';
+import { testsAPI, testSessionsAPI, Test, TestSession } from '../services/api';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash, faEye, faFilePdf, faPlus, faEdit, faTimes } from '@fortawesome/free-solid-svg-icons';
-import { consolidateSessionsByUser, consolidateAllSessions, ConsolidatedSession } from '../utils/sessionConsolidation';
+import { createStyles } from '../shared/utils/styleUtils';
 
 interface FormData {
   sessionId: number;
@@ -25,11 +25,15 @@ interface SessionForm {
   statut: string;
 }
 
+interface Application {
+  id: number;
+  name: string;
+}
+
 const Tests: React.FC = () => {
   const [tests, setTests] = useState<Test[]>([]);
   const [applications, setApplications] = useState<Application[]>([]);
   const [sessions, setSessions] = useState<TestSession[]>([]);
-  const [allSessions, setAllSessions] = useState<TestSession[]>([]);
   const [selectedSession, setSelectedSession] = useState<number | null>(null);
   const [message, setMessage] = useState<{ type: string; text: string }>({ type: '', text: '' });
   const [formData, setFormData] = useState<FormData>({
@@ -63,15 +67,8 @@ const Tests: React.FC = () => {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
 
   // Admin states
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [users, setUsers] = useState<any[]>([]);
-  const [selectedUser, setSelectedUser] = useState<number | null>(null);
 
   // Consolidation states
-  const [consolidationMode, setConsolidationMode] = useState<'none' | 'byUser' | 'global'>('none');
-  const [consolidatedSessions, setConsolidatedSessions] = useState<ConsolidatedSession[]>([]);
-  const [selectionMode, setSelectionMode] = useState(false);
-  const [selectedSessions, setSelectedSessions] = useState<number[]>([]);
 
   useEffect(() => {
     if (selectedSession) {
@@ -88,13 +85,14 @@ const Tests: React.FC = () => {
 
   const fetchData = useCallback(async () => {
     try {
-      const [testsData, appsData] = await Promise.all([
+      const [testsData, appsData, data] = await Promise.all([
         testsAPI.getAll(),
-        applicationsAPI.getAll()
+        fetch('/api/applications').then(res => res.json()),
+        fetch('/api/applications').then(res => res.json())
       ]);
       setTests(testsData);
       setApplications(appsData);
-      await fetchSessions();
+      setSessions(data);
     } catch (err) {
       if (process.env.NODE_ENV === 'development') { console.error(err); }
       setMessage({ type: 'error', text: 'Erreur de chargement' });
@@ -105,19 +103,10 @@ const Tests: React.FC = () => {
     fetchData();
   }, [fetchData]);
 
-  useEffect(() => {
-    if (selectedUser !== null) {
-      const filteredSessions = allSessions.filter(session => session.created_by === selectedUser);
-      setSessions(filteredSessions);
-    } else {
-      setSessions(allSessions);
-    }
-  }, [selectedUser, allSessions]);
-
+  
   async function fetchSessions() {
     try {
-      const data = await testSessionsAPI.getAll();
-      setAllSessions(data);
+      const data = await fetch('/api/applications').then(res => res.json());
       setSessions(data);
     } catch (err) {
       if (process.env.NODE_ENV === 'development') {
@@ -317,7 +306,7 @@ const Tests: React.FC = () => {
             style={styles.select}
           >
             <option value="">Sélectionnez une application</option>
-            {applications.map(app => (
+            {applications.map((app: any) => (
               <option key={app.id} value={app.id}>{app.nom}</option>
             ))}
           </select>
@@ -762,7 +751,7 @@ const Tests: React.FC = () => {
   );
 };
 
-const styles: Record<string, React.CSSProperties> = {
+const styles = createStyles({
   container: { backgroundColor: 'var(--bg-primary)', minHeight: '100vh' },
   main: { padding: '20px', maxWidth: '1400px', margin: '0 auto', minHeight: 'calc(100vh - 70px)' },
   pageTitle: { fontSize: '24px', fontWeight: '700', color: 'var(--text-primary)', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '10px' },
@@ -833,7 +822,7 @@ const styles: Record<string, React.CSSProperties> = {
   sessionActions: { display: 'flex', gap: '8px', marginTop: 'auto' },
   viewButton: { padding: '10px 16px', backgroundColor: '#3b82f6', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', flex: 1, fontWeight: '600', fontSize: '13px', transition: 'all 0.2s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', boxShadow: '0 2px 4px rgba(59, 130, 246, 0.2)' },
   exportButton: { padding: '10px 16px', backgroundColor: '#ef4444', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: '600', fontSize: '13px', transition: 'all 0.2s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', boxShadow: '0 2px 4px rgba(239, 68, 68, 0.2)' },
-  backButton: { padding: '10px 16px', backgroundColor: 'var(--text-muted)', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', marginBottom: '12px', fontWeight: '500', display: 'flex', alignItems: 'center', gap: '6px', transition: 'opacity 0.2s' },
-};
+  backButton: { padding: '10px 16px', backgroundColor: 'var(--text-muted)', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', marginBottom: '12px', fontWeight: '500', display: 'flex', alignItems: 'center', gap: '6px', transition: 'opacity 0.2s' }
+});
 
 export default Tests;
