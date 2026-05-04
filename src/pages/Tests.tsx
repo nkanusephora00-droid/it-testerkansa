@@ -1,8 +1,14 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { testsAPI, applicationsAPI, api, testSessionsAPI, Application, Test, TestSession } from '../services/api';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash, faEye, faFilePdf, faCheck, faTimes, faPlus, faEdit, faCompress, faExpand } from '@fortawesome/free-solid-svg-icons';
+import { faTrash, faEye, faFilePdf, faCheck, faTimes, faPlus, faEdit, faCompress, faExpand, faWindowMaximize, faLayerGroup, faMobileAlt } from '@fortawesome/free-solid-svg-icons';
 import { consolidateSessionsByUser, consolidateAllSessions, ConsolidatedSession } from '../utils/sessionConsolidation';
+import SlideInPanel from '../components/SlideInPanel';
+import InlineForm from '../components/InlineForm';
+import BottomSheet from '../components/BottomSheet';
+import './SlideInPanel.css';
+import './BottomSheet.css';
+import './InlineForm.css';
 
 const Tests: React.FC = () => {
   const [tests, setTests] = useState<Test[]>([]);
@@ -39,6 +45,8 @@ const Tests: React.FC = () => {
   // Session form state
   const [showSessionModal, setShowSessionModal] = useState(false);
   const [showTestForm, setShowTestForm] = useState(false);
+  const [formDisplayMode, setFormDisplayMode] = useState<'modal' | 'inline'>('modal');
+  const [showInlineForm, setShowInlineForm] = useState(false);
   const [sessionForm, setSessionForm] = useState({ 
     nom: '', 
     description: '', 
@@ -783,8 +791,25 @@ const Tests: React.FC = () => {
             </div>
           )}
         </div>
-        <button style={styles.newSessionButton} onClick={() => { setShowSessionModal(true); }}>
+        <button style={styles.newSessionButton} onClick={() => { 
+          if (formDisplayMode === 'modal') {
+            setShowSessionModal(true);
+          } else {
+            setShowInlineForm(!showInlineForm);
+          }
+        }}>
           <FontAwesomeIcon icon={faPlus} /> Nouvelle Session
+        </button>
+        <button 
+          style={styles.toggleModeButton}
+          onClick={() => {
+            setFormDisplayMode(formDisplayMode === 'modal' ? 'inline' : 'modal');
+            setShowSessionModal(false);
+            setShowInlineForm(false);
+          }}
+          title={formDisplayMode === 'modal' ? 'Passer en mode intégré' : 'Passer en mode modal'}
+        >
+          {formDisplayMode === 'modal' ? '📋' : '🖼️'}
         </button>
       </div>
       <div style={styles.sessionsGrid}>
@@ -1036,7 +1061,8 @@ const Tests: React.FC = () => {
         {view === 'sessions' ? renderSessions() : renderTests()}
       </main>
 
-      {showSessionModal && (
+      {/* Formulaire selon le mode sélectionné */}
+      {showSessionModal && formDisplayMode === 'modal' && (
         <div style={styles.modal}>
           <div style={{ ...styles.modalContent, ...styles.sessionModalContent }}>
             <span style={styles.close} onClick={() => setShowSessionModal(false)}>&times;</span>
@@ -1047,16 +1073,115 @@ const Tests: React.FC = () => {
               </p>
             </div>
             <form onSubmit={handleCreateSession} style={styles.sessionForm}>
-              <div style={styles.formRow}>
-                <div style={styles.formGroup}>
-                  <label style={styles.label}>Nom de la session *</label>
-                  <input
-                    type="text"
-                    value={sessionForm.nom}
-                    onChange={(e) => setSessionForm({ ...sessionForm, nom: e.target.value })}
-                    style={styles.input}
-                    required
-                    placeholder="Ex: Test Release v1.0"
+              {renderSessionForm()}
+            </form>
+          </div>
+        </div>
+      )}
+
+      {showSessionModal && formDisplayMode === 'slidein' && (
+        <SlideInPanel
+          isOpen={showSessionModal}
+          onClose={() => setShowSessionModal(false)}
+          title="Nouvelle session de test"
+          subtitle="Créez une session pour regrouper vos cas de test et générer un export PDF."
+        >
+          <form onSubmit={handleCreateSession} style={styles.sessionForm}>
+            {renderSessionForm()}
+          </form>
+        </SlideInPanel>
+      )}
+
+      {showSessionModal && formDisplayMode === 'inline' && (
+        <InlineForm
+          isVisible={showSessionModal}
+          onClose={() => setShowSessionModal(false)}
+          title="Nouvelle session de test"
+        >
+          <form onSubmit={handleCreateSession}>
+            {renderSessionForm()}
+          </form>
+        </InlineForm>
+      )}
+
+      {showSessionModal && formDisplayMode === 'bottom' && (
+        <BottomSheet
+          isOpen={showSessionModal}
+          onClose={() => setShowSessionModal(false)}
+          title="Nouvelle session de test"
+        >
+          <form onSubmit={handleCreateSession} style={styles.sessionForm}>
+            {renderSessionForm()}
+          </form>
+        </BottomSheet>
+      )}
+  // Fonction pour afficher le formulaire de session
+  const renderSessionForm = () => (
+    <>
+      <div style={styles.formRow}>
+        <div style={styles.formGroup}>
+          <label style={styles.label}>Nom de la session *</label>
+          <input
+            type="text"
+            value={sessionForm.nom}
+            onChange={(e) => setSessionForm({ ...sessionForm, nom: e.target.value })}
+            style={styles.input}
+            required
+            placeholder="Ex: Test Release v1.0"
+          />
+        </div>
+        <div style={styles.formGroup}>
+          <label style={styles.label}>Application</label>
+          <select
+            value={sessionForm.applicationId || ''}
+            onChange={(e) => setSessionForm({ ...sessionForm, applicationId: parseInt(e.target.value) })}
+            style={styles.select}
+          >
+            <option value="">Sélectionnez une application</option>
+            {applications.map(app => (
+              <option key={app.id} value={app.id}>{app.nom}</option>
+            ))}
+          </select>
+        </div>
+      </div>
+      <div style={styles.formGroup}>
+        <label style={styles.label}>Description</label>
+        <textarea
+          value={sessionForm.description}
+          onChange={(e) => setSessionForm({ ...sessionForm, description: e.target.value })}
+          style={styles.textarea}
+          placeholder="Description de la session..."
+          rows={3}
+        />
+      </div>
+      <div style={styles.formGroup}>
+        <label style={styles.label}>Nom du document</label>
+        <input
+          type="text"
+          value={sessionForm.nom_document}
+          onChange={(e) => setSessionForm({ ...sessionForm, nom_document: e.target.value })}
+          style={styles.input}
+          placeholder="Ex: Test_Document.pdf"
+        />
+      </div>
+      <div style={styles.formActions}>
+        <button
+          type="button"
+          onClick={() => setShowSessionModal(false)}
+          style={styles.secondaryButton}
+        >
+          Annuler
+        </button>
+        <button
+          type="submit"
+          style={styles.primaryButton}
+          disabled={sessionForm.nom === ''}
+        >
+          Créer la session
+        </button>
+      </div>
+    </>
+  );
                   />
                 </div>
                 <div style={styles.formGroup}>
@@ -1407,18 +1532,31 @@ input: { padding: '4px 6px', border: '1px solid var(--border-color)', borderRadi
   formRow: { display: 'flex', gap: '6px', flexWrap: 'wrap' as const, width: '100%' },
   sessionForm: { display: 'flex', flexDirection: 'column' as const, gap: '6px', width: '100%', maxWidth: '400px', margin: '0 auto' },
   testForm: { display: 'flex', flexDirection: 'column' as const, gap: '6px', width: '100%', maxWidth: '400px', margin: '0 auto' },
-    sessionsHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap' as const, gap: '12px' },
+  sessionsHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap' as const, gap: '12px' },
   headerLeft: { display: 'flex', alignItems: 'center', gap: '12px', flex: 1 },
   userFilter: { display: 'flex', alignItems: 'center', gap: '8px' },
   filterLabel: { fontSize: '13px', color: 'var(--text-secondary)', fontWeight: '500' },
   filterSelect: { padding: '8px 12px', border: '1px solid var(--border-color)', borderRadius: '6px', backgroundColor: 'var(--bg-card)', color: 'var(--text-primary)', fontSize: '13px', minWidth: '200px' },
-  newSessionButton: { padding: '10px 18px', backgroundColor: 'var(--info-color)', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: '600', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '6px', transition: 'background-color 0.2s, transform 0.1s' },
+  sessionControls: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', gap: '16px', flexWrap: 'wrap' as const },
+  formModeSelector: { display: 'flex', alignItems: 'center', gap: '12px' },
+  modeLabel: { fontSize: '14px', color: 'var(--text-secondary)', fontWeight: '500' },
+  modeButtons: { display: 'flex', gap: '8px' },
+  newSessionButton: { padding: '12px 20px', backgroundColor: 'var(--primary-color)', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '14px', fontWeight: '500', display: 'flex', alignItems: 'center', gap: '8px', transition: 'all 0.2s ease', boxShadow: '0 2px 8px rgba(52, 152, 219, 0.3)' },
+  toggleModeButton: { padding: '8px 12px', backgroundColor: 'var(--hover-bg)', color: 'var(--text-secondary)', border: '1px solid var(--border-color)', borderRadius: '6px', cursor: 'pointer', fontSize: '16px', transition: 'all 0.2s ease', marginLeft: '8px' },
   consolidationButtons: { display: 'flex', gap: '8px', alignItems: 'center' },
   consolidationButton: { padding: '8px 12px', backgroundColor: '#6c757d', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: '500', fontSize: '12px', display: 'flex', alignItems: 'center', gap: '4px', transition: 'background-color 0.2s' },
   resetButton: { padding: '8px 12px', backgroundColor: '#dc3545', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: '500', fontSize: '12px', display: 'flex', alignItems: 'center', gap: '4px', transition: 'background-color 0.2s' },
   selectionInfo: { padding: '6px 10px', backgroundColor: '#e9ecef', color: '#495057', borderRadius: '4px', fontSize: '12px', fontWeight: '500' },
   selectionCheckbox: { 
-  position: 'absolute' as const, 
+    position: 'absolute' as const, 
+    top: '10px', 
+    right: '10px', 
+    zIndex: 10,
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    padding: '4px',
+    borderRadius: '6px',
+    boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+  },
   top: '10px', 
   right: '10px', 
   zIndex: 10,
