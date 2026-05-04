@@ -1,46 +1,198 @@
-# Getting Started with Create React App
+# 🧪 IT-TesterKansa - Plateforme de Gestion de Tests QA
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## 🎯 Vision Métier
 
-## Available Scripts
+IT-TesterKansa est une plateforme professionnelle de **Quality Assurance Testing** conçue pour les équipes de développement et de test. Elle permet de gérer efficacement les campagnes de tests, de collaborer entre testeurs et de générer des rapports détaillés.
 
-In the project directory, you can run:
+### 🚀 Fonctionnalités Principales
+
+- **📋 Gestion des Sessions de Tests** : Créez et organisez des campagnes de tests par application
+- **✅ Cas de Tests Complets** : Créez des tests détaillés avec préconditions, étapes et résultats attendus
+- **📊 Rapports PDF** : Générez des rapports professionnels prêts à être partagés
+- **👥 Collaboration** : Travaillez en équipe sur les sessions de tests
+- **📱 Interface Responsive** : Accédez à la plateforme depuis n'importe quel appareil
+
+## 🏗️ Architecture Technique
+
+### Stack Moderne
+- **Frontend** : React 19 + TypeScript + Sass
+- **Backend** : API REST Java (déployée sur Render)
+- **Authentification** : JWT Token-based
+- **Styling** : CSS Modules + Variables CSS
+- **Icons** : FontAwesome Pro
+
+### Architecture Clean Code
+```
+src/
+├── domain/           # Business Logic & Entities
+│   ├── entities/     # TypeScript Interfaces
+│   └── usecases/     # Business Rules
+├── infrastructure/  # Data Access Layer
+│   └── api/          # API Clients
+├── presentation/     # UI Components
+│   ├── components/   # Reusable Components
+│   └── pages/        # Page Components
+├── shared/          # Cross-cutting Concerns
+│   ├── types/        # Shared Types
+│   └── utils/        # Helper Functions
+└── hooks/           # Custom React Hooks
+```
+
+## 🚀 Démarrage Rapide
+
+### Prérequis
+- Node.js 16+
+- npm ou yarn
+
+### Installation
+
+1. **Cloner le projet**
+```bash
+git clone <repository-url>
+cd it-testerkansa-main
+```
+
+2. **Installer les dépendances**
+```bash
+npm install
+```
+
+3. **Démarrer le développement**
+```bash
+npm start
+```
+
+L'application sera disponible sur [http://localhost:3000](http://localhost:3000)
+
+### Variables d'Environnement
+
+Créez un fichier `.env` à la racine :
+```env
+REACT_APP_API_URL=https://votre-backend-api.com
+```
+
+## 📱 Utilisation
+
+### Workflow de Test Typique
+
+1. **Créer une Session**
+   - Allez dans la section "Tests"
+   - Cliquez sur "Nouvelle Session"
+   - Remplissez les informations (nom, application, description)
+
+2. **Ajouter des Cas de Tests**
+   - Sélectionnez la session créée
+   - Cliquez sur "Voir" pour entrer dans la session
+   - Ajoutez des tests avec fonction, préconditions, étapes, etc.
+
+3. **Exécuter les Tests**
+   - Modifiez les statuts (OK, BUG, EN COURS, BLOQUE)
+   - Ajoutez des captures d'écran si nécessaire
+   - Commentez les résultats
+
+4. **Générer un Rapport**
+   - Cliquez sur "Exporter" pour générer un PDF
+   - Partagez le rapport avec l'équipe
+
+### Interface Utilisateur
+
+- **🏠 Dashboard** : Vue d'ensemble des sessions et statistiques
+- **📋 Tests** : Gestion des sessions et cas de tests
+- **👥 Utilisateurs** : Administration des comptes (admin)
+- **⚙️ Applications** : Gestion des applications testées
+- **📊 Rapports** : Historique et exports
+
+## 🔧 Scripts Disponibles
 
 ### `npm start`
-
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
-
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
-
-### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Démarre l'application en mode développement avec hot-reload.
 
 ### `npm run build`
+Crée une version optimisée pour la production dans le dossier `build/`.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### `npm test`
+Lance les tests unitaires en mode watch.
 
 ### `npm run eject`
+**Attention : Opération irréversible !** 
+Expose toutes les configurations de build (webpack, babel, etc.).
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+## 🎨 Personnalisation
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### Thèmes et Styles
+L'application utilise des variables CSS personnalisées pour faciliter la personnalisation :
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+```css
+:root {
+  --primary-color: #3498db;
+  --bg-primary: #f8f9fa;
+  --text-primary: #2c3e50;
+  /* ... */
+}
+```
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+### Composants Réutilisables
+Les composants sont conçus pour être réutilisables et typés avec TypeScript :
 
-## Learn More
+```typescript
+interface SessionFormProps {
+  onSubmit: (data: CreateTestSessionRequest) => Promise<void>;
+  onCancel: () => void;
+  mode?: 'modal' | 'inline';
+}
+```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## 🚀 Déploiement
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+### Production
+```bash
+npm run build
+# Le dossier build/ contient l'application optimisée
+```
+
+### Vercel (Recommandé)
+Le projet est configuré pour Vercel avec `vercel.json`.
+
+### Docker
+```dockerfile
+FROM node:16-alpine
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci --only=production
+COPY . .
+RUN npm run build
+EXPOSE 3000
+CMD ["npm", "start"]
+```
+
+## 🤝 Contribuer
+
+### Normes de Code
+- TypeScript strict
+- ESLint + Prettier
+- CSS Modules pour les styles
+- Tests unitaires avec Jest
+
+### Git Workflow
+```bash
+git checkout -b feature/nouvelle-fonctionnalite
+# ... travail ...
+git commit -m "feat: ajoute nouvelle fonctionnalité"
+git push origin feature/nouvelle-fonctionnalite
+# Pull request
+```
+
+## 📞 Support
+
+Pour toute question ou problème :
+- 📧 Email : support@it-testerkansa.com
+- 📱 Discord : [Serveur Discord]
+- 📖 Documentation : [Wiki du projet]
+
+## 📄 Licence
+
+Ce projet est sous licence MIT - voir le fichier [LICENSE](LICENSE) pour plus de détails.
+
+---
+
+**Développé avec ❤️ par l'équipe IT-TesterKansa**

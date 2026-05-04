@@ -47,5 +47,8 @@
       "last 1 safari version"
     ]
   },
-  "proxy": "https://backend-java-pkn3.onrender.com"
+  "proxy": "https://backend-java-pkn3.onrender.com",
+  "devDependencies": {
+    "xlsx": "^0.18.5"
+  }
 }
