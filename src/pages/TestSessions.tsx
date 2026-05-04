@@ -36,7 +36,6 @@ const TestSessions: React.FC = () => {
   const [sessions, setSessions] = useState<TestSession[]>([]);
   const [filteredSessions, setFilteredSessions] = useState<TestSession[]>([]);
   const [applications, setApplications] = useState<Application[]>([]);
-  const [loading, setLoading] = useState(true);
   const [initialLoading, setInitialLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -135,7 +134,6 @@ const TestSessions: React.FC = () => {
         console.error('Fetch error:', err);
       }
     } finally {
-      setLoading(false);
       setInitialLoading(false);
     }
   };
