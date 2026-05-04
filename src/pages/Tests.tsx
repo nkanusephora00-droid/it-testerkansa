@@ -882,24 +882,34 @@ const Tests: React.FC = () => {
               <div style={styles.sessionActions}>
                 <button 
                   style={styles.viewButton} 
-                  onClick={() => { setSelectedSession(session.id); setView('tests'); }}
-                  onMouseDown={(e) => e.preventDefault()}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSelectedSession(session.id);
+                    setView('tests');
+                  }}
+                  type="button"
                 >
                   <FontAwesomeIcon icon={faEye} /> Voir les tests
                 </button>
                 <button 
                   style={styles.exportButton} 
-                  onClick={() => handleExportSessionPDF(session)}
-                  onMouseDown={(e) => e.preventDefault()}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleExportSessionPDF(session);
+                  }}
+                  type="button"
                 >
                   <FontAwesomeIcon icon={faFilePdf} /> PDF
                 </button>
                 {session.statut !== 'Terminé' && (
                   <button 
-                    style={{...styles.deleteButton, padding: '6px', backgroundColor: 'transparent', color: '#ff6b6b'}} 
-                    onClick={() => handleDeleteSession(session.id)} 
+                    style={{...styles.deleteButton, padding: '8px 12px', backgroundColor: 'transparent', color: '#ff6b6b', border: '1px solid #ff6b6b'}} 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDeleteSession(session.id);
+                    }} 
                     title="Supprimer"
-                    onMouseDown={(e) => e.preventDefault()}
+                    type="button"
                   >
                     <FontAwesomeIcon icon={faTrash} />
                   </button>
