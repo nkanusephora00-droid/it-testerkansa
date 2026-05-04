@@ -882,8 +882,8 @@ const Tests: React.FC = () => {
               <div style={styles.sessionActions}>
                 <button 
                   style={styles.viewButton} 
-                  onClick={(e) => {
-                    e.stopPropagation();
+                  onClick={() => {
+                    console.log('Click sur Voir les tests pour session:', session.id);
                     setSelectedSession(session.id);
                     setView('tests');
                   }}
@@ -893,8 +893,8 @@ const Tests: React.FC = () => {
                 </button>
                 <button 
                   style={styles.exportButton} 
-                  onClick={(e) => {
-                    e.stopPropagation();
+                  onClick={() => {
+                    console.log('Click sur PDF pour session:', session.id);
                     handleExportSessionPDF(session);
                   }}
                   type="button"
@@ -904,8 +904,8 @@ const Tests: React.FC = () => {
                 {session.statut !== 'Terminé' && (
                   <button 
                     style={{...styles.deleteButton, padding: '8px 12px', backgroundColor: 'transparent', color: '#ff6b6b', border: '1px solid #ff6b6b'}} 
-                    onClick={(e) => {
-                      e.stopPropagation();
+                    onClick={() => {
+                      console.log('Click sur Supprimer pour session:', session.id);
                       handleDeleteSession(session.id);
                     }} 
                     title="Supprimer"
