@@ -390,7 +390,7 @@ const TestSessions: React.FC = () => {
                 </select>
               </div>
               <div style={styles.searchWrapper}>
-                <FontAwesomeIcon icon={faSearch} style={styles.searchIcon} />
+                <FontAwesomeIcon icon={faSearch} className="search-icon" />
                 <input
                   type="text"
                   placeholder="Rechercher..."
@@ -825,7 +825,6 @@ const styles: Record<string, React.CSSProperties> = {
   filters: { display: 'flex', gap: '12px', flexWrap: 'wrap' as const },
   filterSelect: { padding: '8px 12px', border: '1px solid var(--border-color)', borderRadius: '8px', backgroundColor: 'var(--input-bg)', color: 'var(--text-primary)', fontSize: '14px' },
   searchWrapper: { position: 'relative' as const, display: 'flex', alignItems: 'center' },
-  searchIcon: { position: 'absolute' as const, left: '12px', color: 'var(--text-secondary)' as any, fontSize: '14px' },
   
   tableSection: { backgroundColor: 'var(--bg-card)', borderRadius: 'var(--radius-lg)', padding: '24px', marginBottom: '24px', border: '1px solid var(--border-color)', boxShadow: '0 2px 8px var(--shadow-color)' },
   sectionTitle: { margin: '0 0 20px', fontSize: '18px' },
