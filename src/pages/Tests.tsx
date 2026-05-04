@@ -1395,7 +1395,7 @@ input: { padding: '4px 6px', border: '1px solid var(--border-color)', borderRadi
   testsHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', gap: '12px' },
   testsSubtitle: { fontSize: '13px', color: 'var(--text-secondary)' },
   sessionInfo: { fontSize: '13px', color: 'var(--text-secondary)', margin: '5px 0' },
-  modal: { position: 'fixed' as const, top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0,0,0,0.6)', display: 'flex', justifyContent: 'center', alignItems: 'flex-start', zIndex: 1000, paddingTop: '40px', overflowY: 'auto' as const, backdropFilter: 'blur(4px)' },
+  modal: { position: 'fixed' as const, top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0,0,0,0.6)', display: 'flex', justifyContent: 'center', alignItems: 'flex-start', zIndex: 9999, paddingTop: '40px', overflowY: 'auto' as const, backdropFilter: 'blur(4px)' },
   modalContent: { backgroundColor: 'var(--bg-card)', padding: '20px', borderRadius: '16px', width: '95%', maxWidth: '600px', position: 'relative' as const, boxShadow: '0 20px 60px rgba(0,0,0,0.3)', marginBottom: '40px', border: '1px solid var(--border-light)' },
   sessionModalContent: { maxWidth: '500px', padding: '16px' },
   testModalContent: { maxWidth: '420px', padding: '10px' },
