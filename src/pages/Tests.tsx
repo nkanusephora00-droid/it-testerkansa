@@ -837,25 +837,26 @@ const Tests: React.FC = () => {
             }}>
               {selectionMode && (
                 <div style={{
-                  ...styles.selectionCheckbox,
-                  border: '3px solid #007bff',
+                  position: 'absolute',
+                  top: '12px',
+                  right: '12px',
+                  zIndex: 10,
                   backgroundColor: 'white',
-                  padding: '8px',
-                  borderRadius: '8px',
-                  boxShadow: '0 2px 8px rgba(0,123,255,0.3)'
+                  borderRadius: '6px',
+                  padding: '4px',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                  border: '2px solid #e1e5e9'
                 }}>
                   <input 
                     type="checkbox"
                     checked={selectedSessions.includes(session.id)}
                     onChange={() => handleToggleSessionSelection(session.id)}
                     style={{
-                      width: '24px',
-                      height: '24px',
+                      width: '18px',
+                      height: '18px',
                       cursor: 'pointer',
-                      accentColor: '#007bff',
-                      border: '2px solid #007bff',
-                      borderRadius: '4px',
-                      transform: 'scale(1.2)'
+                      accentColor: '#3b82f6',
+                      margin: '0'
                     }}
                   />
                 </div>
@@ -879,14 +880,27 @@ const Tests: React.FC = () => {
                 <span style={styles.statBug}><FontAwesomeIcon icon={faTimes} /> {getSessionTests(session.id).filter((t: Test) => t.statut === 'BUG').length}</span>
               </div>
               <div style={styles.sessionActions}>
-                <button style={styles.viewButton} onClick={() => { setSelectedSession(session.id); setView('tests'); }}>
+                <button 
+                  style={styles.viewButton} 
+                  onClick={() => { setSelectedSession(session.id); setView('tests'); }}
+                  onMouseDown={(e) => e.preventDefault()}
+                >
                   <FontAwesomeIcon icon={faEye} /> Voir les tests
                 </button>
-                <button style={styles.exportButton} onClick={() => handleExportSessionPDF(session)}>
+                <button 
+                  style={styles.exportButton} 
+                  onClick={() => handleExportSessionPDF(session)}
+                  onMouseDown={(e) => e.preventDefault()}
+                >
                   <FontAwesomeIcon icon={faFilePdf} /> PDF
                 </button>
                 {session.statut !== 'Terminé' && (
-                  <button style={{...styles.deleteButton, padding: '6px', backgroundColor: 'transparent', color: '#ff6b6b'}} onClick={() => handleDeleteSession(session.id)} title="Supprimer">
+                  <button 
+                    style={{...styles.deleteButton, padding: '6px', backgroundColor: 'transparent', color: '#ff6b6b'}} 
+                    onClick={() => handleDeleteSession(session.id)} 
+                    title="Supprimer"
+                    onMouseDown={(e) => e.preventDefault()}
+                  >
                     <FontAwesomeIcon icon={faTrash} />
                   </button>
                 )}
