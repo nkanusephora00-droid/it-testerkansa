@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBell, faTimes, faCheck, faExclamationTriangle, faInfoCircle, faCheckCircle } from '@fortawesome/free-solid-svg-icons';
+import './NotificationBell.css';
 
 interface Notification {
   id: string;
@@ -137,7 +138,7 @@ const NotificationBell: React.FC = () => {
         onClick={() => setIsOpen(!isOpen)}
         title="Notifications"
       >
-        <FontAwesomeIcon icon={faBell} style={styles.bellIcon} />
+        <FontAwesomeIcon icon={faBell} className="notification-bell-icon" />
         {unreadCount > 0 && (
           <span style={styles.badge}>{unreadCount > 99 ? '99+' : unreadCount}</span>
         )}
@@ -154,7 +155,7 @@ const NotificationBell: React.FC = () => {
                   onClick={markAllAsRead}
                   title="Tout marquer comme lu"
                 >
-                  <FontAwesomeIcon icon={faCheck} style={styles.actionIcon} />
+                  <FontAwesomeIcon icon={faCheck} className="action-icon" />
                 </button>
               )}
               <button
@@ -162,7 +163,7 @@ const NotificationBell: React.FC = () => {
                 onClick={() => setIsOpen(false)}
                 title="Fermer"
               >
-                <FontAwesomeIcon icon={faTimes} style={styles.actionIcon} />
+                <FontAwesomeIcon icon={faTimes} className="action-icon" />
               </button>
             </div>
           </div>
@@ -170,7 +171,7 @@ const NotificationBell: React.FC = () => {
           <div style={styles.notificationsList}>
             {notifications.length === 0 ? (
               <div style={styles.emptyState}>
-                <FontAwesomeIcon icon={faBell} style={styles.emptyIcon} />
+                <FontAwesomeIcon icon={faBell} className="empty-icon" />
                 <p style={styles.emptyText}>Aucune notification</p>
               </div>
             ) : (
@@ -189,8 +190,8 @@ const NotificationBell: React.FC = () => {
                     <div style={styles.notificationIconContainer}>
                       <FontAwesomeIcon
                         icon={getNotificationIcon(notification.type)}
+                        className="notification-icon"
                         style={{
-                          ...styles.notificationIcon,
                           color: getNotificationColor(notification.type)
                         }}
                       />
@@ -208,7 +209,7 @@ const NotificationBell: React.FC = () => {
                     onClick={() => deleteNotification(notification.id)}
                     title="Supprimer"
                   >
-                    <FontAwesomeIcon icon={faTimes} style={styles.deleteIcon} />
+                    <FontAwesomeIcon icon={faTimes} className="delete-icon" />
                   </button>
                 </div>
               ))
@@ -244,8 +245,8 @@ const styles: Record<string, React.CSSProperties> = {
     height: '40px',
     borderRadius: '50%',
     border: 'none',
-    backgroundColor: 'var(--hover-bg)',
-    color: 'var(--text-secondary)',
+    backgroundColor: 'var(--hover-bg)' as any,
+    color: 'var(--text-secondary)' as any,
     fontSize: '16px',
     cursor: 'pointer',
     display: 'flex',
@@ -254,14 +255,11 @@ const styles: Record<string, React.CSSProperties> = {
     transition: 'all 0.2s ease',
     position: 'relative',
   },
-  bellIcon: {
-    fontSize: '16px',
-  },
   badge: {
     position: 'absolute',
     top: '-4px',
     right: '-4px',
-    backgroundColor: 'var(--danger-color)',
+    backgroundColor: 'var(--danger-color)' as any,
     color: 'white',
     fontSize: '10px',
     fontWeight: '600',
@@ -272,7 +270,7 @@ const styles: Record<string, React.CSSProperties> = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    border: '2px solid var(--bg-card)',
+    border: '2px solid var(--bg-card)' as any,
   },
   dropdown: {
     position: 'absolute',
@@ -280,8 +278,8 @@ const styles: Record<string, React.CSSProperties> = {
     right: '0',
     width: '350px',
     maxHeight: '400px',
-    backgroundColor: 'var(--bg-card)',
-    border: '1px solid var(--border-color)',
+    backgroundColor: 'var(--bg-card)' as any,
+    border: '1px solid var(--border-color)' as any,
     borderRadius: '12px',
     boxShadow: '0 8px 24px rgba(0, 0, 0, 0.15)',
     zIndex: 1000,
@@ -292,14 +290,14 @@ const styles: Record<string, React.CSSProperties> = {
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: '16px 20px',
-    borderBottom: '1px solid var(--border-color)',
-    backgroundColor: 'var(--hover-bg)',
+    borderBottom: '1px solid var(--border-color)' as any,
+    backgroundColor: 'var(--hover-bg)' as any,
   },
   dropdownTitle: {
     margin: 0,
     fontSize: '16px',
     fontWeight: '600',
-    color: 'var(--text-primary)',
+    color: 'var(--text-primary)' as any,
   },
   headerActions: {
     display: 'flex',
@@ -310,7 +308,7 @@ const styles: Record<string, React.CSSProperties> = {
     height: '32px',
     borderRadius: '6px',
     border: 'none',
-    backgroundColor: 'var(--success-color)',
+    backgroundColor: 'var(--success-color)' as any,
     color: 'white',
     cursor: 'pointer',
     display: 'flex',
@@ -323,16 +321,13 @@ const styles: Record<string, React.CSSProperties> = {
     height: '32px',
     borderRadius: '6px',
     border: 'none',
-    backgroundColor: 'var(--hover-bg)',
-    color: 'var(--text-secondary)',
+    backgroundColor: 'var(--hover-bg)' as any,
+    color: 'var(--text-secondary)' as any,
     cursor: 'pointer',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     transition: 'all 0.2s ease',
-  },
-  actionIcon: {
-    fontSize: '14px',
   },
   notificationsList: {
     maxHeight: '300px',
@@ -344,12 +339,7 @@ const styles: Record<string, React.CSSProperties> = {
     alignItems: 'center',
     justifyContent: 'center',
     padding: '40px 20px',
-    color: 'var(--text-secondary)',
-  },
-  emptyIcon: {
-    fontSize: '32px',
-    marginBottom: '12px',
-    opacity: 0.5,
+    color: 'var(--text-secondary)' as any,
   },
   emptyText: {
     margin: 0,
@@ -359,11 +349,11 @@ const styles: Record<string, React.CSSProperties> = {
     display: 'flex',
     alignItems: 'center',
     padding: '12px 20px',
-    borderBottom: '1px solid var(--border-light)',
+    borderBottom: '1px solid var(--border-light)' as any,
     transition: 'background-color 0.2s ease',
   },
   notificationUnread: {
-    backgroundColor: 'var(--hover-bg)',
+    backgroundColor: 'var(--hover-bg)' as any,
   },
   notificationRead: {
     backgroundColor: 'transparent',
@@ -384,7 +374,7 @@ const styles: Record<string, React.CSSProperties> = {
     width: '32px',
     height: '32px',
     borderRadius: '50%',
-    backgroundColor: 'var(--hover-bg)',
+    backgroundColor: 'var(--hover-bg)' as any,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
@@ -399,19 +389,19 @@ const styles: Record<string, React.CSSProperties> = {
   notificationTitle: {
     fontSize: '14px',
     fontWeight: '600',
-    color: 'var(--text-primary)',
+    color: 'var(--text-primary)' as any,
     margin: '0 0 4px 0',
     lineHeight: '1.3',
   },
   notificationMessage: {
     fontSize: '13px',
-    color: 'var(--text-secondary)',
+    color: 'var(--text-secondary)' as any,
     margin: '0 0 4px 0',
     lineHeight: '1.4',
   },
   notificationTime: {
     fontSize: '11px',
-    color: 'var(--text-muted)',
+    color: 'var(--text-muted)' as any,
     margin: 0,
   },
   deleteButton: {
@@ -420,7 +410,7 @@ const styles: Record<string, React.CSSProperties> = {
     borderRadius: '4px',
     border: 'none',
     backgroundColor: 'transparent',
-    color: 'var(--text-muted)',
+    color: 'var(--text-muted)' as any,
     cursor: 'pointer',
     display: 'flex',
     alignItems: 'center',
@@ -428,21 +418,18 @@ const styles: Record<string, React.CSSProperties> = {
     transition: 'all 0.2s ease',
     flexShrink: 0,
   },
-  deleteIcon: {
-    fontSize: '12px',
-  },
   dropdownFooter: {
     padding: '12px 20px',
-    borderTop: '1px solid var(--border-color)',
-    backgroundColor: 'var(--hover-bg)',
+    borderTop: '1px solid var(--border-color)' as any,
+    backgroundColor: 'var(--hover-bg)' as any,
   },
   viewAllButton: {
     width: '100%',
     padding: '8px 16px',
-    border: '1px solid var(--border-color)',
+    border: '1px solid var(--border-color)' as any,
     borderRadius: '6px',
-    backgroundColor: 'var(--bg-card)',
-    color: 'var(--text-primary)',
+    backgroundColor: 'var(--bg-card)' as any,
+    color: 'var(--text-primary)' as any,
     fontSize: '14px',
     fontWeight: '500',
     cursor: 'pointer',
