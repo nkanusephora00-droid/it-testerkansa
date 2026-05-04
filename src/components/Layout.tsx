@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { authAPI } from "../services/api";
+import NotificationBell from "./NotificationBell";
 import "./Layout.css";
 
 interface LayoutProps {
@@ -172,6 +173,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
            <h1>Gestion des Accès IT</h1>
          </div>
          <div style={styles.headerActions}>
+           <NotificationBell />
            <button
             onClick={handleLogout}
             style={styles.logoutButton}

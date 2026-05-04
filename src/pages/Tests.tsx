@@ -883,21 +883,17 @@ const Tests: React.FC = () => {
                 <button 
                   style={styles.viewButton} 
                   onClick={() => {
-                    console.log('Click sur Voir les tests pour session:', session.id);
                     setSelectedSession(session.id);
                     setView('tests');
                   }}
-                  type="button"
                 >
                   <FontAwesomeIcon icon={faEye} /> Voir les tests
                 </button>
                 <button 
                   style={styles.exportButton} 
                   onClick={() => {
-                    console.log('Click sur PDF pour session:', session.id);
                     handleExportSessionPDF(session);
                   }}
-                  type="button"
                 >
                   <FontAwesomeIcon icon={faFilePdf} /> PDF
                 </button>
@@ -905,11 +901,9 @@ const Tests: React.FC = () => {
                   <button 
                     style={{...styles.deleteButton, padding: '8px 12px', backgroundColor: 'transparent', color: '#ff6b6b', border: '1px solid #ff6b6b'}} 
                     onClick={() => {
-                      console.log('Click sur Supprimer pour session:', session.id);
                       handleDeleteSession(session.id);
                     }} 
                     title="Supprimer"
-                    type="button"
                   >
                     <FontAwesomeIcon icon={faTrash} />
                   </button>
