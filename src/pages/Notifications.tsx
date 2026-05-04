@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { testsAPI, todosAPI } from '../services/api';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBell, faCheck, faExclamationTriangle, faInfo, faCheckCircle, faBug } from '@fortawesome/free-solid-svg-icons';
+import { createStyles } from '../shared/utils/styleUtils';
 
 interface Notification {
   id: number;
@@ -182,7 +183,7 @@ const Notifications: React.FC = () => {
         <div style={styles.notifList}>
           {filteredNotifs.length === 0 ? (
             <div style={styles.emptyState}>
-              <FontAwesomeIcon icon={faBell} style={styles.emptyIcon as any} />
+              <FontAwesomeIcon icon={faBell} style={styles.emptyIcon} />
               <h3>Aucune notification</h3>
               <p>{filter === 'unread' ? 'Toutes vos notifications ont été lues' : 'Vous n\'avez aucune notification'}</p>
             </div>
@@ -223,7 +224,7 @@ const Notifications: React.FC = () => {
   );
 };
 
-const styles: Record<string, React.CSSProperties> = {
+const styles = createStyles({
   container: { backgroundColor: 'var(--bg-primary)', minHeight: '100vh' },
   main: { padding: '30px', maxWidth: '900px', margin: '0 auto', width: '100%', minHeight: 'calc(100vh - 70px)' },
   loading: { display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh', color: 'var(--text-secondary)' },
@@ -235,7 +236,7 @@ const styles: Record<string, React.CSSProperties> = {
   markAllButton: { padding: '8px 16px', backgroundColor: 'var(--success-color)', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '13px', fontWeight: '500', display: 'flex', alignItems: 'center', gap: '6px' },
   notifList: { display: 'flex', flexDirection: 'column', gap: '12px' },
   emptyState: { textAlign: 'center', padding: '60px 20px', color: 'var(--text-secondary)' },
-  emptyIcon: { fontSize: '48px', marginBottom: '16px', opacity: 0.5 },
+  emptyIcon: { fontSize: '48px', marginBottom: '16px', opacity: 0.5 } as any,
   notifItem: { display: 'flex', alignItems: 'flex-start', gap: '16px', padding: '16px', backgroundColor: 'var(--bg-card)', borderRadius: '12px', border: '1px solid var(--border-color)', transition: 'all 0.2s' },
   notifItemUnread: { borderLeftWidth: '4px', borderLeftColor: 'var(--info-color)', borderLeftStyle: 'solid' },
   notifItemRead: { opacity: 0.7 },
@@ -246,6 +247,6 @@ const styles: Record<string, React.CSSProperties> = {
   notifDate: { fontSize: '12px', color: 'var(--text-muted)' },
   notifMessage: { margin: 0, fontSize: '13px', color: 'var(--text-secondary)' },
   markReadButton: { width: '32px', height: '32px', minWidth: '32px', borderRadius: '50%', border: '1px solid var(--success-color)', backgroundColor: 'transparent', color: 'var(--success-color)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', transition: 'all 0.2s' }
-};
+});
 
 export default Notifications;

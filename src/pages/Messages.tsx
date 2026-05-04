@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { usersAPI, messagesAPI, User, profileAPI } from '../services/api';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faComments, faPaperPlane, faCircle, faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+import { createStyles } from '../shared/utils/styleUtils';
 import Chat from '../components/Chat';
 
 const Messages: React.FC = () => {
@@ -113,7 +114,7 @@ const Messages: React.FC = () => {
               <div style={styles.loading}>Chargement...</div>
             ) : users.length === 0 ? (
               <div style={styles.emptyState}>
-                <FontAwesomeIcon icon={faComments} style={styles.emptyIcon as any} />
+                <FontAwesomeIcon icon={faComments} style={styles.emptyIcon} />
                 <p>Aucun utilisateur disponible</p>
               </div>
             ) : (
@@ -121,11 +122,11 @@ const Messages: React.FC = () => {
                 {users.map((user) => (
                   <div
                     key={user.id}
-                    style={styles.userCard as any}
+                    style={styles.userCard}
                     onClick={() => handleStartChat(user)}
                   >
                     <div style={styles.userInfo}>
-                      <div style={styles.userAvatar as any}>
+                      <div style={styles.userAvatar}>
                         <FontAwesomeIcon icon={user.role === 'admin' ? faComments : faPaperPlane} />
                       </div>
                       <div style={styles.userDetails}>
@@ -175,7 +176,7 @@ const Messages: React.FC = () => {
               <div style={styles.loading}>Chargement...</div>
             ) : users.length === 0 ? (
               <div style={styles.emptyState}>
-                <FontAwesomeIcon icon={faComments} style={styles.emptyIcon as any} />
+                <FontAwesomeIcon icon={faComments} style={styles.emptyIcon} />
                 <p>Aucun utilisateur disponible</p>
               </div>
             ) : (
@@ -184,13 +185,13 @@ const Messages: React.FC = () => {
                   <div
                     key={user.id}
                     style={{
-                      ...styles.userCard as any,
+                      ...styles.userCard,
                       ...(selectedUser?.id === user.id ? styles.userCardSelected : {})
                     }}
                     onClick={() => handleStartChat(user)}
                   >
                     <div style={styles.userInfo}>
-                      <div style={styles.userAvatar as any}>
+                      <div style={styles.userAvatar}>
                         <FontAwesomeIcon icon={user.role === 'admin' ? faComments : faPaperPlane} />
                       </div>
                       <div style={styles.userDetails}>
@@ -225,7 +226,7 @@ const Messages: React.FC = () => {
               />
             ) : (
               <div style={styles.noChatSelected}>
-                <FontAwesomeIcon icon={faComments} style={styles.noChatIcon as any} />
+                <FontAwesomeIcon icon={faComments} style={styles.noChatIcon} />
                 <h3>Sélectionnez une conversation</h3>
                 <p>Choisissez un utilisateur pour commencer à discuter</p>
               </div>
@@ -237,7 +238,7 @@ const Messages: React.FC = () => {
   );
 };
 
-const styles: Record<string, React.CSSProperties> = {
+const styles = createStyles({
   container: {
     backgroundColor: 'var(--bg-primary)',
     minHeight: '100vh',
@@ -314,7 +315,7 @@ const styles: Record<string, React.CSSProperties> = {
     fontSize: '48px',
     marginBottom: '16px',
     opacity: 0.5,
-  } as React.CSSProperties,
+  } as any,
   usersList: {
     flex: 1,
     overflowY: 'auto' as const,
@@ -383,11 +384,11 @@ const styles: Record<string, React.CSSProperties> = {
   onlineIndicator: {
     fontSize: '8px',
     color: 'var(--success-color)',
-  } as React.CSSProperties,
+  } as any,
   offlineIndicator: {
     fontSize: '8px',
     color: 'var(--text-muted)',
-  } as React.CSSProperties,
+  } as any,
   chatArea: {
     flex: 1,
     backgroundColor: 'var(--bg-card)',
@@ -407,7 +408,7 @@ const styles: Record<string, React.CSSProperties> = {
     fontSize: '64px',
     marginBottom: '20px',
     opacity: 0.3,
-  } as React.CSSProperties,
-};
+  },
+});
 
 export default Messages;

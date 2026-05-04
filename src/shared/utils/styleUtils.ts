@@ -5,7 +5,7 @@ import { EnhancedCSSProperties } from '../types/CSSVariables';
  * @param styles - Objet de styles React.CSSProperties
  * @returns Styles avec typage étendu pour les variables CSS
  */
-export function createStyles<T extends Record<string, EnhancedCSSProperties>>(styles: T): T {
+export function createStyles<T extends Record<string, React.CSSProperties>>(styles: T): T {
   return styles;
 }
 
@@ -25,4 +25,13 @@ export function createStyle(style: EnhancedCSSProperties): EnhancedCSSProperties
  */
 export function enhanceStyle(style: React.CSSProperties): EnhancedCSSProperties {
   return style as EnhancedCSSProperties;
+}
+
+/**
+ * Crée un style FontAwesome compatible avec TypeScript
+ * @param style - Objet de style React.CSSProperties
+ * @returns Style compatible pour les icônes FontAwesome
+ */
+export function createFontAwesomeStyle(style: React.CSSProperties): React.CSSProperties {
+  return style;
 }
