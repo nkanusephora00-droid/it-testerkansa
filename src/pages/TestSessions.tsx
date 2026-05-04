@@ -1,7 +1,8 @@
 import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { testSessionsAPI, applicationsAPI, Application } from '../services/api';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPen, faTrash, faSearch, faFilter, faSort, faChartBar, faClock, faCheckCircle, faExclamationTriangle, faPlayCircle, faTimesCircle, faDownload, faEye } from '@fortawesome/free-solid-svg-icons';
+import { faPen, faTrash, faSearch, faSort, faChartBar, faClock, faCheckCircle, faExclamationTriangle, faPlayCircle, faTimesCircle, faEye } from '@fortawesome/free-solid-svg-icons';
+import './TestSessions.css';
 
 interface TestSession {
   id: number;
@@ -48,7 +49,6 @@ const TestSessions: React.FC = () => {
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [filterStatus, setFilterStatus] = useState<string>('all');
   const [filterApp, setFilterApp] = useState<string>('all');
-  const [selectedSessions, setSelectedSessions] = useState<number[]>([]);
   const [viewMode, setViewMode] = useState<'table' | 'cards'>('table');
   
   const [formData, setFormData] = useState({ 
@@ -410,7 +410,7 @@ const TestSessions: React.FC = () => {
             </div>
           ) : error ? (
             <div style={styles.errorContainer}>
-              <FontAwesomeIcon icon={faTimesCircle} style={styles.errorIcon} />
+              <FontAwesomeIcon icon={faTimesCircle} className="error-icon" />
               <h3>Erreur de chargement</h3>
               <p>{error}</p>
               <button style={styles.retryButton} onClick={fetchData}>
